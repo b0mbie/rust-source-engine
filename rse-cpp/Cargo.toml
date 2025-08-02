@@ -1,0 +1,6 @@
+[package]
+name = "rse-cpp"
+edition = "2024"
+
+[dependencies]
+cppdvt.workspace = true

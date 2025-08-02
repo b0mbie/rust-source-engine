@@ -1,0 +1,9 @@
+[package]
+name = "rse-server-plugin"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rse-cpp.workspace = true
+rse-game.workspace = true
+rse-interface.workspace = true

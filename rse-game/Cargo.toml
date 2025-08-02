@@ -1,0 +1,11 @@
+[package]
+name = "rse-game"
+version = "0.1.0"
+edition = "2024"
+
+[features]
+xbox = []
+
+[dependencies]
+rse-cpp.workspace = true
+rse-interface.workspace = true

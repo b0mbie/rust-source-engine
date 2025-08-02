@@ -1,0 +1,17 @@
+[workspace]
+resolver = "3"
+members = [
+	"rse-cpp",
+	"rse-interface",
+	"rse-game",
+	"rse-server-plugin",
+	"test-server-plugin",
+]
+
+[workspace.dependencies]
+cppdvt = { git = "https://github.com/b0mbie/cppdvt.git" }
+
+rse-cpp = { path = "./rse-cpp" }
+rse-interface = { path = "./rse-interface" }
+rse-game = { path = "./rse-game" }
+rse-server-plugin = { path = "./rse-server-plugin" }
