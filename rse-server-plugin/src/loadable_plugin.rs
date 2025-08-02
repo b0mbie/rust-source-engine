@@ -14,7 +14,7 @@ use crate::{
 
 pub struct PluginLoader<P> {
 	plugin: Option<P>,
-	had_failed_load: bool,
+	had_duplicate_load: bool,
 }
 
 impl<P> PluginLoader<P> {
@@ -33,7 +33,7 @@ impl<P> PluginLoader<P> {
 	pub const fn new() -> Self {
 		Self {
 			plugin: None,
-			had_failed_load: false,
+			had_duplicate_load: false,
 		}
 	}
 }
@@ -49,13 +49,13 @@ impl<P: LoadablePlugin> DllPlugin for PluginLoader<P> {
 			self.plugin = P::load(factories);
 			self.plugin.is_some()
 		} else {
-			self.had_failed_load = true;
+			self.had_duplicate_load = true;
 			false
 		}
 	}
 	fn unload(&mut self) {
-		if self.had_failed_load {
-			self.had_failed_load = false;
+		if self.had_duplicate_load {
+			self.had_duplicate_load = false;
 		} else {
 			self.plugin = None;
 		}
