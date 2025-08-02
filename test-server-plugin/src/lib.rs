@@ -1,12 +1,13 @@
 use ::core::ffi::CStr;
 
-use rse_server_plugin::prelude::*;
+use rse_server_plugin::{game, prelude::*};
 
 struct Test;
 impl LoadablePlugin for Test {
 	fn load(app_system_factory: CreateInterfaceFn, game_server_factory: CreateInterfaceFn) -> Option<Self> {
-		let _ = app_system_factory;
 		let _ = game_server_factory;
+		let mut engine_server = app_system_factory.create_interface::<game::VEngineServer>().ok()?;
+		engine_server.server_command(c"echo i drank water\n");
 		Some(Test)
 	}
 }
