@@ -23,9 +23,9 @@ pub mod prelude {
 		},
 		game::{
 			Command, ServerEdict,
+			InterfaceFactories,
 		},
 		interface::{
-			cppdef::CreateInterfaceFn,
 			InterfaceFactory, RawInterfaceFactory,
 		},
 		DllPlugin, LoadablePlugin, Plugin,

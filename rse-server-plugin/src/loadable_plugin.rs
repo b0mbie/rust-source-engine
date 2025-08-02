@@ -1,8 +1,8 @@
 use ::core::ffi::CStr;
 use ::rse_game::{
 	Command, ServerEdict,
+	InterfaceFactories,
 };
-use ::rse_interface::CreateInterfaceFn;
 
 use crate::{
 	cppdef::{
@@ -39,14 +39,14 @@ impl<P> PluginLoader<P> {
 }
 
 pub trait LoadablePlugin: Sized + Plugin {
-	fn load(app_system_factory: CreateInterfaceFn, game_server_factory: CreateInterfaceFn) -> Option<Self>;
+	fn load(factories: InterfaceFactories<'_>) -> Option<Self>;
 }
 
 impl<P: LoadablePlugin> DllPlugin for PluginLoader<P> {
 	const NOT_LOADED: Self = Self::new();
-	fn load(&mut self, app_system_factory: CreateInterfaceFn, game_server_factory: CreateInterfaceFn) -> bool {
+	fn load(&mut self, factories: InterfaceFactories<'_>) -> bool {
 		if self.plugin.is_none() {
-			self.plugin = P::load(app_system_factory, game_server_factory);
+			self.plugin = P::load(factories);
 			self.plugin.is_some()
 		} else {
 			self.had_failed_load = true;

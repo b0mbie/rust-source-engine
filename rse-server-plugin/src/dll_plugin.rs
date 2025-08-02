@@ -11,6 +11,7 @@ use ::rse_cpp::{
 use ::rse_game::{
 	cppdef::entities::Edict,
 	Command, ServerEdict,
+	InterfaceFactories,
 };
 use ::rse_interface::{
 	CreateInterfaceFn, RawInterface,
@@ -22,12 +23,12 @@ use crate::{
 		ClientIndex, PluginResult, QueryCvarCookie, QueryCvarValueStatus, ServerPluginCallbacksVt,
 		INTERFACEVERSION_ISERVERPLUGINCALLBACKS,
 	},
-	RejectReason, ClientConnect, Plugin,
+	ClientConnect, Plugin, RejectReason,
 };
 
 pub trait DllPlugin: Plugin {
 	const NOT_LOADED: Self;
-	fn load(&mut self, app_system_factory: CreateInterfaceFn, game_server_factory: CreateInterfaceFn) -> bool;
+	fn load(&mut self, factories: InterfaceFactories<'_>) -> bool;
 	fn unload(&mut self);
 }
 
@@ -119,7 +120,8 @@ where
 	vtable_methods! {
 		this;
 		fn load(interface_factory: CreateInterfaceFn, game_server_factory: CreateInterfaceFn) -> bool {
-			this_to_self!(mut this).inner.load(interface_factory, game_server_factory)
+			let factories = InterfaceFactories::new(interface_factory, game_server_factory);
+			this_to_self!(mut this).inner.load(factories)
 		}
 		fn unload() {
 			this_to_self!(mut this).inner.unload();

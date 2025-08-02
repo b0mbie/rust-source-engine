@@ -9,9 +9,12 @@ use ::rse_cpp::{
 	VtObject, virtual_call,
 };
 
-use crate::cppdef::{
-	game_dll_interfaces::*,
-	SteamId, Vector,
+use crate::{
+	cppdef::{
+		game_dll_interfaces::*,
+		SteamId, Vector,
+	},
+	InterfaceOfFactory, AppSystemFactory,
 };
 
 #[derive(Debug)]
@@ -23,12 +26,14 @@ pub struct VEngineServer {
 unsafe impl ::rse_interface::Interface for VEngineServer {
 	const IDENTIFIER: &CStr = INTERFACEVERSION_VENGINESERVER;
 }
-
 impl ::rse_interface::VTableInterface for VEngineServer {
 	type VTable = VEngineServerVt;
 	unsafe fn from_ptr(ptr: VtObject<Self::VTable>) -> Self {
 		unsafe { Self::from_ptr_const(ptr) }
 	}
+}
+impl InterfaceOfFactory for VEngineServer {
+	type Factory = AppSystemFactory;
 }
 
 impl VEngineServer {

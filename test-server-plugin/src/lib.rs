@@ -4,9 +4,8 @@ use rse_server_plugin::{game, prelude::*};
 
 struct Test;
 impl LoadablePlugin for Test {
-	fn load(app_system_factory: CreateInterfaceFn, game_server_factory: CreateInterfaceFn) -> Option<Self> {
-		let _ = game_server_factory;
-		let mut engine_server = app_system_factory.create_interface::<game::VEngineServer>().ok()?;
+	fn load(factories: InterfaceFactories<'_>) -> Option<Self> {
+		let mut engine_server = factories.create_interface::<game::VEngineServer>().ok()?;
 		engine_server.server_command(c"echo i drank water\n");
 		Some(Test)
 	}
