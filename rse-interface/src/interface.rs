@@ -48,6 +48,19 @@ impl InterfaceCode for ReturnCode {
 	}
 }
 
+pub trait InterfaceFactory: RawInterfaceFactory {
+	fn create_interface<I: FromRawInterface>(&self) -> Result<I, I::Error> {
+		let mut code = I::INITIAL_CODE;
+		unsafe {
+			let Some(raw_interface) = self.create_interface_raw(I::IDENTIFIER, code.as_out_return_code()) else {
+				return Err(I::convert_error(code))
+			};
+			Ok(I::from_raw_interface(raw_interface, code))
+		}
+	}
+}
+impl<T: RawInterfaceFactory> InterfaceFactory for T {}
+
 pub trait RawInterfaceFactory {
 	/// # Safety
 	/// The returned [`RawInterface`] is valid only for the duration specified by the implementing interface.
@@ -65,22 +78,6 @@ impl RawInterfaceFactory for CreateInterfaceFn {
 				name.as_ptr(),
 				return_code.map(move |p| p as *mut ReturnCode).unwrap_or(::core::ptr::null_mut()),
 			)
-		}
-	}
-}
-
-pub trait InterfaceFactory: RawInterfaceFactory {
-	fn create_interface<I: FromRawInterface>(&self) -> Result<I, I::Error>;
-}
-
-impl<T: RawInterfaceFactory> InterfaceFactory for T {
-	fn create_interface<I: FromRawInterface>(&self) -> Result<I, I::Error> {
-		let mut code = I::INITIAL_CODE;
-		unsafe {
-			let Some(raw_interface) = self.create_interface_raw(I::IDENTIFIER, code.as_out_return_code()) else {
-				return Err(I::convert_error(code))
-			};
-			Ok(I::from_raw_interface(raw_interface, code))
 		}
 	}
 }
