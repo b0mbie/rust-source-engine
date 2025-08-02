@@ -4,7 +4,7 @@ use ::core::ffi::{
 use ::rse_cpp::{
 	RefConst, VtObjectMut, vtable,
 };
-use ::rse_interface::cppdef::CreateInterfaceFn;
+use ::rse_interface::CreateInterfaceFn;
 use ::rse_game::cppdef::{
 	convar::Command,
 	entities::Edict,

@@ -9,7 +9,7 @@ use crate::cppdef::{
 /// # Safety
 /// `IDENTIFIER` must be valid to be used to query for a value of the implementing type.
 pub unsafe trait Interface {
-	const IDENTIIFER: &CStr;
+	const IDENTIFIER: &CStr;
 }
 
 /// # Safety
@@ -20,7 +20,8 @@ pub unsafe trait FromRawInterface: Interface {
 	const INITIAL_CODE: Self::Code;
 
 	/// # Safety
-	/// `raw_interface` must be a pointer that was queried with the implementing type's `IDENTIFIER`.
+	/// `raw_interface` must be a pointer that was queried with the implementing type's
+	/// [`IDENTIFIER`](Interface::IDENTIFIER).
 	unsafe fn from_raw_interface(raw_interface: RawInterface, code: Self::Code) -> Self;
 	
 	type Error;
@@ -76,7 +77,7 @@ impl<T: RawInterfaceFactory> InterfaceFactory for T {
 	fn create_interface<I: FromRawInterface>(&self) -> Result<I, I::Error> {
 		let mut code = I::INITIAL_CODE;
 		unsafe {
-			let Some(raw_interface) = self.create_interface_raw(I::IDENTIIFER, code.as_out_return_code()) else {
+			let Some(raw_interface) = self.create_interface_raw(I::IDENTIFIER, code.as_out_return_code()) else {
 				return Err(I::convert_error(code))
 			};
 			Ok(I::from_raw_interface(raw_interface, code))

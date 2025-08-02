@@ -13,9 +13,7 @@ use ::rse_game::{
 	Command, ServerEdict,
 };
 use ::rse_interface::{
-	cppdef::{
-		CreateInterfaceFn, RawInterface,
-	},
+	CreateInterfaceFn, RawInterface,
 	Interface, ToRawInterface,
 };
 
@@ -40,7 +38,7 @@ pub struct PluginObject<T> {
 }
 
 unsafe impl<T> Interface for PluginObject<T> {
-	const IDENTIIFER: &CStr = INTERFACEVERSION_ISERVERPLUGINCALLBACKS;
+	const IDENTIFIER: &CStr = INTERFACEVERSION_ISERVERPLUGINCALLBACKS;
 }
 impl<T: DllPlugin> ToRawInterface for PluginObject<T> {
 	unsafe fn to_raw_interface(&mut self) -> RawInterface {

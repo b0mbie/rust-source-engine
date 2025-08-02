@@ -2,7 +2,7 @@ use ::core::ffi::{
 	c_char, c_void,
 };
 use ::rse_cpp::vtable;
-use ::rse_interface::cppdef::CreateInterfaceFn;
+use ::rse_interface::CreateInterfaceFn;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]

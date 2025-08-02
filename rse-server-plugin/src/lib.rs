@@ -52,7 +52,7 @@ macro_rules! export_dll_plugin {
 				unsafe fn create_interface_raw(
 					&self, name: &::core::ffi::CStr, return_code: Option<&mut ReturnCode>,
 				) -> Option<$crate::interface::cppdef::RawInterface> {
-					let result = if name == <PluginObject<$ty> as $crate::interface::Interface>::IDENTIIFER {
+					let result = if name == <PluginObject<$ty> as $crate::interface::Interface>::IDENTIFIER {
 						unsafe { Some($crate::interface::ToRawInterface::to_raw_interface(&mut PLUGIN)) }
 					} else {
 						None

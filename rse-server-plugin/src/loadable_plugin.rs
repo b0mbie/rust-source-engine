@@ -2,7 +2,7 @@ use ::core::ffi::CStr;
 use ::rse_game::{
 	Command, ServerEdict,
 };
-use ::rse_interface::cppdef::CreateInterfaceFn;
+use ::rse_interface::CreateInterfaceFn;
 
 use crate::{
 	cppdef::{
