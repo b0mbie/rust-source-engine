@@ -43,19 +43,13 @@ pub trait InterfaceOfFactory: Sized + FromRawInterface {
 	type Factory: Factory;
 }
 
-mod private {
-	pub trait Sealed {}
-}
-use private::*;
-
-pub trait Factory: Sealed + RawInterfaceFactory {
+pub trait Factory: RawInterfaceFactory {
 	fn from_factories(app_system_factory: CreateInterfaceFn, game_server_factory: CreateInterfaceFn) -> Self;
 }
 
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct AppSystemFactory(CreateInterfaceFn);
-impl Sealed for AppSystemFactory {}
 impl RawInterfaceFactory for AppSystemFactory {
 	unsafe fn create_interface_raw(
 		&self, name: &CStr, return_code: Option<&mut ReturnCode>,
@@ -72,7 +66,6 @@ impl Factory for AppSystemFactory {
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct GameServerFactory(CreateInterfaceFn);
-impl Sealed for GameServerFactory {}
 impl RawInterfaceFactory for GameServerFactory {
 	unsafe fn create_interface_raw(
 		&self, name: &CStr, return_code: Option<&mut ReturnCode>,
