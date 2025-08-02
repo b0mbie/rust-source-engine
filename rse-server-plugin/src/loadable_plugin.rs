@@ -1,8 +1,8 @@
 use ::core::ffi::CStr;
 use ::rse_game::{
 	Command, ServerEdict,
-	InterfaceFactories,
 };
+use ::rse_game_interfaces::InterfaceFactories;
 
 use crate::{
 	cppdef::{

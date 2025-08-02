@@ -4,6 +4,7 @@ members = [
 	"rse-cpp",
 	"rse-interface",
 	"rse-game",
+	"rse-game-interfaces",
 	"rse-server-plugin",
 	"test-server-plugin",
 ]
@@ -14,4 +15,5 @@ cppdvt = { git = "https://github.com/b0mbie/cppdvt.git" }
 rse-cpp = { path = "./rse-cpp" }
 rse-interface = { path = "./rse-interface" }
 rse-game = { path = "./rse-game" }
+rse-game-interfaces = { path = "./rse-game-interfaces" }
 rse-server-plugin = { path = "./rse-server-plugin" }

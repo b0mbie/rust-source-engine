@@ -11,8 +11,8 @@ use ::rse_cpp::{
 use ::rse_game::{
 	cppdef::entities::Edict,
 	Command, ServerEdict,
-	InterfaceFactories,
 };
+use ::rse_game_interfaces::InterfaceFactories;
 use ::rse_interface::{
 	CreateInterfaceFn, RawInterface,
 	Interface, ToRawInterface,
@@ -45,25 +45,6 @@ impl<T: DllPlugin> ToRawInterface for PluginObject<T> {
 	unsafe fn to_raw_interface(&mut self) -> RawInterface {
 		unsafe { RawInterface::new_unchecked(self as *mut Self as *mut _) }
 	}
-}
-
-pub type ServerPluginPtr = VtObjectMut<ServerPluginCallbacksVt>;
-
-macro_rules! vtable_methods {
-	{
-		$this:ident;
-		$(
-			fn $name:ident($($param:tt)*) $(-> $return:ty)? {
-				$($body:tt)*
-			}
-		)*
-	} => {
-		$(
-			unsafe extern "C-unwind" fn $name($this: ServerPluginPtr, $($param)*) $(-> $return)? {
-				$($body)*
-			}
-		)*
-	};
 }
 
 impl<T> Default for PluginObject<T>
@@ -117,8 +98,8 @@ where
 		on_edict_freed
 	});
 
-	vtable_methods! {
-		this;
+	::rse_cpp::vtable_methods! {
+		this: VtObjectMut<ServerPluginCallbacksVt>;
 		fn load(interface_factory: CreateInterfaceFn, game_server_factory: CreateInterfaceFn) -> bool {
 			let factories = InterfaceFactories::new(interface_factory, game_server_factory);
 			this_to_self!(mut this).inner.load(factories)

@@ -5,13 +5,12 @@ use ::rse_cpp::{
 	VtObject, vtable,
 	VtObjectMut,
 };
-use ::rse_interface::cppdef::BaseInterfaceVt;
-
-use super::{
+use ::rse_game::cppdef::{
 	KeyValues,
 	BfRead, BfWrite,
 	wchar_t,
 };
+use ::rse_interface::cppdef::BaseInterfaceVt;
 
 /// Maximum game event name length.
 pub const MAX_EVENT_NAME_LENGTH: usize = 32;

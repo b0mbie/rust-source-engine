@@ -8,11 +8,14 @@ use ::core::{
 use ::rse_cpp::{
 	VtObject, virtual_call,
 };
+use ::rse_game::cppdef::{
+	SteamId, Vector,
+	SoundLevel,
+};
 
 use crate::{
 	cppdef::{
-		game_dll_interfaces::*,
-		SteamId, Vector,
+		VEngineServerVt, INTERFACEVERSION_VENGINESERVER,
 	},
 	InterfaceOfFactory, AppSystemFactory,
 };
