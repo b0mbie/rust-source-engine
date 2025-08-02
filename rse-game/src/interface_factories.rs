@@ -7,7 +7,7 @@ use ::rse_interface::{
 	InterfaceFactory, ReturnCode,
 };
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct InterfaceFactories<'a> {
 	app_system_factory: CreateInterfaceFn,
 	game_server_factory: CreateInterfaceFn,
