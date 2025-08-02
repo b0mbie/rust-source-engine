@@ -24,6 +24,7 @@ pub mod prelude {
 		game::{
 			Command, ServerEdict,
 			InterfaceFactories,
+			VEngineServer, EmitSound,
 		},
 		interface::{
 			InterfaceFactory, RawInterfaceFactory,
