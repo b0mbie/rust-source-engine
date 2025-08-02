@@ -36,8 +36,20 @@ pub enum QueryCvarValueStatus {
 	CvarProtected = 3,
 }
 
-pub type QueryCvarCookie = c_int;
-pub const INVALID_QUERY_CVAR_COOKIE: QueryCvarCookie = -1;
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[repr(transparent)]
+pub struct QueryCvarCookie(pub c_int);
+impl QueryCvarCookie {
+	pub const INVALID: Self = Self(-1);
+
+	pub const fn is_valid(&self) -> bool {
+		self.0 != Self::INVALID.0
+	}
+
+	pub const fn is_invalid(&self) -> bool {
+		self.0 == Self::INVALID.0
+	}
+}
 
 pub const INTERFACEVERSION_ISERVERPLUGINCALLBACKS: &CStr = c"ISERVERPLUGINCALLBACKS003";
 
