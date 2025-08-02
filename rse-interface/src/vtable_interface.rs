@@ -8,6 +8,7 @@ use crate::{
 	Interface, RawInterface, FromRawInterface,
 };
 
+#[diagnostic::on_unimplemented(message = "`{Self}` is not a vtable-based Source Engine interface")]
 pub trait VTableInterface: Interface {
 	type VTable;
 	/// # Safety
@@ -15,6 +16,8 @@ pub trait VTableInterface: Interface {
 	/// [`IDENTIFIER`](Interface::IDENTIFIER).
 	unsafe fn from_ptr(ptr: VtObject<Self::VTable>) -> Self;
 }
+
+#[diagnostic::do_not_recommend]
 unsafe impl<T: VTableInterface> FromRawInterface for T {
 	type Code = ();
 	const INITIAL_CODE: Self::Code = ();

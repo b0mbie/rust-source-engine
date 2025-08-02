@@ -39,6 +39,7 @@ impl InterfaceFactories<'_> {
 	}
 }
 
+#[diagnostic::on_unimplemented(message = "`{Self}` is not a Source Engine interface")]
 pub trait InterfaceOfFactory: Sized + FromRawInterface {
 	type Factory: Factory;
 }
