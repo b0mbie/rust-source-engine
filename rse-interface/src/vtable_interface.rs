@@ -2,7 +2,9 @@ use ::core::{
 	error::Error,
 	fmt,
 };
-use ::rse_cpp::VtObject;
+use ::rse_cpp::{
+	OwnedVtObjectWrapper, VtObjectPtr,
+};
 
 use crate::{
 	Interface, RawInterface, FromRawInterface,
@@ -14,7 +16,15 @@ pub trait VTableInterface: Interface {
 	/// # Safety
 	/// `ptr` must be a valid pointer to an interface identified by the implementing type's
 	/// [`IDENTIFIER`](Interface::IDENTIFIER).
-	unsafe fn from_ptr(ptr: VtObject<Self::VTable>) -> Self;
+	unsafe fn from_ptr(ptr: VtObjectPtr<Self::VTable>) -> Self;
+}
+
+#[diagnostic::do_not_recommend]
+impl<T: Interface + OwnedVtObjectWrapper> VTableInterface for T {
+	type VTable = T::VTable;
+	unsafe fn from_ptr(ptr: VtObjectPtr<Self::VTable>) -> Self {
+		unsafe { T::from_ptr(ptr) }
+	}
 }
 
 #[diagnostic::do_not_recommend]

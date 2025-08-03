@@ -2,7 +2,7 @@ use ::core::ffi::{
 	CStr, c_char, c_int, c_float, c_void,
 };
 use ::rse_cpp::{
-	VtObject, vtable,
+	VtObjectPtr, vtable,
 	VtObjectMut,
 };
 use ::rse_game::cppdef::{
@@ -30,7 +30,7 @@ pub struct GameEventManager2Vt {
 }
 
 vtable! {
-	pub GameEventManager2VtBase for VtObject<GameEventManager2Vt> {
+	pub GameEventManager2VtBase for VtObjectPtr<GameEventManager2Vt> {
 		pub fn load_events_from_file(filename: *const c_char) -> c_int;
 		pub fn reset();
 		pub fn add_listener(listener: VtObjectMut<GameEventListener2Vt>, name: *const c_char, server_side: bool) -> bool;
@@ -42,7 +42,7 @@ vtable! {
 		pub fn duplicate_event(event: VtObjectMut<GameEventVt>) -> VtObjectMut<GameEventVt>;
 		pub fn free_event(event: VtObjectMut<GameEventVt>);
 		pub fn serialize_event(event: VtObjectMut<GameEventVt>, buf: BfWrite) -> bool;
-		pub fn unserialize_event(buf: *mut BfRead) -> VtObject<GameEventVt>;
+		pub fn unserialize_event(buf: *mut BfRead) -> VtObjectPtr<GameEventVt>;
 	}
 }
 

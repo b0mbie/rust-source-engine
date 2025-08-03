@@ -3,9 +3,10 @@ use ::core::{
 		c_char, c_int,
 	},
 	fmt,
+	ptr::NonNull,
 };
 use ::rse_cpp::{
-	RefConst, VtObject, vtable,
+	RefConst, VtObjectPtr, vtable,
 	test_bits, with_bits,
 };
 
@@ -19,7 +20,7 @@ use super::{
 #[derive(Debug)]
 #[repr(C)]
 pub struct ConCommand {
-	pub vtable: *mut ConCommandVt,
+	pub vtable: NonNull<ConCommandVt>,
 	pub base: ConCommandBaseExt,
 	pub command_callback: CommandCallback,
 	pub completion_callback: CompletionCallback,
@@ -27,8 +28,8 @@ pub struct ConCommand {
 }
 
 impl ConCommand {
-	pub const fn as_base_ptr(&mut self) -> VtObject<ConCommandBaseVt> {
-		unsafe { VtObject::new_unchecked(self as *mut Self as *mut *mut ConCommandBaseVt) }
+	pub const fn as_base_ptr(&mut self) -> VtObjectPtr<ConCommandBaseVt> {
+		unsafe { VtObjectPtr::new_unchecked(self as *mut Self as *mut NonNull<ConCommandBaseVt>) }
 	}
 }
 
@@ -77,7 +78,7 @@ pub struct ConCommandVt {
 }
 
 vtable! {
-	pub ConCommandVtBase for VtObject<ConCommandVt> {
+	pub ConCommandVtBase for VtObjectPtr<ConCommandVt> {
 		pub fn auto_complete_suggest(partial: *const c_char, commands: RefConst<UtlVector<UtlString>>);
 		pub fn can_auto_complete() -> bool;
 		pub fn dispatch(command: RefConst<Command>);
@@ -91,7 +92,7 @@ pub type CommandCallbackFn = unsafe extern "C-unwind" fn(command: RefConst<Comma
 pub union CommandCallback {
 	pub v1: CommandCallbackFnV1,
 	pub new: CommandCallbackFn,
-	pub interface: VtObject<CommandCallbackVt>,
+	pub interface: VtObjectPtr<CommandCallbackVt>,
 	pub not_used: (),
 }
 

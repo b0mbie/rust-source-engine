@@ -1,5 +1,6 @@
 use ::rse_cpp::{
 	VtObjectMut, new_vtable_self, this_to_self,
+	VtObject,
 };
 
 use crate::{
@@ -10,11 +11,11 @@ use crate::{
 };
 
 pub trait EventListener {
-	type Event: for<'a> TryFrom<GameEvent<'a>>;
+	type Event: for<'a> TryFrom<&'a GameEvent>;
 	fn on_event(&mut self, event: Self::Event);
 }
 impl<T: EventListener> RawEventListener for T {
-	fn fire_game_event(&mut self, event: GameEvent<'_>) {
+	fn fire_game_event(&mut self, event: &GameEvent) {
 		if let Ok(event) = T::Event::try_from(event) {
 			self.on_event(event)
 		}
@@ -22,7 +23,7 @@ impl<T: EventListener> RawEventListener for T {
 }
 
 pub trait RawEventListener {
-	fn fire_game_event(&mut self, event: GameEvent<'_>);
+	fn fire_game_event(&mut self, event: &GameEvent);
 }
 
 #[repr(C)]
@@ -76,8 +77,8 @@ where
 			unsafe { this.cast::<Self>().drop_in_place() }
 		}
 		fn fire_game_event(event: VtObjectMut<GameEventVt>) {
-			let event = unsafe { GameEvent::from_ptr(event) };
-			this_to_self!(mut this).inner.fire_game_event(event)
+			let event = unsafe { VtObject::from_ptr_const(event) };
+			this_to_self!(mut this).inner.fire_game_event(event.into())
 		}
 	}
 }

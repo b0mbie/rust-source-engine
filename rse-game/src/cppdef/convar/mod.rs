@@ -8,7 +8,7 @@ use ::core::{
 	slice::from_raw_parts as slice_from_raw_parts,
 };
 use ::rse_cpp::{
-	VtObject, vtable,
+	VtObjectPtr, vtable,
 };
 
 use super::cvar::CvarDllIdentifier;
@@ -98,7 +98,7 @@ pub struct ConCommandBase {
 #[derive(Debug)]
 #[repr(C)]
 pub struct ConCommandBaseExt {
-	pub next: Option<VtObject<ConCommandBaseVt>>,
+	pub next: Option<VtObjectPtr<ConCommandBaseVt>>,
 	pub registered: bool,
 	pub name: *const c_char,
 	pub help_string: *const c_char,
@@ -106,7 +106,7 @@ pub struct ConCommandBaseExt {
 }
 
 vtable! {
-	pub ConCommandBaseVt for VtObject<ConCommandBaseVt> {
+	pub ConCommandBaseVt for VtObjectPtr<ConCommandBaseVt> {
 		pub fn destructor();
 		#[cfg(not(windows))]
 		pub fn destructor_2();
@@ -145,5 +145,5 @@ vtable! {
 
 // TODO: `ConVar`.
 vtable! {
-	pub ConVarVtBase for VtObject<ConVarVt> {}
+	pub ConVarVtBase for VtObjectPtr<ConVarVt> {}
 }

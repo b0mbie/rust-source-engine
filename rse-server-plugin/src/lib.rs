@@ -26,9 +26,10 @@ pub mod prelude {
 			Command, ServerEdict,
 		},
 		game_interfaces::{
-			EventManager,
+			GameEventManager2, GameEventManager2Impl as _,
+			VEngineServer, VEngineServerImpl as _,
 			InterfaceFactories,
-			VEngineServer, EmitSound,
+			EmitSound,
 		},
 		interface::{
 			InterfaceFactory, RawInterfaceFactory,

@@ -2,7 +2,7 @@ use ::rse_server_plugin::prelude::*;
 
 struct Test {
 	engine_server: VEngineServer,
-	event_manager: EventManager,
+	event_manager: GameEventManager2,
 }
 
 impl Drop for Test {
@@ -15,7 +15,7 @@ impl LoadablePlugin for Test {
 	fn load(factories: InterfaceFactories<'_>) -> Option<Self> {
 		let mut engine_server = factories.create_interface::<VEngineServer>().ok()?;
 		engine_server.server_command(c"echo i drank water\n");
-		let event_manager = factories.create_interface::<EventManager>().ok()?;
+		let event_manager = factories.create_interface::<GameEventManager2>().ok()?;
 		Some(Self {
 			engine_server,
 			event_manager,
