@@ -8,6 +8,8 @@ use crate::{
 	Level, Color,
 };
 
+mod macros;
+
 pub const fn dev() -> LinkedTier0Dev {
 	LinkedTier0Dev
 }

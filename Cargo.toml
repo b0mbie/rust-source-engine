@@ -5,14 +5,13 @@ members = [
 	"rse-interface",
 	"rse-game",
 	"rse-game-interfaces",
-	"rse-tier0", "rse-tier0-log",
+	"rse-tier0",
 	"rse-server-plugin",
 	"test-server-plugin",
 ]
 
 [workspace.dependencies]
 cppdvt = { git = "https://github.com/b0mbie/cppdvt.git" }
-log = "0.4.27"
 
 rse-cpp = { path = "./rse-cpp" }
 rse-interface = { path = "./rse-interface" }

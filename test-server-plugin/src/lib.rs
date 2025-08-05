@@ -1,5 +1,5 @@
 use ::rse_server_plugin::prelude::*;
-use ::rse_tier0_log::*;
+use ::rse_tier0::prelude::*;
 
 struct Test {
 	engine_server: VEngineServer,
@@ -7,18 +7,16 @@ struct Test {
 
 impl Drop for Test {
 	fn drop(&mut self) {
-		log::debug!("Test plugin unloading");
+		dev_msg!("Test plugin unloading");
 	}
 }
 
 impl LoadablePlugin for Test {
 	fn load(factories: InterfaceFactories<'_>) -> Option<Self> {
-		install_tier0_logger().ok()?;
-		log::info!("This is an informational message logged with {:?}", "tier0");
-		log::warn!("This is a warning printed with {:?}", "tier0");
-		log::warn!("This is what we call an \"ERR-OR\"... printed with tier0");
-		log::debug!("This is a debug message only visible with developer mode on");
-		log::trace!("This is a trace message, same thing as the above");
+		con_msg!("This is an informational message logged with {:?}", "tier0");
+		con_warn!("This is what we call an \"ERR-OR\"... printed with tier0");
+		dev_msg!("This is a debug message only visible with developer mode on");
+		dev_warn!("This is a developer-facing warning message, same thing as the above");
 
 		let mut engine_server = factories.create_interface::<VEngineServer>().ok()?;
 		engine_server.server_command(c"alias test_reload \"plugin_unload 0;plugin_load addons/libtest_server_plugin\"\n");
