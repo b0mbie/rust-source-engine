@@ -1,6 +1,4 @@
-use ::core::ffi::{
-	CStr, c_char,
-};
+use ::core::ffi::CStr;
 
 use crate::{
 	Tier0Spew, Tier0SpewGroups, CFormattable,
@@ -9,7 +7,7 @@ use crate::{
 
 use super::{
 	cppdef::*,
-	LinkedTier0,
+	STR_FORMAT, LinkedTier0,
 };
 
 pub const fn dev() -> LinkedTier0Dev {
@@ -23,8 +21,6 @@ pub const fn con() -> LinkedTier0Con {
 pub const fn dev_con() -> LinkedTier0DevCon {
 	LinkedTier0DevCon
 }
-
-const STR_FORMAT: *const c_char = c"%.*s".as_ptr();
 
 impl<T: CFormattable> Tier0Spew<T> for LinkedTier0 {
 	fn msg(&self, t: T) {

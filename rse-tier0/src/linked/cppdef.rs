@@ -34,4 +34,6 @@ unsafe extern "C" {
 	pub fn NetLog(level: c_int, msg: *const c_char, ...);
 
 	pub fn COM_TimestampedLog(fmt: *const c_char, ...);
+
+	pub fn Error(msg: *const c_char, ...) -> !;
 }

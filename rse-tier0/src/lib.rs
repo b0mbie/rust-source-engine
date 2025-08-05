@@ -6,6 +6,8 @@ pub mod fmt_adapters;
 
 mod c_format;
 pub use c_format::*;
+mod errors;
+pub use errors::*;
 mod level;
 pub use level::*;
 mod spew;
@@ -26,6 +28,7 @@ pub mod prelude {
 
 	pub use crate::{
 		Tier0Spew, Tier0SpewGroups,
+		Tier0Errors,
 		Logger, LevelLogger, ColorLogger, ColorLevelLogger,
 		msg, warn, log,
 	};
