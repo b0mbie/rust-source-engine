@@ -1,0 +1,28 @@
+#![allow(unexpected_cfgs)]
+
+use ::std::env::var;
+
+#[cfg(not(windows))]
+macro_rules! link_name {
+	($name:literal) => {
+		concat!($name, "_srv")
+	};
+}
+#[cfg(windows)]
+macro_rules! link_name {
+	($name:literal) => {
+		$name
+	};
+}
+
+fn main() -> Result<(), String> {
+	if cfg!(all(not(rust_analyzer), feature = "link-dll")) {
+		println!(
+			"cargo:rustc-link-search={}",
+			var("VALVE_LIB_PATH")
+				.map_err(move |e| format!("`VALVE_LIB_PATH` must be specified, where it contains `tier0` and the like ({e})"))?
+		);
+		println!("cargo:rustc-link-lib={}", link_name!("tier0"));
+	}
+	Ok(())
+}

@@ -1,0 +1,12 @@
+[package]
+name = "rse-tier0"
+version = "0.1.0"
+edition = "2024"
+
+[features]
+default = ["link-dll"]
+link-dll = []
+
+[dependencies]
+rse-cpp.workspace = true
+rse-game.workspace = true
