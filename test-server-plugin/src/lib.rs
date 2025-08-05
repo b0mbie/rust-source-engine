@@ -1,20 +1,29 @@
 use ::rse_server_plugin::prelude::*;
-use ::rse_tier0::prelude::*;
+use ::rse_tier0_log::*;
 
 struct Test {
 	engine_server: VEngineServer,
-	event_manager: GameEventManager2,
+}
+
+impl Drop for Test {
+	fn drop(&mut self) {
+		log::debug!("Test plugin unloading");
+	}
 }
 
 impl LoadablePlugin for Test {
 	fn load(factories: InterfaceFactories<'_>) -> Option<Self> {
+		install_tier0_logger().ok()?;
+		log::info!("This is an informational message logged with {:?}", "tier0");
+		log::warn!("This is a warning printed with {:?}", "tier0");
+		log::warn!("This is what we call an \"ERR-OR\"... printed with tier0");
+		log::debug!("This is a debug message only visible with developer mode on");
+		log::trace!("This is a trace message, same thing as the above");
+
 		let mut engine_server = factories.create_interface::<VEngineServer>().ok()?;
-		warn!(con(), "{:?} moved wrongly!", "niko oneshor");
 		engine_server.server_command(c"alias test_reload \"plugin_unload 0;plugin_load addons/libtest_server_plugin\"\n");
-		let event_manager = factories.create_interface::<GameEventManager2>().ok()?;
 		Some(Self {
 			engine_server,
-			event_manager,
 		})
 	}
 }

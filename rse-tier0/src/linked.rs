@@ -94,6 +94,27 @@ impl<T: CFormattable> Tier0Spew<T> for LinkedTier0 {
 		LinkedTier0Net
 	}
 }
+impl Tier0Spew<&str> for LinkedTier0 {
+	type DevGroup<'a> = LinkedTier0Dev;
+	fn dev_group(&self) -> Self::DevGroup<'_> {
+		LinkedTier0Dev
+	}
+
+	type ConGroup<'a> = LinkedTier0Con;
+	fn con_group(&self) -> Self::ConGroup<'_> {
+		LinkedTier0Con
+	}
+
+	type DevConGroup<'a> = LinkedTier0DevCon;
+	fn dev_con_group(&self) -> Self::DevConGroup<'_> {
+		LinkedTier0DevCon
+	}
+
+	type NetGroup<'a> = LinkedTier0Net;
+	fn net_group(&self) -> Self::NetGroup<'_> {
+		LinkedTier0Net
+	}
+}
 
 const STR_FORMAT: *const c_char = c"%.*s".as_ptr();
 

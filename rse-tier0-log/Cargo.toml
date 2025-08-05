@@ -1,0 +1,9 @@
+[package]
+name = "rse-tier0-log"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+log.workspace = true
+
+rse-tier0.workspace = true
