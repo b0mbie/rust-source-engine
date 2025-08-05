@@ -30,8 +30,8 @@ impl LinkedTier0Logger {
 		let _ = match record.level() {
 			Level::Error | Level::Warn => writeln!(logger.fmt_warning(), "{args}"),
 			Level::Info => writeln!(logger.fmt_log(), "{args}"),
-			Level::Debug => writeln!(logger.fmt_msg(), "[{}] {}", RecordLocation(record), record.args()),
-			Level::Trace => writeln!(logger.fmt_warning(), "[{}] {}", RecordLocation(record), record.args()),
+			Level::Debug => writeln!(logger.fmt_msg(), "{args}"),
+			Level::Trace => writeln!(logger.fmt_warning(), "{args}"),
 		};
 	}
 }
@@ -56,22 +56,4 @@ impl Log for LinkedTier0Logger {
 	}
 	fn flush(&self) {}
 }
-struct RecordLocation<'a>(pub &'a Record<'a>);
-impl fmt::Display for RecordLocation<'_> {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		if let Some(file) = self.0.file() {
-			f.write_str(file)
-		} else if let Some(module_path) = self.0.module_path() {
-			f.write_char('<')?;
-			f.write_str(module_path)?;
-			f.write_char('>')
-		} else {
-			f.write_str("<unknown>")
-		}?;
-		if let Some(line) = self.0.line() {
-			f.write_char(':')?;
-			line.fmt(f)?;
-		}
-		Ok(())
-	}
-}
+
