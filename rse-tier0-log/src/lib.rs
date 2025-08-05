@@ -27,7 +27,10 @@ impl LinkedTier0Logger {
 		let args = record.args();
 		let _ = match record.level() {
 			Level::Error | Level::Warn => writeln!(logger.fmt_warning(), "{args}"),
-			Level::Info => writeln!(logger.fmt_log(), "{args}"),
+			Level::Info => {
+				let _ = writeln!(logger.fmt_log(), "{args}");
+				writeln!(logger.fmt_msg(), "{args}")
+			}
 			Level::Debug => writeln!(logger.fmt_msg(), "{args}"),
 			Level::Trace => writeln!(logger.fmt_warning(), "{args}"),
 		};
