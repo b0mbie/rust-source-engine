@@ -1,8 +1,6 @@
 #![no_std]
 
-use ::core::fmt::{
-	self, Write,
-};
+use ::core::fmt::Write;
 use ::rse_tier0::{
 	fmt_adapters::AdaptToFmt,
 	linked::LinkedTier0,
