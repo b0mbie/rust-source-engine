@@ -32,4 +32,6 @@ unsafe extern "C" {
 	pub fn NetMsg(level: c_int, msg: *const c_char, ...);
 	pub fn NetWarning(level: c_int, msg: *const c_char, ...);
 	pub fn NetLog(level: c_int, msg: *const c_char, ...);
+
+	pub fn COM_TimestampedLog(fmt: *const c_char, ...);
 }

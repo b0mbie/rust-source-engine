@@ -4,13 +4,14 @@ use crate::{
 	Level, Color,
 };
 
-pub trait Tier0Spew {
-	fn msg(&self, s: &CStr);
-	fn msg_with(&self, group: &CStr, level: Level, s: &CStr);
-	fn warning(&self, s: &CStr);
-	fn warning_with(&self, group: &CStr, level: Level, s: &CStr);
-	fn log(&self, s: &CStr);
-	fn log_with(&self, group: &CStr, level: Level, s: &CStr);
+pub trait Tier0Spew<T> {
+	fn msg(&self, t: T);
+	fn msg_with(&self, group: &CStr, level: Level, t: T);
+	fn warning(&self, t: T);
+	fn warning_with(&self, group: &CStr, level: Level, t: T);
+	fn log(&self, t: T);
+	fn log_with(&self, group: &CStr, level: Level, t: T);
+	fn timestamped_log(&self, t: T);
 }
 
 pub trait Tier0SpewGroups<T> {
