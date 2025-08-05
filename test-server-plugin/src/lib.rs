@@ -17,6 +17,7 @@ impl LoadablePlugin for Test {
 		con_warn!("This is what we call an \"ERR-OR\"... printed with tier0");
 		dev_msg!("This is a debug message only visible with developer mode on");
 		dev_warn!("This is a developer-facing warning message, same thing as the above");
+		con_color_msg!(ConstColor::<0, 255, 0>, "1111 I Am GRN");
 
 		let mut engine_server = factories.create_interface::<VEngineServer>().ok()?;
 		engine_server.server_command(c"alias test_reload \"plugin_unload 0;plugin_load addons/libtest_server_plugin\"\n");

@@ -23,13 +23,14 @@ pub mod prelude {
 			LinkedTier0,
 			con, dev, dev_con,
 		},
-		dev_msg, dev_warn, con_msg, con_warn,
+		dev_msg, dev_warn, con_msg, con_warn, con_color_msg,
 	};
 
 	pub use crate::{
+		fmt_adapters::ConstColor,
 		Tier0Spew, Tier0SpewGroups,
 		Tier0Errors,
 		Logger, LevelLogger, ColorLogger, ColorLevelLogger,
-		msg, warn, log,
+		msg, warn, log, color_msg,
 	};
 }

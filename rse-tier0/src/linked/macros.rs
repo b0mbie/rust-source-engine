@@ -41,3 +41,10 @@ macro_rules! con_warn {
 		$crate::warn!($crate::linked::con(), $($arg)+)
 	};
 }
+
+#[macro_export]
+macro_rules! con_color_msg {
+	($($arg:tt)+) => {
+		$crate::color_msg!($crate::linked::con(), $($arg)+)
+	};
+}
