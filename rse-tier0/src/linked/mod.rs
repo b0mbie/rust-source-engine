@@ -1,12 +1,14 @@
 use ::core::ffi::{
-	CStr, c_char, c_int,
+	CStr, c_char,
 };
-use ::rse_cpp::RefConst;
 
 use crate::{
-	Tier0, Tier0Spew, CFormattable,
+	Tier0Spew, Tier0SpewGroups, CFormattable,
 	Level, Color,
 };
+
+pub mod cppdef;
+use cppdef::*;
 
 mod macros;
 
@@ -22,40 +24,12 @@ pub const fn dev_con() -> LinkedTier0DevCon {
 	LinkedTier0DevCon
 }
 
-unsafe extern "C" {
-	pub fn Msg(msg: *const c_char, ...);
-	pub fn DMsg(group_name: *const c_char, level: c_int, msg: *const c_char, ...);
-
-	pub fn Warning(msg: *const c_char, ...);
-	pub fn DWarning(group_name: *const c_char, level: c_int, msg: *const c_char, ...);
-
-	pub fn Log(msg: *const c_char, ...);
-	pub fn DLog(group_name: *const c_char, level: c_int, msg: *const c_char, ...);
-
-	pub fn DevMsg(level: c_int, msg: *const c_char, ...);
-	pub fn DevWarning(level: c_int, msg: *const c_char, ...);
-	pub fn DevLog(level: c_int, msg: *const c_char, ...);
-	
-	pub fn ConColorMsg(level: c_int, clr: RefConst<Color>, msg: *const c_char, ...);
-	pub fn ConMsg(level: c_int, msg: *const c_char, ...);
-	pub fn ConWarning(level: c_int, msg: *const c_char, ...);
-	pub fn ConLog(level: c_int, msg: *const c_char, ...);
-	
-	pub fn ConDColorMsg(clr: RefConst<Color>, msg: *const c_char, ...);
-	pub fn ConDMsg(msg: *const c_char, ...);
-	pub fn ConDWarning(msg: *const c_char, ...);
-	pub fn ConDLog(msg: *const c_char, ...);
-	
-	pub fn NetMsg(level: c_int, msg: *const c_char, ...);
-	pub fn NetWarning(level: c_int, msg: *const c_char, ...);
-	pub fn NetLog(level: c_int, msg: *const c_char, ...);
-}
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct LinkedTier0;
 
 const C_STR_FORMAT: *const c_char = c"%s".as_ptr();
 
-#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct LinkedTier0;
-impl Tier0 for LinkedTier0 {
+impl Tier0Spew for LinkedTier0 {
 	fn msg(&self, s: &CStr) {
 		unsafe { Msg(C_STR_FORMAT, s.as_ptr()) }
 	}
@@ -75,7 +49,7 @@ impl Tier0 for LinkedTier0 {
 		unsafe { DLog(group.as_ptr(), level.0, C_STR_FORMAT, s.as_ptr()) }	
 	}
 }
-impl<T: CFormattable> Tier0Spew<T> for LinkedTier0 {
+impl<T: CFormattable> Tier0SpewGroups<T> for LinkedTier0 {
 	type DevGroup<'a> = LinkedTier0Dev;
 	fn dev_group(&self) -> Self::DevGroup<'_> {
 		LinkedTier0Dev
@@ -96,7 +70,7 @@ impl<T: CFormattable> Tier0Spew<T> for LinkedTier0 {
 		LinkedTier0Net
 	}
 }
-impl Tier0Spew<&str> for LinkedTier0 {
+impl Tier0SpewGroups<&str> for LinkedTier0 {
 	type DevGroup<'a> = LinkedTier0Dev;
 	fn dev_group(&self) -> Self::DevGroup<'_> {
 		LinkedTier0Dev

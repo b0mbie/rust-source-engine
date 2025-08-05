@@ -8,8 +8,8 @@ mod c_format;
 pub use c_format::*;
 mod level;
 pub use level::*;
-mod traits;
-pub use traits::*;
+mod spew;
+pub use spew::*;
 
 #[cfg(feature = "link-dll")]
 pub mod linked;
@@ -25,7 +25,7 @@ pub mod prelude {
 	};
 
 	pub use crate::{
-		Tier0, Tier0Spew,
+		Tier0Spew, Tier0SpewGroups,
 		Logger, LevelLogger, ColorLogger, ColorLevelLogger,
 		msg, warn, log,
 	};

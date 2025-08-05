@@ -4,7 +4,16 @@ use crate::{
 	Level, Color,
 };
 
-pub trait Tier0Spew<T> {
+pub trait Tier0Spew {
+	fn msg(&self, s: &CStr);
+	fn msg_with(&self, group: &CStr, level: Level, s: &CStr);
+	fn warning(&self, s: &CStr);
+	fn warning_with(&self, group: &CStr, level: Level, s: &CStr);
+	fn log(&self, s: &CStr);
+	fn log_with(&self, group: &CStr, level: Level, s: &CStr);
+}
+
+pub trait Tier0SpewGroups<T> {
 	type DevGroup<'a>: LevelLogger<T> + Logger<T> where Self: 'a;
 	fn dev_group(&self) -> Self::DevGroup<'_>;
 
@@ -17,15 +26,6 @@ pub trait Tier0Spew<T> {
 
 	type NetGroup<'a>: LevelLogger<T> where Self: 'a;
 	fn net_group(&self) -> Self::NetGroup<'_>;
-}
-
-pub trait Tier0 {
-	fn msg(&self, s: &CStr);
-	fn msg_with(&self, group: &CStr, level: Level, s: &CStr);
-	fn warning(&self, s: &CStr);
-	fn warning_with(&self, group: &CStr, level: Level, s: &CStr);
-	fn log(&self, s: &CStr);
-	fn log_with(&self, group: &CStr, level: Level, s: &CStr);
 }
 
 pub trait LevelLogger<T> {
