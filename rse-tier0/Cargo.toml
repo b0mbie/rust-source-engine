@@ -6,6 +6,7 @@ edition = "2024"
 [features]
 default = ["link-dll"]
 link-dll = []
+link-srv = []
 
 [dependencies]
 rse-cpp.workspace = true

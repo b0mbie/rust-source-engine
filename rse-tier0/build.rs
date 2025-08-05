@@ -2,13 +2,13 @@
 
 use ::std::env::var;
 
-#[cfg(not(windows))]
+#[cfg(feature = "link-srv")]
 macro_rules! link_name {
 	($name:literal) => {
 		concat!($name, "_srv")
 	};
 }
-#[cfg(windows)]
+#[cfg(not(feature = "link-srv"))]
 macro_rules! link_name {
 	($name:literal) => {
 		$name
