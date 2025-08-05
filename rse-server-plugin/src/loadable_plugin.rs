@@ -9,7 +9,7 @@ use crate::{
 		ClientIndex, PluginResult, QueryCvarCookie, QueryCvarValueStatus,
 	},
 	RejectReason, ClientConnect,
-	DllPlugin, Plugin,
+	StaticPlugin, Plugin,
 };
 
 pub struct PluginLoader<P> {
@@ -42,7 +42,7 @@ pub trait LoadablePlugin: Sized + Plugin {
 	fn load(factories: InterfaceFactories<'_>) -> Option<Self>;
 }
 
-impl<P: LoadablePlugin> DllPlugin for PluginLoader<P> {
+impl<P: LoadablePlugin> StaticPlugin for PluginLoader<P> {
 	const NOT_LOADED: Self = Self::new();
 	fn load(&mut self, factories: InterfaceFactories<'_>) -> bool {
 		if self.plugin.is_none() {

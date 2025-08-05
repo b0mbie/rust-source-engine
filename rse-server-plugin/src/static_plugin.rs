@@ -26,7 +26,7 @@ use crate::{
 	ClientConnect, Plugin, RejectReason,
 };
 
-pub trait DllPlugin: Plugin {
+pub trait StaticPlugin: Plugin {
 	const NOT_LOADED: Self;
 	fn load(&mut self, factories: InterfaceFactories<'_>) -> bool;
 	fn unload(&mut self);
@@ -41,7 +41,7 @@ pub struct PluginObject<T> {
 unsafe impl<T> Interface for PluginObject<T> {
 	const IDENTIFIER: &CStr = INTERFACEVERSION_ISERVERPLUGINCALLBACKS;
 }
-impl<T: DllPlugin> ToRawInterface for PluginObject<T> {
+impl<T: StaticPlugin> ToRawInterface for PluginObject<T> {
 	unsafe fn to_raw_interface(&mut self) -> RawInterface {
 		unsafe { RawInterface::new_unchecked(self as *mut Self as *mut _) }
 	}
@@ -49,7 +49,7 @@ impl<T: DllPlugin> ToRawInterface for PluginObject<T> {
 
 impl<T> Default for PluginObject<T>
 where
-	T: DllPlugin + Default,
+	T: StaticPlugin + Default,
 {
 	fn default() -> Self {
 		Self::new(T::default())
@@ -58,7 +58,7 @@ where
 
 impl<T> PluginObject<T>
 where
-	T: DllPlugin,
+	T: StaticPlugin,
 {
 	pub const fn new(inner: T) -> Self {
 		Self {

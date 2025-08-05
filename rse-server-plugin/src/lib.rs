@@ -6,8 +6,8 @@ pub use ::rse_interface as interface;
 
 pub mod cppdef;
 
-mod dll_plugin;
-pub use dll_plugin::*;
+mod static_plugin;
+pub use static_plugin::*;
 mod plugin;
 pub use plugin::*;
 mod loadable_plugin;
@@ -34,14 +34,14 @@ pub mod prelude {
 		interface::{
 			InterfaceFactory, RawInterfaceFactory,
 		},
-		DllPlugin, LoadablePlugin, Plugin,
+		StaticPlugin, LoadablePlugin, Plugin,
 		ClientConnect, RejectReason,
-		export_dll_plugin, export_loadable_plugin,
+		export_static_plugin, export_loadable_plugin,
 	};
 }
 
 #[macro_export]
-macro_rules! export_dll_plugin {
+macro_rules! export_static_plugin {
 	($ty:ty) => {
 		const _: () = {
 			use ::core::option::Option;
@@ -50,7 +50,7 @@ macro_rules! export_dll_plugin {
 				PluginObject
 			};
 
-			static mut PLUGIN: PluginObject<$ty> = PluginObject::new(<$ty as $crate::DllPlugin>::NOT_LOADED);
+			static mut PLUGIN: PluginObject<$ty> = PluginObject::new(<$ty as $crate::StaticPlugin>::NOT_LOADED);
 
 			struct ExportedPlugin;
 			impl $crate::interface::RawInterfaceFactory for ExportedPlugin {
@@ -81,6 +81,6 @@ macro_rules! export_dll_plugin {
 #[macro_export]
 macro_rules! export_loadable_plugin {
 	($ty:ty) => {
-		$crate::export_dll_plugin!($crate::PluginLoader<$ty>);
+		$crate::export_static_plugin!($crate::PluginLoader<$ty>);
 	};
 }
