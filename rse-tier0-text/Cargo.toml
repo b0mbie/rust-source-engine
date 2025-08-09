@@ -1,0 +1,7 @@
+[package]
+name = "rse-tier0-text"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rse-tier0.workspace = true

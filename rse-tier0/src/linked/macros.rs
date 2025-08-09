@@ -1,50 +1,50 @@
 #[macro_export]
 macro_rules! dev_msg {
 	() => {
-		$crate::msg!($crate::linked::dev())
+		$crate::msgln!($crate::linked::dev())
 	};
 
 	($($arg:tt)+) => {
-		$crate::msg!($crate::linked::dev(), $($arg)+)
+		$crate::msgln!($crate::linked::dev(), $($arg)+)
 	};
 }
 
 #[macro_export]
 macro_rules! dev_warn {
 	() => {
-		$crate::warn!($crate::linked::dev())
+		$crate::warnln!($crate::linked::dev())
 	};
 
 	($($arg:tt)+) => {
-		$crate::warn!($crate::linked::dev(), $($arg)+)
+		$crate::warnln!($crate::linked::dev(), $($arg)+)
 	};
 }
 
 #[macro_export]
 macro_rules! con_msg {
 	() => {
-		$crate::msg!($crate::linked::con())
+		$crate::msgln!($crate::linked::con())
 	};
 
 	($($arg:tt)+) => {
-		$crate::msg!($crate::linked::con(), $($arg)+)
+		$crate::msgln!($crate::linked::con(), $($arg)+)
 	};
 }
 
 #[macro_export]
 macro_rules! con_warn {
 	() => {
-		$crate::warn!($crate::linked::con())
+		$crate::warnln!($crate::linked::con())
 	};
 
 	($($arg:tt)+) => {
-		$crate::warn!($crate::linked::con(), $($arg)+)
+		$crate::warnln!($crate::linked::con(), $($arg)+)
 	};
 }
 
 #[macro_export]
 macro_rules! con_color_msg {
 	($($arg:tt)+) => {
-		$crate::color_msg!($crate::linked::con(), $($arg)+)
+		$crate::color_msgln!($crate::linked::con(), $($arg)+)
 	};
 }

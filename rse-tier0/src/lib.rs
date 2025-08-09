@@ -4,8 +4,6 @@ pub use ::rse_game::cppdef::Color;
 
 pub mod fmt_adapters;
 
-mod c_format;
-pub use c_format::*;
 mod errors;
 pub use errors::*;
 mod level;
@@ -27,9 +25,9 @@ pub mod prelude {
 	};
 
 	pub use crate::{
-		fmt_adapters::ConstColor,
 		Tier0Spew, Tier0SpewGroups,
 		Tier0Errors,
+		Color,
 		Logger, LevelLogger, ColorLogger, ColorLevelLogger,
 		msg, warn, log, color_msg,
 	};

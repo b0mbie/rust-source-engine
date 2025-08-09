@@ -1,13 +1,16 @@
 use ::core::ffi::CStr;
+use ::rse_printf::IntoFormattable;
 
 use crate::{
-	Tier0Spew, Tier0SpewGroups, CFormattable,
+	Tier0Spew, Tier0SpewGroups,
 	Level, Color,
 };
 
+use super::call_printf;
+
 use super::{
 	cppdef::*,
-	STR_FORMAT, LinkedTier0,
+	LinkedTier0,
 };
 
 pub const fn dev() -> LinkedTier0Dev {
@@ -22,75 +25,31 @@ pub const fn dev_con() -> LinkedTier0DevCon {
 	LinkedTier0DevCon
 }
 
-impl<T: CFormattable> Tier0Spew<T> for LinkedTier0 {
+impl<T: IntoFormattable> Tier0Spew<T> for LinkedTier0 {
 	fn msg(&self, t: T) {
-		unsafe { Msg(T::FORMAT_STR.as_ptr(), t.into_c_type()) }
+		unsafe { call_printf!(t => Msg) }
 	}
 	fn msg_with(&self, group: &CStr, level: crate::Level, t: T) {
-		unsafe { DMsg(group.as_ptr(), level.0, T::FORMAT_STR.as_ptr(), t.into_c_type()) }	
+		unsafe { call_printf!(t => DMsg, group.as_ptr(), level.0) }
 	}
 	fn warning(&self, t: T) {
-		unsafe { Warning(T::FORMAT_STR.as_ptr(), t.into_c_type()) }
+		unsafe { call_printf!(t => Warning) }
 	}
 	fn warning_with(&self, group: &CStr, level: Level, t: T) {
-		unsafe { DWarning(group.as_ptr(), level.0, T::FORMAT_STR.as_ptr(), t.into_c_type()) }	
+		unsafe { call_printf!(t => DWarning, group.as_ptr(), level.0) }
 	}
 	fn log(&self, t: T) {
-		unsafe { Log(T::FORMAT_STR.as_ptr(), t.into_c_type()) }
+		unsafe { call_printf!(t => Log) }
 	}
 	fn log_with(&self, group: &CStr, level: Level, t: T) {
-		unsafe { DLog(group.as_ptr(), level.0, T::FORMAT_STR.as_ptr(), t.into_c_type()) }	
+		unsafe { call_printf!(t => DLog, group.as_ptr(), level.0) }
 	}
 	fn timestamped_log(&self, t: T) {
-		unsafe { COM_TimestampedLog(T::FORMAT_STR.as_ptr(), t.into_c_type()) }
-	}
-}
-impl Tier0Spew<&str> for LinkedTier0 {
-	fn msg(&self, s: &str) {
-		unsafe { Msg(STR_FORMAT, s.len(), s.as_ptr()) }
-	}
-	fn msg_with(&self, group: &CStr, level: crate::Level, s: &str) {
-		unsafe { DMsg(group.as_ptr(), level.0, STR_FORMAT, s.len(), s.as_ptr()) }	
-	}
-	fn warning(&self, s: &str) {
-		unsafe { Warning(STR_FORMAT, s.len(), s.as_ptr()) }
-	}
-	fn warning_with(&self, group: &CStr, level: Level, s: &str) {
-		unsafe { DWarning(group.as_ptr(), level.0, STR_FORMAT, s.len(), s.as_ptr()) }	
-	}
-	fn log(&self, s: &str) {
-		unsafe { Log(STR_FORMAT, s.len(), s.as_ptr()) }
-	}
-	fn log_with(&self, group: &CStr, level: Level, s: &str) {
-		unsafe { DLog(group.as_ptr(), level.0, STR_FORMAT, s.len(), s.as_ptr()) }	
-	}
-	fn timestamped_log(&self, s: &str) {
-		unsafe { COM_TimestampedLog(STR_FORMAT, s.len(), s.as_ptr()) }
+		unsafe { call_printf!(t => COM_TimestampedLog) }
 	}
 }
 
-impl<T: CFormattable> Tier0SpewGroups<T> for LinkedTier0 {
-	type DevGroup<'a> = LinkedTier0Dev;
-	fn dev_group(&self) -> Self::DevGroup<'_> {
-		LinkedTier0Dev
-	}
-
-	type ConGroup<'a> = LinkedTier0Con;
-	fn con_group(&self) -> Self::ConGroup<'_> {
-		LinkedTier0Con
-	}
-
-	type DevConGroup<'a> = LinkedTier0DevCon;
-	fn dev_con_group(&self) -> Self::DevConGroup<'_> {
-		LinkedTier0DevCon
-	}
-
-	type NetGroup<'a> = LinkedTier0Net;
-	fn net_group(&self) -> Self::NetGroup<'_> {
-		LinkedTier0Net
-	}
-}
-impl Tier0SpewGroups<&str> for LinkedTier0 {
+impl<T: IntoFormattable> Tier0SpewGroups<T> for LinkedTier0 {
 	type DevGroup<'a> = LinkedTier0Dev;
 	fn dev_group(&self) -> Self::DevGroup<'_> {
 		LinkedTier0Dev
@@ -114,27 +73,15 @@ impl Tier0SpewGroups<&str> for LinkedTier0 {
 
 macro_rules! impl_level_logger {
 	($target:ty: $msg:expr, $warning:expr, $log:expr) => {
-		impl<T: CFormattable> crate::LevelLogger<T> for $target {
+		impl<T: IntoFormattable> crate::LevelLogger<T> for $target {
 			fn msg_on(&self, level: Level, t: T) {
-				unsafe { $msg(level.0, <T as CFormattable>::FORMAT_STR.as_ptr(), t.into_c_type()) }
+				unsafe { call_printf!(t => $msg, level.0) }
 			}
 			fn warning_on(&self, level: Level, t: T) {
-				unsafe { $warning(level.0, <T as CFormattable>::FORMAT_STR.as_ptr(), t.into_c_type()) }
+				unsafe { call_printf!(t => $warning, level.0) }
 			}
 			fn log_on(&self, level: Level, t: T) {
-				unsafe { $log(level.0, <T as CFormattable>::FORMAT_STR.as_ptr(), t.into_c_type()) }
-			}
-		}
-
-		impl crate::LevelLogger<&str> for $target {
-			fn msg_on(&self, level: Level, s: &str) {
-				unsafe { $msg(level.0, STR_FORMAT, s.len(), s.as_ptr()) }
-			}
-			fn warning_on(&self, level: Level, s: &str) {
-				unsafe { $warning(level.0, STR_FORMAT, s.len(), s.as_ptr()) }
-			}
-			fn log_on(&self, level: Level, s: &str) {
-				unsafe { $log(level.0, STR_FORMAT, s.len(), s.as_ptr()) }
+				unsafe { call_printf!(t => $log, level.0) }
 			}
 		}
 	};
@@ -142,21 +89,9 @@ macro_rules! impl_level_logger {
 
 macro_rules! impl_color_level_logger {
 	($target:ty: $color_msg:expr) => {
-		impl<T: CFormattable> crate::ColorLevelLogger<T> for $target {
+		impl<T: IntoFormattable> crate::ColorLevelLogger<T> for $target {
 			fn color_msg_on(&self, level: Level, color: &Color, t: T) {
-				unsafe { $color_msg(
-					level.0, ::rse_cpp::RefConst::from(color),
-					<T as CFormattable>::FORMAT_STR.as_ptr(), t.into_c_type(),
-				) }
-			}
-		}
-
-		impl crate::ColorLevelLogger<&str> for $target {
-			fn color_msg_on(&self, level: Level, color: &Color, s: &str) {
-				unsafe { $color_msg(
-					level.0, ::rse_cpp::RefConst::from(color),
-					STR_FORMAT, s.len(), s.as_ptr(),
-				) }
+				unsafe { call_printf!(t => $color_msg, level.0, ::rse_cpp::RefConst::from(color)) }
 			}
 		}
 	};
@@ -164,27 +99,15 @@ macro_rules! impl_color_level_logger {
 
 macro_rules! impl_logger {
 	($target:ty: $msg:expr, $warning:expr, $log:expr $(, $level:expr)?) => {
-		impl<T: CFormattable> crate::Logger<T> for $target {
+		impl<T: IntoFormattable> crate::Logger<T> for $target {
 			fn msg(&self, t: T) {
-				unsafe { $msg($($level.0,)? <T as CFormattable>::FORMAT_STR.as_ptr(), t.into_c_type()) }
+				unsafe { call_printf!(t => $msg $(, $level.0)?) }
 			}
 			fn warning(&self, t: T) {
-				unsafe { $warning($($level.0,)? <T as CFormattable>::FORMAT_STR.as_ptr(), t.into_c_type()) }
+				unsafe { call_printf!(t => $warning $(, $level.0)?) }
 			}
 			fn log(&self, t: T) {
-				unsafe { $log($($level.0,)? <T as CFormattable>::FORMAT_STR.as_ptr(), t.into_c_type()) }
-			}
-		}
-
-		impl crate::Logger<&str> for $target {
-			fn msg(&self, s: &str) {
-				unsafe { $msg($($level.0,)? STR_FORMAT, s.len(), s.as_ptr()) }
-			}
-			fn warning(&self, s: &str) {
-				unsafe { $warning($($level.0,)? STR_FORMAT, s.len(), s.as_ptr()) }
-			}
-			fn log(&self, s: &str) {
-				unsafe { $log($($level.0,)? STR_FORMAT, s.len(), s.as_ptr()) }
+				unsafe { call_printf!(t => $log $(, $level.0)?) }
 			}
 		}
 	};
@@ -192,21 +115,9 @@ macro_rules! impl_logger {
 
 macro_rules! impl_color_logger {
 	($target:ty: $color_msg:expr $(, $level:expr)?) => {
-		impl<T: CFormattable> crate::ColorLogger<T> for $target {
+		impl<T: IntoFormattable> crate::ColorLogger<T> for $target {
 			fn color_msg(&self, color: &Color, t: T) {
-				unsafe { $color_msg(
-					$($level.0,)? ::rse_cpp::RefConst::from(color),
-					<T as CFormattable>::FORMAT_STR.as_ptr(), t.into_c_type(),
-				) }
-			}
-		}
-
-		impl crate::ColorLogger<&str> for $target {
-			fn color_msg(&self, color: &Color, s: &str) {
-				unsafe { $color_msg(
-					$($level.0,)? ::rse_cpp::RefConst::from(color),
-					STR_FORMAT, s.len(), s.as_ptr(),
-				) }
+				unsafe { call_printf!(t => $color_msg, $($level.0,)? ::rse_cpp::RefConst::from(color)) }
 			}
 		}
 	};

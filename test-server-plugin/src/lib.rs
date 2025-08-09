@@ -1,29 +1,28 @@
 use ::rse_server_plugin::prelude::*;
-use ::rse_tier0::prelude::*;
+use ::rse_tier0_text::{
+	tier0::prelude::*,
+	prelude::*,
+};
 
-struct Test {
-	engine_server: VEngineServer,
-}
+struct Test;
 
 impl Drop for Test {
 	fn drop(&mut self) {
-		dev_msg!("Test plugin unloading");
+		con().color_text("Test plugin unloading".colored(Color::rgb(255, 0, 0)));
 	}
 }
 
 impl LoadablePlugin for Test {
 	fn load(factories: InterfaceFactories<'_>) -> Option<Self> {
 		con_msg!("This is an informational message logged with {:?}", "tier0");
-		con_warn!("This is what we call an \"ERR-OR\"... printed with tier0");
+		con_warn!("This is what we call an \"ERR-OR\"... or, warning, printed with tier0");
 		dev_msg!("This is a debug message only visible with developer mode on");
 		dev_warn!("This is a developer-facing warning message, same thing as the above");
-		con_color_msg!(ConstColor::<0, 255, 0>, "1111 I Am GRN");
+		con_color_msg!(&Color::rgb(0, 255, 0), "1111 I Am GRN");
 
 		let mut engine_server = factories.create_interface::<VEngineServer>().ok()?;
 		engine_server.server_command(c"alias test_reload \"plugin_unload 0;plugin_load addons/libtest_server_plugin\"\n");
-		Some(Self {
-			engine_server,
-		})
+		Some(Self)
 	}
 }
 

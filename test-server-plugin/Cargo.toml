@@ -9,4 +9,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rse-server-plugin.workspace = true
-rse-tier0.workspace = true
+rse-tier0-text.workspace = true

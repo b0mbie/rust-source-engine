@@ -34,29 +34,9 @@ pub trait LevelLogger<T> {
 	fn warning_on(&self, level: Level, t: T);
 	fn log_on(&self, level: Level, t: T);
 }
-impl<L: for<'a> LevelLogger<&'a str>> LevelLogger<char> for L {
-	fn msg_on(&self, level: Level, c: char) {
-		let mut buffer = [0; 4];
-		L::msg_on(self, level, c.encode_utf8(&mut buffer))
-	}
-	fn warning_on(&self, level: Level, c: char) {
-		let mut buffer = [0; 4];
-		L::warning_on(self, level, c.encode_utf8(&mut buffer))
-	}
-	fn log_on(&self, level: Level, c: char) {
-		let mut buffer = [0; 4];
-		L::log_on(self, level, c.encode_utf8(&mut buffer))
-	}
-}
 
 pub trait ColorLevelLogger<T> {
 	fn color_msg_on(&self, level: Level, color: &Color, t: T);
-}
-impl<L: for<'a> ColorLevelLogger<&'a str>> ColorLevelLogger<char> for L {
-	fn color_msg_on(&self, level: Level, color: &Color, c: char) {
-		let mut buffer = [0; 4];
-		L::color_msg_on(self, level, color, c.encode_utf8(&mut buffer))
-	}
 }
 
 pub trait Logger<T> {
@@ -64,27 +44,7 @@ pub trait Logger<T> {
 	fn warning(&self, t: T);
 	fn log(&self, t: T);
 }
-impl<L: for<'a> Logger<&'a str>> Logger<char> for L {
-	fn msg(&self, c: char) {
-		let mut buffer = [0; 4];
-		L::msg(self, c.encode_utf8(&mut buffer))
-	}
-	fn warning(&self, c: char) {
-		let mut buffer = [0; 4];
-		L::warning(self, c.encode_utf8(&mut buffer))
-	}
-	fn log(&self, c: char) {
-		let mut buffer = [0; 4];
-		L::log(self, c.encode_utf8(&mut buffer))
-	}
-}
 
 pub trait ColorLogger<T> {
 	fn color_msg(&self, color: &Color, t: T);
-}
-impl<L: for<'a> ColorLogger<&'a str>> ColorLogger<char> for L {
-	fn color_msg(&self, color: &Color, c: char) {
-		let mut buffer = [0; 4];
-		L::color_msg(self, color, c.encode_utf8(&mut buffer))
-	}
 }

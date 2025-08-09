@@ -4,10 +4,11 @@ version = "0.1.0"
 edition = "2024"
 
 [features]
-default = ["link-dll", "link-srv"]
-link-dll = []
+default = ["link-dll"]
+link-dll = ["dep:rse-printf"]
 link-srv = []
 
 [dependencies]
 rse-cpp.workspace = true
 rse-game.workspace = true
+rse-printf = { path = "../rse-printf", optional = true }

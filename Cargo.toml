@@ -5,7 +5,9 @@ members = [
 	"rse-interface",
 	"rse-game",
 	"rse-game-interfaces",
+	"rse-printf",
 	"rse-tier0",
+	"rse-tier0-text",
 	"rse-server-plugin",
 	"test-server-plugin",
 ]
@@ -19,4 +21,4 @@ rse-game = { path = "./rse-game" }
 rse-game-interfaces = { path = "./rse-game-interfaces" }
 rse-server-plugin = { path = "./rse-server-plugin" }
 rse-tier0 = { path = "./rse-tier0" }
-rse-tier0-log = { path = "./rse-tier0-log" }
+rse-tier0-text = { path = "./rse-tier0-text" }
