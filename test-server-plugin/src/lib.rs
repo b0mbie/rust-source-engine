@@ -1,5 +1,5 @@
 use ::rse_server_plugin::prelude::*;
-use ::rse_tier0_text::{
+use ::rse_tier0_print::{
 	tier0::prelude::*,
 	prelude::*,
 };
@@ -8,7 +8,11 @@ struct Test;
 
 impl Drop for Test {
 	fn drop(&mut self) {
-		con().color_text("Test plugin unloading".colored(Color::rgb(255, 0, 0)));
+		con().print(
+			"Test plugin".colored(Color::rgb(0, 255, 0))
+				.then(" is ".plain())
+				.then("unloading".colored(Color::rgb(255, 0, 0)))
+		);
 	}
 }
 
