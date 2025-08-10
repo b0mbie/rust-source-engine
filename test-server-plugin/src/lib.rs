@@ -1,17 +1,29 @@
+#![no_std]
+
 use ::rse_server_plugin::prelude::*;
-use ::rse_tier0_print::{
-	tier0::prelude::*,
-	prelude::*,
-};
+use ::rse_tier0::prelude::*;
+use ::rse_tier0_print::prelude::*;
+
+macro_rules! println {
+	($t:expr) => {{
+		::rse_tier0_print::Printer::print(
+			&::rse_tier0::linked::con(),
+			::rse_tier0_print::ComposeThen::then(
+				$t,
+				::rse_tier0_print::IntoPlain::plain(::rse_printf::ByteChar(b'\n')),
+			)
+		)
+	}};
+}
 
 struct Test;
 
 impl Drop for Test {
 	fn drop(&mut self) {
-		con().print(
-			"Test plugin".colored(Color::rgb(0, 255, 0))
+		println!(
+			"Test plugin".rgb::<255, 0, 191>()
 				.then(" is ".plain())
-				.then("unloading".colored(Color::rgb(255, 0, 0)))
+				.then("unloading".rgb::<255, 0, 0>())
 		);
 	}
 }
@@ -22,7 +34,10 @@ impl LoadablePlugin for Test {
 		con_warn!("This is what we call an \"ERR-OR\"... or, warning, printed with tier0");
 		dev_msg!("This is a debug message only visible with developer mode on");
 		dev_warn!("This is a developer-facing warning message, same thing as the above");
-		con_color_msg!(&Color::rgb(0, 255, 0), "1111 I Am GRN");
+		con_color_msg!(
+			(&Color::rgb(255, 0, 191), "1111 I Am "),
+			(&Color::rgb(0, 255, 0), "GRN"),
+		);
 
 		let mut engine_server = factories.create_interface::<VEngineServer>().ok()?;
 		engine_server.server_command(c"alias test_reload \"plugin_unload 0;plugin_load addons/libtest_server_plugin\"\n");

@@ -66,28 +66,16 @@ macro_rules! log {
 }
 
 #[macro_export]
-macro_rules! color_msgln {
-	($logger:expr, $color_provider:expr $(,)?) => {
-		$crate::Logger::<&str>::color_msg(&$logger, $color_provider, "\n")
-	};
-
-	($logger:expr, $color_provider:expr, $($arg:tt)*) => {{
-		use ::core::fmt::Write as _;
-		let _ = ::core::writeln!(
-			$crate::fmt_adapters::AdaptToColorFmt::fmt_color_msg(&$logger, $color_provider),
-			$($arg)*
-		);
-	}};
-}
-
-#[macro_export]
 macro_rules! color_msg {
-	($logger:expr, $color_provider:expr, $($arg:tt)*) => {{
+	($logger:expr => $(($color_provider:expr, $($arg:tt)*)),+ $(,)?) => {{
 		use ::core::fmt::Write as _;
-		let _ = ::core::write!(
-			$crate::fmt_adapters::AdaptToColorFmt::fmt_color_msg(&$logger, $color_provider),
-			$($arg)*
-		);
+		let logger = &$logger;
+		$(
+			let _ = ::core::write!(
+				$crate::fmt_adapters::AdaptToColorFmt::fmt_color_msg(logger, $color_provider),
+				$($arg)*
+			);
+		)+
 	}};
 }
 

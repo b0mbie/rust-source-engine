@@ -1,4 +1,4 @@
-use crate::tier0::Color;
+use crate::Color;
 
 pub trait ColorProvider {
 	type Color<'a>: AsRef<Color> where Self: 'a;

@@ -8,5 +8,7 @@ publish = false
 crate-type = ["cdylib"]
 
 [dependencies]
+rse-printf.workspace = true
 rse-server-plugin.workspace = true
+rse-tier0.workspace = true
 rse-tier0-print.workspace = true

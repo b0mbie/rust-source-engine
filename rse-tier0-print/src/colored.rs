@@ -1,18 +1,33 @@
 use crate::{
+	ConstColor,
 	PrintTo, DirectPrinter,
 	ColorProvider,
 	ComposeThen,
 };
 
-pub trait IntoColored<C: ColorProvider>: Sized {
-	fn colored(self, color_provider: C) -> Colored<Self, C> {
+pub trait IntoColored: Sized {
+	fn colored<C: ColorProvider>(self, color_provider: C) -> Colored<Self, C> {
 		Colored {
 			text: self,
 			color_provider,
 		}
 	}
+
+	fn rgb<const R: u8, const G: u8, const B: u8>(self) -> Colored<Self, ConstColor<R, G, B>> {
+		Colored {
+			text: self,
+			color_provider: ConstColor,
+		}
+	}
+
+	fn rgba<const R: u8, const G: u8, const B: u8, const A: u8>(self) -> Colored<Self, ConstColor<R, G, B, A>> {
+		Colored {
+			text: self,
+			color_provider: ConstColor,
+		}
+	}
 }
-impl<T, C: ColorProvider> IntoColored<C> for T {}
+impl<T> IntoColored for T {}
 
 #[derive(Clone, Copy)]
 pub struct Colored<T, C> {

@@ -1,10 +1,6 @@
 #![no_std]
 
-pub use ::rse_tier0 as tier0;
-
-pub use tier0::Color;
-
-mod macros;
+pub use ::rse_tier0::Color;
 
 mod color_provider;
 pub use color_provider::*;
@@ -20,9 +16,8 @@ pub use then::*;
 pub mod prelude {
 	pub use crate::{
 		ComposeThen,
-		IntoColored, Color,
+		IntoColored, Color, ConstColor,
 		IntoPlain,
 		Printer,
-		msg,
 	};
 }

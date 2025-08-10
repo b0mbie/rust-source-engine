@@ -44,7 +44,6 @@ where
 	}
 }
 
-
 pub trait DirectPrinter<T> {
 	fn direct_print(&self, t: T);
 	fn direct_color_print(&self, color: &Color, t: T) {
