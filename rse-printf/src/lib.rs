@@ -2,6 +2,8 @@
 
 use ::core::ffi::*;
 
+mod byte_char;
+pub use byte_char::*;
 pub mod char_printf;
 mod precision;
 pub use precision::*;
