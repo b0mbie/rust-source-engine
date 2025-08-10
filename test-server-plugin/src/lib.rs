@@ -1,5 +1,3 @@
-#![no_std]
-
 use ::rse_server_plugin::prelude::*;
 use ::rse_tier0::prelude::*;
 use ::rse_tier0_print::prelude::*;
