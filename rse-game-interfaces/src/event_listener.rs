@@ -62,7 +62,7 @@ where
 
 	const VTABLE: &GameEventListener2Vt = &new_vtable_self!(GameEventListener2Vt {
 		destructor,
-		#[cfg(not(target_os = "windows"))]
+		#[cfg(not(windows))]
 		destructor_2,
 		fire_game_event
 	});
@@ -72,7 +72,7 @@ where
 		fn destructor() {
 			unsafe { this.cast::<Self>().drop_in_place() }
 		}
-		#[cfg(not(target_os = "windows"))]
+		#[cfg(not(windows))]
 		fn destructor_2() {
 			unsafe { this.cast::<Self>().drop_in_place() }
 		}

@@ -80,7 +80,7 @@ pub struct TextParams {
 ::rse_cpp::vtable! {
 	pub ScratchPad3DVt {
 		pub fn destructor();
-		#[cfg(not(target_os = "windows"))]
+		#[cfg(not(windows))]
 		pub fn destructor_2();
 		pub fn release();
 		pub fn set_mapping(

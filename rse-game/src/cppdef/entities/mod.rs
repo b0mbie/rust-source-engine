@@ -82,7 +82,7 @@ vtable! {
 		pub fn get_base_entity() -> *mut BaseEntity;
 		pub fn get_pvs_info() -> *mut PvsInfo;
 		pub fn destructor();
-		#[cfg(not(target_os = "windows"))]
+		#[cfg(not(windows))]
 		pub fn destructor_2();
 	}
 }
@@ -96,7 +96,7 @@ pub struct ServerEntityVt {
 vtable! {
 	pub ServerEntityVtBase for VtObjectMut<ServerEntityVt> {
 		pub fn destructor();
-		#[cfg(not(target_os = "windows"))]
+		#[cfg(not(windows))]
 		pub fn destructor_2();
 		pub fn get_model_index() -> c_int;
 		pub fn get_model_name() -> string_t;
@@ -196,7 +196,7 @@ impl BaseHandle {
 vtable! {
 	pub HandleEntityVt {
 		pub fn destructor();
-		#[cfg(not(target_os = "windows"))]
+		#[cfg(not(windows))]
 		pub fn destructor_2();
 		pub fn set_ref_ehandle(handle: RefConst<BaseHandle>);
 		pub fn get_ref_ehandle() -> RefConst<BaseHandle>;

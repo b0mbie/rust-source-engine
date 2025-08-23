@@ -29,7 +29,7 @@ pub enum IfaceStatus {
 ::rse_cpp::vtable! {
 	pub BaseInterfaceVt {
 		pub fn destructor();
-		#[cfg(not(target_os = "windows"))]
+		#[cfg(not(windows))]
 		pub fn destructor_2();
 	}
 }

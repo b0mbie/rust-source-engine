@@ -49,7 +49,7 @@ vtable! {
 vtable! {
 	pub GameEventListener2Vt {
 		pub fn destructor();
-		#[cfg(not(target_os = "windows"))]
+		#[cfg(not(windows))]
 		pub fn destructor_2();
 		pub fn fire_game_event(event: VtObjectMut<GameEventVt>);
 	}
@@ -58,7 +58,7 @@ vtable! {
 vtable! {
 	pub GameEventVt {
 		pub fn destructor();
-		#[cfg(not(target_os = "windows"))]
+		#[cfg(not(windows))]
 		pub fn destructor_2();
 		pub fn get_name() -> *const c_char;
 		pub fn is_reliable() -> bool;
