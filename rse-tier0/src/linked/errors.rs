@@ -1,4 +1,4 @@
-use ::rse_printf::IntoFormattable;
+use ::printf::IntoFormattable;
 
 use crate::Tier0Errors;
 

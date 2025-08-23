@@ -11,7 +11,7 @@ pub struct LinkedTier0;
 
 macro_rules! call_printf {
 	($t:expr => $func:expr $(, $($arg:tt)+)?) => {{
-		use ::rse_printf::{
+		use ::printf::{
 			IntoFormattable, Formattable, IntoPrecision,
 		};
 		let fmt = IntoFormattable::into_formattable($t);

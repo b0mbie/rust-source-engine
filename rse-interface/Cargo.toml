@@ -2,6 +2,7 @@
 name = "rse-interface"
 version = "0.1.0"
 edition = "2024"
+authors.workspace = true
 
 [dependencies]
 rse-cpp.workspace = true

@@ -8,7 +8,7 @@ macro_rules! println {
 			&::rse_tier0::linked::con(),
 			::rse_tier0_print::ComposeThen::then(
 				$t,
-				::rse_tier0_print::IntoPlain::plain(::rse_printf::ByteChar(b'\n')),
+				::rse_tier0_print::IntoPlain::plain(::printf::ByteChar(b'\n')),
 			)
 		)
 	}};

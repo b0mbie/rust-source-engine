@@ -1,5 +1,5 @@
 use ::core::ffi::CStr;
-use ::rse_printf::IntoFormattable;
+use ::printf::IntoFormattable;
 
 use crate::{
 	Tier0Spew, Tier0SpewGroups,

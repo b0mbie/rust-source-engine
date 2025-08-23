@@ -5,21 +5,23 @@ members = [
 	"rse-interface",
 	"rse-game",
 	"rse-game-interfaces",
-	"rse-printf",
 	"rse-tier0",
 	"rse-tier0-print",
 	"rse-server-plugin",
 	"test-server-plugin",
 ]
 
+[workspace.package]
+authors = ["b0mbie"]
+
 [workspace.dependencies]
 cppdvt = { git = "https://github.com/b0mbie/cppdvt.git" }
+printf = { git = "https://github.com/b0mbie/printf-rs.git" }
 
 rse-cpp = { path = "./rse-cpp" }
 rse-interface = { path = "./rse-interface" }
 rse-game = { path = "./rse-game" }
 rse-game-interfaces = { path = "./rse-game-interfaces" }
-rse-printf = { path = "./rse-printf" }
 rse-server-plugin = { path = "./rse-server-plugin" }
 rse-tier0 = { path = "./rse-tier0" }
 rse-tier0-print = { path = "./rse-tier0-print" }

@@ -2,6 +2,7 @@
 name = "rse-game"
 version = "0.1.0"
 edition = "2024"
+authors.workspace = true
 
 [features]
 xbox = []
