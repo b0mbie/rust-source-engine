@@ -22,7 +22,7 @@ fn main() -> Result<(), String> {
 			var("VALVE_LIB_PATH")
 				.map_err(move |e| format!("`VALVE_LIB_PATH` must be specified, where it contains `tier0` and the like ({e})"))?
 		);
-		println!("cargo:rustc-link-lib={}", link_name!("tier0"));
+		println!("cargo:rustc-link-lib=dylib={}", link_name!("tier0"));
 	}
 	Ok(())
 }
