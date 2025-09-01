@@ -4,11 +4,21 @@ use ::core::{
 	},
 	marker::PhantomData,
 	ptr::null_mut,
+	slice::{
+		from_raw_parts, from_raw_parts_mut,
+	},
 };
 use ::rse_cpp::{
 	AsObject, virtual_call, owned_vt_object_wrapper,
+	transparent_wrapper,
 };
-use ::rse_game::cppdef::entities::ServerClass as CServerClass;
+use ::rse_game::cppdef::{
+	datatable::{
+		SendProp as CSendProp,
+		SendTable as CSendTable,
+	},
+	entities::ServerClass as CServerClass,
+};
 
 use crate::{
 	cppdef::{
@@ -46,38 +56,49 @@ impl InterfaceOfFactory for ServerGameDll {
 	type Factory = GameServerFactory;
 }
 
-/// # Layout
-/// This type has the exact same layout as a C++ [`ServerClass`](CServerClass).
-#[repr(transparent)]
-pub struct ServerClass(CServerClass);
+transparent_wrapper! {
+	/// # Layout
+	/// This type has the exact same layout as a C++ [`SendProp`](CSendProp).
+	pub struct SendProp for CSendProp as "SendProp";
+}
+
+transparent_wrapper! {
+	/// # Layout
+	/// This type has the exact same layout as a C++ [`SendTable`](CSendTable).
+	pub struct SendTable for CSendTable as "SendTable";
+}
+
+impl SendTable {
+	pub const fn props(&self) -> &[SendProp] {
+		unsafe { from_raw_parts(self.0.props as *const SendProp, self.0.n_props as usize) }
+	}
+
+	pub const fn props_mut(&mut self) -> &mut [SendProp] {
+		unsafe { from_raw_parts_mut(self.0.props as *mut SendProp, self.0.n_props as usize) }
+	}
+}
+
+transparent_wrapper! {
+	/// # Layout
+	/// This type has the exact same layout as a C++ [`ServerClass`](CServerClass).
+	pub struct ServerClass for CServerClass as "ServerClass";
+}
 
 impl ServerClass {
-	/// # Safety
-	/// `ptr` must point to a valid, mutable [`ServerClass`](CServerClass).
-	pub const unsafe fn from_ptr_mut<'a>(ptr: *mut CServerClass) -> &'a mut Self {
-		unsafe { &mut *(ptr as *mut Self) }
-	}
-
-	/// # Safety
-	/// `ptr` must point to a valid, immutable [`ServerClass`](CServerClass).
-	pub const unsafe fn from_ptr<'a>(ptr: *const CServerClass) -> &'a Self {
-		unsafe { &*(ptr as *const Self) }
-	}
-
-	pub const fn as_ptr_mut(&mut self) -> *mut CServerClass {
-		self as *mut Self as *mut CServerClass
-	}
-
-	pub const fn as_ptr(&self) -> *const CServerClass {
-		self as *const Self as *const CServerClass
-	}
-
 	pub const fn network_name(&self) -> &CStr {
 		unsafe { CStr::from_ptr(self.0.network_name) }
 	}
 
 	pub const fn class_id(&self) -> c_int {
 		self.0.class_id
+	}
+
+	pub const fn table(&self) -> &SendTable {
+		unsafe { SendTable::from_ptr(self.0.table) }
+	}
+
+	pub const fn table_mut(&mut self) -> &mut SendTable {
+		unsafe { SendTable::from_ptr_mut(self.0.table) }
 	}
 
 	pub fn next(&self) -> Option<&Self> {

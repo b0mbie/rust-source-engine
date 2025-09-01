@@ -5,8 +5,9 @@ use ::rse_cpp::{
 	RefConst, RefMut, VtObjectMut, vtable,
 };
 use ::rse_game::cppdef::{
+	datatable::SendTable,
 	entities::{
-		Edict, ServerClass, SendTable, PvsInfo,
+		Edict, ServerClass, PvsInfo,
 		CollideableVt,
 	},
 	scratch_pad::ScratchPad3DVt,
