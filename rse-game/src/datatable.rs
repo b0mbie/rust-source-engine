@@ -27,8 +27,46 @@ transparent_wrapper! {
 }
 
 impl SendProp {
+	pub const fn name(&self) -> &CStr {
+		unsafe { CStr::from_ptr(self.0.var_name) }
+	}
+
 	pub const fn prop_type(&self) -> SendPropType {
 		self.0.prop_type
+	}
+
+	pub const fn offset(&self) -> isize {
+		self.0.offset as _
+	}
+
+	pub const fn table(&self) -> Option<&SendTable> {
+		let ptr = self.0.data_table;
+		if !ptr.is_null() {
+			unsafe { Some(SendTable::from_ptr(ptr)) }
+		} else {
+			None
+		}
+	}
+
+	pub const fn table_mut(&mut self) -> Option<&mut SendTable> {
+		let ptr = self.0.data_table;
+		if !ptr.is_null() {
+			unsafe { Some(SendTable::from_ptr_mut(ptr)) }
+		} else {
+			None
+		}
+	}
+
+	/// # Safety
+	/// The [`SendProp`] must be a [`SendPropType::DataTable`].
+	pub const unsafe fn table_unchecked(&self) -> &SendTable {
+		unsafe { SendTable::from_ptr(self.0.data_table) }
+	}
+
+	/// # Safety
+	/// The [`SendProp`] must be a [`SendPropType::DataTable`].
+	pub const unsafe fn table_unchecked_mut(&mut self) -> &mut SendTable {
+		unsafe { SendTable::from_ptr_mut(self.0.data_table) }
 	}
 }
 
@@ -39,12 +77,20 @@ transparent_wrapper! {
 }
 
 impl SendTable {
+	pub const fn name(&self) -> &CStr {
+		unsafe { CStr::from_ptr(self.0.net_table_name) }
+	}
+
+	pub const fn n_props(&self) -> usize {
+		self.0.n_props as usize
+	}
+
 	pub const fn props(&self) -> &[SendProp] {
-		unsafe { from_raw_parts(self.0.props as *const SendProp, self.0.n_props as usize) }
+		unsafe { from_raw_parts(self.0.props as *const SendProp, self.n_props()) }
 	}
 
 	pub const fn props_mut(&mut self) -> &mut [SendProp] {
-		unsafe { from_raw_parts_mut(self.0.props as *mut SendProp, self.0.n_props as usize) }
+		unsafe { from_raw_parts_mut(self.0.props as *mut SendProp, self.n_props()) }
 	}
 }
 
