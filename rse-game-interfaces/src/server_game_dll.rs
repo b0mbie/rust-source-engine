@@ -1,5 +1,7 @@
 use ::core::{
-	ffi::CStr,
+	ffi::{
+		CStr, c_int,
+	},
 	marker::PhantomData,
 	ptr::null_mut,
 };
@@ -72,6 +74,10 @@ impl ServerClass {
 
 	pub const fn network_name(&self) -> &CStr {
 		unsafe { CStr::from_ptr(self.0.network_name) }
+	}
+
+	pub const fn class_id(&self) -> c_int {
+		self.0.class_id
 	}
 
 	pub fn next(&self) -> Option<&Self> {
