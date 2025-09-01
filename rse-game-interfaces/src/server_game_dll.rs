@@ -20,6 +20,8 @@ use ::rse_game::cppdef::{
 	entities::ServerClass as CServerClass,
 };
 
+pub use ::rse_game::cppdef::datatable::SendPropType;
+
 use crate::{
 	cppdef::{
 		ServerGameDllVt, INTERFACEVERSION_SERVERGAMEDLL,
@@ -60,6 +62,12 @@ transparent_wrapper! {
 	/// # Layout
 	/// This type has the exact same layout as a C++ [`SendProp`](CSendProp).
 	pub struct SendProp for CSendProp as "SendProp";
+}
+
+impl SendProp {
+	pub const fn prop_type(&self) -> SendPropType {
+		self.0.prop_type
+	}
 }
 
 transparent_wrapper! {
