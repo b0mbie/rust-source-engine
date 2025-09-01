@@ -1,6 +1,7 @@
 use ::core::ffi::{
 	c_char, c_float, c_int, c_void,
 };
+use ::rse_cpp::vtable;
 
 use super::{
 	Variant, SendPropType,
@@ -37,8 +38,17 @@ pub struct SendTable {
 	pub precalc: *mut SendTablePrecalc,
 }
 
+vtable! {
+	pub SendTableVt {
+		pub fn destructor();
+		#[cfg(not(windows))]
+		pub fn destructor_2();
+	}
+}
+
 #[repr(C)]
 pub struct SendProp {
+	pub vtable: *mut SendTableVt,
 	pub matching_recv_prop: *mut RecvProp,
 	pub prop_type: SendPropType,
 	pub bits: c_int,
