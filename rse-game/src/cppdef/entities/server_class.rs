@@ -1,9 +1,8 @@
 use ::core::ffi::{
-	c_char, c_int, c_void,
+	c_char, c_int,
 };
 
-// TODO: `SendTable`.
-pub type SendTable = c_void;
+use crate::cppdef::datatable::SendTable;
 
 #[derive(Debug)]
 #[repr(C)]
