@@ -8,6 +8,8 @@ mod color_provider;
 pub use color_provider::*;
 mod colored;
 pub use colored::*;
+mod newlined;
+pub use newlined::*;
 mod plain;
 pub use plain::*;
 mod printing;
@@ -18,7 +20,8 @@ pub use then::*;
 pub mod prelude {
 	pub use crate::{
 		ComposeThen,
-		IntoColored, Color, ConstColor,
+		ComposeColored, Color, ConstColor,
+		ComposeNewlined,
 		IntoPlain,
 		Printer,
 	};
