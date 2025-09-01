@@ -30,6 +30,7 @@ pub use utl_vector::*;
 pub mod app_system;
 pub mod convar;
 pub mod cvar;
+pub mod datatable;
 pub mod entities;
 pub mod scratch_pad;
 

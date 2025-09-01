@@ -6,6 +6,7 @@ authors.workspace = true
 
 [features]
 xbox = []
+datatable-supports-int64 = []
 
 [dependencies]
 rse-cpp.workspace = true
