@@ -44,7 +44,7 @@ impl LoadablePlugin for Test {
 
 		let game = factories.create_interface::<ServerGameDll>().ok()?;
 		for server_class in game.server_classes() {
-			println!(server_class.network_name().to_string_lossy().as_ref().plain());
+			println!(server_class.network_name().plain());
 		}
 
 		Some(Self)
