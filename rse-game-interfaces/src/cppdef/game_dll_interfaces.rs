@@ -102,8 +102,9 @@ pub enum FindMapResult {
 	/// but it may be possible to load.
 	/// 
 	/// `find_map` is non-blocking,
-	/// so it is possible that blocking resources in a [`ServerGameDllVt::prepare_level_resources`] call may be able
-	/// to pull a better match than is immediately available with `find_map`
+	/// so it is possible that blocking resources in a
+	/// [`ServerGameDllVt::prepare_level_resources`](super::ServerGameDllVt::prepare_level_resources)
+	/// call may be able to pull a better match than is immediately available with `find_map`
 	/// (e.g. blocking lookups of cloud maps).
 	PossiblyAvailable,
 }
