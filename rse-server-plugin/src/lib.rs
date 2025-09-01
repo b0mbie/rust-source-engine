@@ -28,6 +28,7 @@ pub mod prelude {
 		game_interfaces::{
 			GameEventManager2, GameEventManager2Impl as _,
 			VEngineServer, VEngineServerImpl as _,
+			ServerGameDll, ServerGameDllImpl as _,
 			InterfaceFactories,
 			EmitSound,
 		},

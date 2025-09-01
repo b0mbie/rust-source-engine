@@ -4,5 +4,10 @@ version = "0.1.0"
 edition = "2024"
 authors.workspace = true
 
+[features]
+default = ["link-dll"]
+link-dll = ["rse-tier0/link-dll"]
+link-srv = ["rse-tier0/link-srv"]
+
 [dependencies]
-rse-tier0.workspace = true
+rse-tier0 = { path = "../rse-tier0", default-features = false }

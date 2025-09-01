@@ -1,11 +1,13 @@
 use ::rse_server_plugin::prelude::*;
-use ::rse_tier0::prelude::*;
-use ::rse_tier0_print::prelude::*;
+use ::rse_tier0_print::{
+	tier0::prelude::*,
+	prelude::*,
+};
 
 macro_rules! println {
 	($t:expr) => {{
 		::rse_tier0_print::Printer::print(
-			&::rse_tier0::linked::con(),
+			&::rse_tier0_print::tier0::linked::con(),
 			::rse_tier0_print::ComposeThen::then(
 				$t,
 				::rse_tier0_print::IntoPlain::plain(::printf::ByteChar(b'\n')),
@@ -39,6 +41,12 @@ impl LoadablePlugin for Test {
 
 		let mut engine_server = factories.create_interface::<VEngineServer>().ok()?;
 		engine_server.server_command(c"alias test_reload \"plugin_unload 0;plugin_load addons/libtest_server_plugin\"\n");
+
+		let game = factories.create_interface::<ServerGameDll>().ok()?;
+		for server_class in game.server_classes() {
+			println!(server_class.network_name().to_string_lossy().as_ref().plain());
+		}
+
 		Some(Self)
 	}
 }

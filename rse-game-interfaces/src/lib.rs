@@ -14,3 +14,5 @@ mod game_event;
 pub use game_event::*;
 mod interface_factories;
 pub use interface_factories::*;
+mod server_game_dll;
+pub use server_game_dll::*;

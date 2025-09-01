@@ -1,6 +1,8 @@
 #![no_std]
 
-pub use ::rse_tier0::Color;
+pub use ::rse_tier0 as tier0;
+
+pub use tier0::Color;
 
 mod color_provider;
 pub use color_provider::*;
