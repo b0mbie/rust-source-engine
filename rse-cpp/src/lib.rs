@@ -5,6 +5,7 @@ use ::core::ptr::NonNull;
 pub use ::cppdvt::*;
 
 mod flag_utils;
+mod transparent_wrappers;
 
 /// Type of pointers to immutable C++ objects with v-tables (`const IObject *`).
 pub type VtObjectRef<VTable> = VtObjectPtr<VTable>;
