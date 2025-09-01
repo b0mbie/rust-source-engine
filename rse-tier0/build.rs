@@ -16,7 +16,7 @@ macro_rules! link_name {
 }
 
 fn main() -> Result<(), String> {
-	if cfg!(all(not(any(rust_analyzer, doc)), feature = "link-dll")) {
+	if cfg!(all(feature = "link-dll", not(any(feature = "doc", rust_analyzer)))) {
 		println!(
 			"cargo:rustc-link-search={}",
 			var("VALVE_LIB_PATH")
