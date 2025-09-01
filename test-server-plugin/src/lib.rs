@@ -37,11 +37,37 @@ impl LoadablePlugin for Test {
 		);
 
 		let mut engine_server = factories.create_interface::<VEngineServer>().ok()?;
-		engine_server.server_command(c"alias test_reload \"plugin_unload 0;plugin_load addons/libtest_server_plugin\"\n");
+		engine_server.server_command(c"alias test_reload \"plugin_unload 0;plugin_load addons/test\"\n");
 
-		let game = factories.create_interface::<ServerGameDll>().ok()?;
-		for server_class in game.server_classes() {
-			println!(server_class.network_name().plain());
+		let dll = factories.create_interface::<ServerGameDll>().ok()?;
+		for class in dll.server_classes() {
+			let table = class.table();
+			println!(
+				class.network_name().plain()
+					.then(" (".plain())
+					.then(table.name().plain())
+					.then("), ".plain())
+					.then(table.n_props().plain())
+					.then(" SendProp(s)".plain())
+			);
+			for prop in table.props() {
+				use ::rse_server_plugin::game::SendPropType as Pt;
+				let pt = match prop.prop_type() {
+					Pt::Int => "Int",
+					Pt::Float => "Float",
+					Pt::Vector => "Vector",
+					Pt::VectorXy => "VectorXy",
+					Pt::String => "String",
+					Pt::Array => "Array",
+					Pt::DataTable => "DataTable",
+				};
+				println!(
+					"    ".plain()
+						.then(prop.name().plain())
+						.then(" @".plain()).then(prop.offset().plain())
+						.then(" (".plain()).then(pt.plain()).then(")".plain())
+				);
+			}
 		}
 
 		Some(Self)
