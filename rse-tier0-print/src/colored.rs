@@ -5,7 +5,7 @@ use crate::{
 	ComposeThen,
 };
 
-pub trait IntoColored: Sized {
+pub trait ComposeColored: Sized {
 	fn colored<C: ColorProvider>(self, color_provider: C) -> Colored<Self, C> {
 		Colored {
 			text: self,
@@ -27,7 +27,7 @@ pub trait IntoColored: Sized {
 		}
 	}
 }
-impl<T> IntoColored for T {}
+impl<T> ComposeColored for T {}
 
 #[derive(Clone, Copy)]
 pub struct Colored<T, C> {
