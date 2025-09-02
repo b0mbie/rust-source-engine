@@ -1,6 +1,7 @@
 use ::core::{
 	error::Error,
 	fmt,
+	marker::PhantomData,
 };
 use ::rse_cpp::{
 	OwnedVtObjectWrapper, VtObjectPtr,
@@ -35,17 +36,37 @@ unsafe impl<T: VTableInterface> FromRawInterface for T {
 		unsafe { T::from_ptr(raw_interface.cast()) }
 	}
 
-	type Error = InterfaceError;
+	type Error = InterfaceError<Self>;
 	fn convert_error(_: Self::Code) -> Self::Error {
-		InterfaceError
+		InterfaceError::new()
 	}
 }
 
-#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct InterfaceError;
-impl fmt::Display for InterfaceError {
+#[repr(transparent)]
+pub struct InterfaceError<T>(PhantomData<fn(&T)>);
+
+impl<T: Interface> fmt::Display for InterfaceError<T> {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		f.write_str("failed to create interface")
+		f.write_str("failed to create interface ")?;
+		fmt::Debug::fmt(T::IDENTIFIER, f)
 	}
 }
-impl Error for InterfaceError {}
+impl<T: Interface> Error for InterfaceError<T> {}
+
+impl<T> InterfaceError<T> {
+	pub const fn new() -> Self {
+		Self(PhantomData)
+	}
+}
+
+impl<T> Default for InterfaceError<T> {
+	fn default() -> Self {
+		Self::new()
+	}
+}
+
+impl<T> fmt::Debug for InterfaceError<T> {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		f.write_str("InterfaceError")
+	}
+}
