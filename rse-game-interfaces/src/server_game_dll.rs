@@ -23,7 +23,7 @@ pub trait ServerGameDllImpl: AsObject<ServerGameDllVt> {
 		ServerClasses::new(head)
 	}
 	fn server_classes_mut(&mut self) -> ServerClassesMut<'_> {
-		let head = unsafe { ServerClass::from_ptr_mut(virtual_call!(self.as_object() => get_all_server_classes())) };
+		let head = unsafe { ServerClass::from_mut_ptr(virtual_call!(self.as_object() => get_all_server_classes())) };
 		ServerClassesMut::new(head)
 	}
 }
