@@ -53,7 +53,7 @@ impl SendProp {
 	pub const fn table_mut(&mut self) -> Option<&mut SendTable> {
 		let ptr = self.0.data_table;
 		if !ptr.is_null() {
-			unsafe { Some(SendTable::from_ptr_mut(ptr)) }
+			unsafe { Some(SendTable::from_mut_ptr(ptr)) }
 		} else {
 			None
 		}
@@ -68,7 +68,7 @@ impl SendProp {
 	/// # Safety
 	/// The [`SendProp`] must be a [`SendPropType::DataTable`].
 	pub const unsafe fn table_unchecked_mut(&mut self) -> &mut SendTable {
-		unsafe { SendTable::from_ptr_mut(self.0.data_table) }
+		unsafe { SendTable::from_mut_ptr(self.0.data_table) }
 	}
 
 	pub const fn low_value(&self) -> ValueLimit {
@@ -128,7 +128,7 @@ impl ServerClass {
 	}
 
 	pub const fn table_mut(&mut self) -> &mut SendTable {
-		unsafe { SendTable::from_ptr_mut(self.0.table) }
+		unsafe { SendTable::from_mut_ptr(self.0.table) }
 	}
 
 	pub fn next(&self) -> Option<&Self> {
@@ -143,7 +143,7 @@ impl ServerClass {
 	pub fn next_mut(&mut self) -> Option<&mut Self> {
 		let next = self.0.next;
 		if !next.is_null() {
-			unsafe { Some(Self::from_ptr_mut(next)) }
+			unsafe { Some(Self::from_mut_ptr(next)) }
 		} else {
 			None
 		}
@@ -181,7 +181,7 @@ pub struct ServerClassesMut<'a> {
 impl<'a> ServerClassesMut<'a> {
 	pub const fn new(head: &'a mut ServerClass) -> Self {
 		Self {
-			head: head.as_ptr_mut(),
+			head: head.as_mut_ptr(),
 			_life: PhantomData,
 		}
 	}
@@ -193,8 +193,8 @@ impl<'a> Iterator for ServerClassesMut<'a> {
 		let head = self.head;
 		if !head.is_null() {
 			unsafe {
-				let class = ServerClass::from_ptr_mut(head);
-				self.head = class.next_mut().map(move |c| c.as_ptr_mut()).unwrap_or(null_mut());
+				let class = ServerClass::from_mut_ptr(head);
+				self.head = class.next_mut().map(move |c| c.as_mut_ptr()).unwrap_or(null_mut());
 				Some(class)
 			}
 		} else {

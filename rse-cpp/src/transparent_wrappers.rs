@@ -16,7 +16,7 @@ macro_rules! transparent_wrapper {
 			/// # Safety
 			/// `ptr` must point to a valid, mutable
 			#[doc = concat!("[`", $target_name, "`](", stringify!($target), ").")]
-			pub const unsafe fn from_ptr_mut<'a>(ptr: *mut $target) -> &'a mut Self {
+			pub const unsafe fn from_mut_ptr<'a>(ptr: *mut $target) -> &'a mut Self {
 				unsafe { &mut *(ptr as *mut Self) }
 			}
 
@@ -33,7 +33,7 @@ macro_rules! transparent_wrapper {
 
 			/// Returns the raw mutable pointer given a mutable reference to a value of type
 			#[doc = concat!("[`", stringify!($name), "`].")]
-			pub const fn as_ptr_mut(&mut self) -> *mut $target {
+			pub const fn as_mut_ptr(&mut self) -> *mut $target {
 				self as *mut Self as *mut $target
 			}
 
@@ -41,6 +41,26 @@ macro_rules! transparent_wrapper {
 			#[doc = concat!("[`", stringify!($name), "`].")]
 			pub const fn as_ptr(&self) -> *const $target {
 				self as *const Self as *const $target
+			}
+
+			/// Returns an immutable reference to the inner C++ structure
+			/// given an immutable reference to a value of type
+			#[doc = concat!("[`", stringify!($name), "`].")]
+			pub const fn as_inner(&self) -> &$target {
+				&self.0
+			}
+
+			/// Returns a mutable reference to the inner C++ structure
+			/// given a mutable reference to a value of type
+			#[doc = concat!("[`", stringify!($name), "`].")]
+			///
+			/// See also [`as_inner`](Self::as_inner) for a safe version that doesn't permit mutation.
+			/// 
+			/// # Safety
+			/// The structure contains public fields for highly-specific applications,
+			/// which can be freely mutated and cause *Undefined Behavior*.
+			pub const unsafe fn as_mut_inner(&mut self) -> &mut $target {
+				&mut self.0
 			}
 		}
 	};
