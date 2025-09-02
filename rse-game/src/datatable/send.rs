@@ -18,7 +18,9 @@ use crate::cppdef::{
 	entities::ServerClass as CServerClass,
 };
 
-pub use crate::cppdef::datatable::SendPropType;
+pub use crate::cppdef::datatable::{
+	SendPropType, ValueLimit,
+};
 
 transparent_wrapper! {
 	/// # Layout
@@ -67,6 +69,18 @@ impl SendProp {
 	/// The [`SendProp`] must be a [`SendPropType::DataTable`].
 	pub const unsafe fn table_unchecked_mut(&mut self) -> &mut SendTable {
 		unsafe { SendTable::from_ptr_mut(self.0.data_table) }
+	}
+
+	pub const fn low_value(&self) -> ValueLimit {
+		self.0.low_value
+	}
+
+	pub const fn high_value(&self) -> ValueLimit {
+		self.0.high_value
+	}
+
+	pub const fn n_bits(&self) -> usize {
+		self.0.bits as _
 	}
 }
 

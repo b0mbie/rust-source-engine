@@ -4,7 +4,7 @@ use ::core::ffi::{
 use ::rse_cpp::vtable;
 
 use super::{
-	Variant, SendPropType,
+	Variant, SendPropType, SendPropFlags,
 };
 
 // TODO: `RecvProp`.
@@ -52,8 +52,8 @@ pub struct SendProp {
 	pub matching_recv_prop: *mut RecvProp,
 	pub prop_type: SendPropType,
 	pub bits: c_int,
-	pub low_value: c_float,
-	pub high_value: c_float,
+	pub low_value: ValueLimit,
+	pub high_value: ValueLimit,
 	pub array_prop: *mut SendProp,
 	pub array_length_proxy: Option<ArrayLengthSendProxyFn>,
 	pub n_elements: c_int,
@@ -62,10 +62,12 @@ pub struct SendProp {
 	pub parrent_array_prop_name: *const c_char,
 	pub var_name: *const c_char,
 	pub high_low_mul: c_float,
-	pub flags: c_int,
+	pub flags: SendPropFlags,
 	pub proxy_fn: Option<SendVarProxyFn>,
 	pub dt_proxy_fn: Option<SendTableProxyFn>,
 	pub data_table: *mut SendTable,
 	pub offset: c_int,
 	pub extra_data: *const c_void,
 }
+
+pub type ValueLimit = c_float;

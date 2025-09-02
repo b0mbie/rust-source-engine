@@ -9,6 +9,8 @@ use ::core::{
 
 mod send;
 pub use send::*;
+mod sprop_flags;
+pub use sprop_flags::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub enum RsVariant<'a> {
