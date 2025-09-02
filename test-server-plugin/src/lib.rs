@@ -1,3 +1,6 @@
+use ::anyhow::{
+	Result, Error,
+};
 use ::rse_server_plugin::prelude::*;
 use ::rse_tier0_print::{
 	tier0::prelude::*,
@@ -13,7 +16,42 @@ macro_rules! println {
 	}};
 }
 
-struct Test;
+fn handle_anyhow_error(error: Error) {
+	let mut chain = error.chain().peekable();
+	while let Some(error) = chain.next() {
+		eprint!("{error}");
+		if chain.peek().is_some() {
+			eprint!(": ");
+		} else {
+			eprintln!();
+		}
+	}
+}
+
+struct Test {
+	dll: ServerGameDll,
+}
+
+impl Test {
+	fn load_impl(factories: InterfaceFactories<'_>) -> Result<Self> {
+		con_msg!("This is an informational message logged with {:?}", "tier0");
+		con_warn!("This is what we call an \"ERR-OR\"... or, warning, printed with tier0");
+		dev_msg!("This is a debug message only visible with developer mode on");
+		dev_warn!("This is a developer-facing warning message, same thing as the above");
+		con_color_msg!(
+			(&Color::rgb(255, 0, 191), "1111 I Am "),
+			(&Color::rgb(0, 255, 0), "GRN"),
+		);
+
+		let mut engine_server = factories.create_interface::<VEngineServer>()?;
+		engine_server.server_command(c"alias test_reload \"plugin_unload 0;plugin_load addons/test\"\n");
+
+		let dll = factories.create_interface::<ServerGameDll>()?;
+		Ok(Self {
+			dll,
+		})
+	}
+}
 
 impl Drop for Test {
 	fn drop(&mut self) {
@@ -27,20 +65,24 @@ impl Drop for Test {
 
 impl LoadablePlugin for Test {
 	fn load(factories: InterfaceFactories<'_>) -> Option<Self> {
-		con_msg!("This is an informational message logged with {:?}", "tier0");
-		con_warn!("This is what we call an \"ERR-OR\"... or, warning, printed with tier0");
-		dev_msg!("This is a debug message only visible with developer mode on");
-		dev_warn!("This is a developer-facing warning message, same thing as the above");
-		con_color_msg!(
-			(&Color::rgb(255, 0, 191), "1111 I Am "),
-			(&Color::rgb(0, 255, 0), "GRN"),
-		);
+		match Self::load_impl(factories) {
+			Ok(inst) => Some(inst),
+			Err(error) => {
+				handle_anyhow_error(error);
+				None
+			}
+		}
+	}
+}
 
-		let mut engine_server = factories.create_interface::<VEngineServer>().ok()?;
-		engine_server.server_command(c"alias test_reload \"plugin_unload 0;plugin_load addons/test\"\n");
+impl Plugin for Test {
+	fn description(&mut self) -> &CStr {
+		plugin_description!()
+	}
 
-		let dll = factories.create_interface::<ServerGameDll>().ok()?;
-		for class in dll.server_classes() {
+	fn level_init(&mut self, map_name: &CStr) {
+		let _ = map_name;
+		for class in self.dll.server_classes() {
 			let table = class.table();
 			println!(
 				class.network_name().plain()
@@ -69,14 +111,6 @@ impl LoadablePlugin for Test {
 				);
 			}
 		}
-
-		Some(Self)
-	}
-}
-
-impl Plugin for Test {
-	fn description(&mut self) -> &CStr {
-		plugin_description!()
 	}
 }
 

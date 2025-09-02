@@ -11,6 +11,7 @@ link-srv = ["rse-tier0-print/link-srv"]
 crate-type = ["cdylib"]
 
 [dependencies]
+anyhow = "1.0.99"
 printf.workspace = true
 rse-server-plugin.workspace = true
 rse-tier0-print = { path = "../rse-tier0-print", default-features = false }
