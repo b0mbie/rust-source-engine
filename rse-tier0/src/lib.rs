@@ -30,5 +30,6 @@ pub mod prelude {
 		Color,
 		Logger, LevelLogger, ColorLogger, ColorLevelLogger,
 		msg, warn, log, color_msg,
+		msgln, warnln, logln,
 	};
 }
