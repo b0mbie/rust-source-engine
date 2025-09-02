@@ -119,7 +119,7 @@ impl ServerClass {
 		unsafe { CStr::from_ptr(self.0.network_name) }
 	}
 
-	pub const fn class_id(&self) -> c_int {
+	pub const fn id(&self) -> c_int {
 		self.0.class_id
 	}
 
