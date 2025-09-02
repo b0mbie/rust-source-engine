@@ -6,6 +6,8 @@ pub use ::rse_interface as interface;
 
 pub mod cppdef;
 
+mod macros;
+
 mod static_plugin;
 pub use static_plugin::*;
 mod plugin;
@@ -38,6 +40,7 @@ pub mod prelude {
 		StaticPlugin, LoadablePlugin, Plugin,
 		ClientConnect, RejectReason,
 		export_static_plugin, export_loadable_plugin,
+		plugin_description,
 	};
 }
 

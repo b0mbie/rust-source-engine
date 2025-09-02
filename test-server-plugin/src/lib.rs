@@ -76,10 +76,7 @@ impl LoadablePlugin for Test {
 
 impl Plugin for Test {
 	fn description(&mut self) -> &CStr {
-		// "test-server-plugin v0.1.0"
-		unsafe { ::core::ffi::CStr::from_bytes_with_nul_unchecked(
-			::core::concat!(::core::env!("CARGO_PKG_NAME"), " v", ::core::env!("CARGO_PKG_VERSION"), "\0").as_bytes()
-		) }
+		plugin_description!()
 	}
 }
 
