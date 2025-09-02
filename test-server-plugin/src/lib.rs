@@ -17,13 +17,14 @@ macro_rules! println {
 }
 
 fn handle_anyhow_error(error: Error) {
+	let con = con();
 	let mut chain = error.chain().peekable();
 	while let Some(error) = chain.next() {
-		eprint!("{error}");
+		warn!(con, "{error}");
 		if chain.peek().is_some() {
-			eprint!(": ");
+			warn!(con, ": ");
 		} else {
-			eprintln!();
+			warnln!(con);
 		}
 	}
 }
