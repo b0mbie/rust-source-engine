@@ -8,7 +8,7 @@ use crate::{
 #[macro_export]
 macro_rules! msgln {
 	($logger:expr $(,)?) => {
-		$crate::Logger::<&str>::msg(&$logger, "\n")
+		$crate::Logger::<&::core::ffi::CStr>::msg(&$logger, c"\n")
 	};
 
 	($logger:expr, $($arg:tt)*) => {{
@@ -28,7 +28,7 @@ macro_rules! msg {
 #[macro_export]
 macro_rules! warnln {
 	($logger:expr $(,)?) => {
-		$crate::Logger::<&str>::warning(&$logger, c"\n")
+		$crate::Logger::<&::core::ffi::CStr>::warning(&$logger, c"\n")
 	};
 
 	($logger:expr, $($arg:tt)*) => {{
@@ -48,7 +48,7 @@ macro_rules! warn {
 #[macro_export]
 macro_rules! logln {
 	($logger:expr $(,)?) => {
-		$crate::Logger::<&str>::log(&$logger, c"\n")
+		$crate::Logger::<&::core::ffi::CStr>::log(&$logger, c"\n")
 	};
 
 	($logger:expr, $($arg:tt)*) => {{
