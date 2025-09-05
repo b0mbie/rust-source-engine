@@ -8,6 +8,8 @@ authors.workspace = true
 default = ["link-dll"]
 link-dll = ["rse-tier0/link-dll"]
 link-srv = ["rse-tier0/link-srv"]
+doc = ["rse-tier0/doc"]
+link-optional = ["rse-tier0/link-optional"]
 
 [dependencies]
 rse-tier0 = { path = "../rse-tier0", default-features = false }
