@@ -8,7 +8,8 @@ authors.workspace = true
 default = ["link-dll"]
 link-dll = ["dep:printf"]
 link-srv = []
-doc = []
+doc = ["link-optional"]
+link-optional = []
 
 [dependencies]
 printf = { git = "https://github.com/b0mbie/printf-rs.git", optional = true }

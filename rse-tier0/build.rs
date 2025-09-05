@@ -16,13 +16,17 @@ macro_rules! link_name {
 }
 
 fn main() -> Result<(), String> {
-	if cfg!(all(feature = "link-dll", not(any(feature = "doc", rust_analyzer)))) {
-		println!(
-			"cargo:rustc-link-search={}",
-			var("VALVE_LIB_PATH")
-				.map_err(move |e| format!("`VALVE_LIB_PATH` must be specified, where it contains `tier0` and the like ({e})"))?
-		);
-		println!("cargo:rustc-link-lib=dylib={}", link_name!("tier0"));
+	if cfg!(feature = "link-dll") {
+		match var("VALVE_LIB_PATH") {
+			Ok(path) => {
+				println!("cargo:rustc-link-search={path}");
+				println!("cargo:rustc-link-lib=dylib={}", link_name!("tier0"));
+			}
+			Err(..) if cfg!(any(rust_analyzer, feature = "link-optional")) => {}
+			Err(error) => {
+				return Err(format!("`VALVE_LIB_PATH` must be specified, where it contains `tier0` and the like ({error})"))
+			}
+		}
 	}
 	Ok(())
 }
