@@ -16,11 +16,12 @@ macro_rules! link_name {
 }
 
 fn main() -> Result<(), String> {
+	println!("cargo::rerun-if-env-changed=VALVE_LIB_PATH");
 	if cfg!(feature = "link-dll") {
 		match var("VALVE_LIB_PATH") {
 			Ok(path) => {
-				println!("cargo:rustc-link-search={path}");
-				println!("cargo:rustc-link-lib=dylib={}", link_name!("tier0"));
+				println!("cargo::rustc-link-search={path}");
+				println!("cargo::rustc-link-lib=dylib={}", link_name!("tier0"));
 			}
 			Err(..) if cfg!(any(rust_analyzer, feature = "link-optional")) => {}
 			Err(error) => {
