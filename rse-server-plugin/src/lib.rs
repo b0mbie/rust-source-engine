@@ -40,51 +40,7 @@ pub mod prelude {
 		StaticPlugin, LoadablePlugin, Plugin,
 		ClientConnect, RejectReason,
 		export_static_plugin, export_loadable_plugin,
+		export_static_plugin_as, export_loadable_plugin_as,
 		plugin_description,
-	};
-}
-
-#[macro_export]
-macro_rules! export_static_plugin {
-	($ty:ty) => {
-		const _: () = {
-			use ::core::option::Option;
-			use $crate::{
-				interface::cppdef::ReturnCode,
-				PluginObject
-			};
-
-			static mut PLUGIN: PluginObject<$ty> = PluginObject::new(<$ty as $crate::StaticPlugin>::NOT_LOADED);
-
-			struct ExportedPlugin;
-			impl $crate::interface::RawInterfaceFactory for ExportedPlugin {
-				#[allow(static_mut_refs)]
-				unsafe fn create_interface_raw(
-					&self, name: &::core::ffi::CStr, return_code: Option<&mut ReturnCode>,
-				) -> Option<$crate::interface::cppdef::RawInterface> {
-					let result = if name == <PluginObject<$ty> as $crate::interface::Interface>::IDENTIFIER {
-						unsafe { Some($crate::interface::ToRawInterface::to_raw_interface(&mut PLUGIN)) }
-					} else {
-						None
-					};
-					if let Option::Some(return_code) = return_code {
-						*return_code = if result.is_some() { ReturnCode::OK } else { ReturnCode::FAILED };
-					}
-					result
-				}
-			}
-			impl $crate::interface::DllInterfaceFactory for ExportedPlugin {
-				const INSTANCE: &Self = &ExportedPlugin;
-			}
-
-			$crate::interface::dll_interface_factory!(ExportedPlugin);
-		};
-	};
-}
-
-#[macro_export]
-macro_rules! export_loadable_plugin {
-	($ty:ty) => {
-		$crate::export_static_plugin!($crate::PluginLoader<$ty>);
 	};
 }
