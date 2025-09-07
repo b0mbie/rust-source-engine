@@ -18,6 +18,14 @@ pub struct PluginLoader<P> {
 }
 
 impl<P> PluginLoader<P> {
+	pub const fn plugin(&self) -> Option<&P> {
+		self.plugin.as_ref()
+	}
+
+	pub const fn plugin_mut(&mut self) -> Option<&mut P> {
+		self.plugin.as_mut()
+	}
+
 	const unsafe fn as_plugin_mut_unchecked(&mut self) -> &mut P {
 		unsafe { self.plugin.as_mut().unwrap_unchecked() }
 	}
