@@ -1,5 +1,7 @@
 #![no_std]
 
+extern crate alloc;
+
 pub use ::rse_game::cppdef::Color;
 
 pub mod fmt_adapters;
@@ -8,6 +10,8 @@ mod errors;
 pub use errors::*;
 mod level;
 pub use level::*;
+mod mem;
+pub use mem::*;
 mod spew;
 pub use spew::*;
 

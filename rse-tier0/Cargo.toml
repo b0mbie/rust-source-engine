@@ -11,6 +11,9 @@ link-srv = []
 doc = ["link-optional"]
 link-optional = []
 
+# Equivalent to `_MEMTEST`.
+memtest = []
+
 [dependencies]
 printf = { git = "https://github.com/b0mbie/printf-rs.git", optional = true }
 rse-cpp.workspace = true

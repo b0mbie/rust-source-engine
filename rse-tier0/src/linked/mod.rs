@@ -3,6 +3,8 @@ pub mod cppdef;
 mod macros;
 
 mod errors;
+mod mem;
+pub use mem::*;
 mod spew;
 pub use spew::*;
 
