@@ -2,19 +2,9 @@ use ::anyhow::{
 	Result, Error,
 };
 use ::rse_server_plugin::prelude::*;
-use ::rse_tier0_print::{
-	tier0::prelude::*,
-	prelude::*,
-};
+use ::rse_tier0::prelude::*;
 
-macro_rules! println {
-	($t:expr) => {{
-		::rse_tier0_print::Printer::print(
-			&::rse_tier0_print::tier0::linked::con(),
-			::rse_tier0_print::ComposeNewlined::newlined($t),
-		)
-	}};
-}
+mod std_handlers;
 
 fn handle_anyhow_error(error: Error) {
 	let con = con();
@@ -43,7 +33,7 @@ impl Test {
 			(&Color::rgb(255, 0, 191), "1111 I Am "),
 			(&Color::rgb(0, 255, 0), "GRN"),
 		);
-
+		
 		let mut engine_server = factories.create_interface::<VEngineServer>()?;
 		engine_server.server_command(c"alias test_reload \"plugin_unload 0;plugin_load addons/test\"\n");
 
@@ -56,11 +46,7 @@ impl Test {
 
 impl Drop for Test {
 	fn drop(&mut self) {
-		println!(
-			"Test plugin".rgb::<255, 0, 191>()
-				.then(" is ".plain())
-				.then("unloading".rgb::<255, 0, 0>())
-		);
+		dev_msg!("Test plugin is unloading");
 	}
 }
 
@@ -85,31 +71,9 @@ impl Plugin for Test {
 		let _ = map_name;
 		for class in self.dll.server_classes() {
 			let table = class.table();
-			println!(
-				class.network_name().plain()
-					.then(" (".plain())
-					.then(table.name().plain())
-					.then("), ".plain())
-					.then(table.n_props().plain())
-					.then(" SendProp(s)".plain())
-			);
+			con_msg!("{:?} ({:?}), {} SendProp(s)", class.network_name(), table.name(), table.n_props());
 			for prop in table.props() {
-				use ::rse_server_plugin::game::SendPropType as Pt;
-				let pt = match prop.prop_type() {
-					Pt::Int => "Int",
-					Pt::Float => "Float",
-					Pt::Vector => "Vector",
-					Pt::VectorXy => "VectorXy",
-					Pt::String => "String",
-					Pt::Array => "Array",
-					Pt::DataTable => "DataTable",
-				};
-				println!(
-					"    ".plain()
-						.then(prop.name().plain())
-						.then(" @".plain()).then(prop.offset().plain())
-						.then(" (".plain()).then(pt.plain()).then(")".plain())
-				);
+				con_msg!("    {:?} @{} ({:?})", prop.name(), prop.offset(), prop.prop_type());
 			}
 		}
 	}
