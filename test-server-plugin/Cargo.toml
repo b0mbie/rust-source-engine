@@ -8,6 +8,7 @@ publish = false
 link-srv = ["rse-tier0-print/link-srv"]
 
 [lib]
+name = "test"
 crate-type = ["cdylib"]
 
 [dependencies]
