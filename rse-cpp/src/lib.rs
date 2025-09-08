@@ -6,6 +6,7 @@ pub use ::cppdvt::*;
 
 mod flag_utils;
 mod transparent_wrappers;
+mod vtable;
 
 /// Type of pointers to immutable C++ objects with v-tables (`const IObject *`).
 pub type VtObjectRef<VTable> = VtObjectPtr<VTable>;
@@ -16,26 +17,6 @@ pub type VtObjectMut<VTable> = VtObjectPtr<VTable>;
 pub type RefConst<T> = NonNull<T>;
 /// Type of mutable C++ references (`int &`).
 pub type RefMut<T> = NonNull<T>;
-
-#[macro_export]
-macro_rules! vtable_methods {
-	{
-		$this:ident : $this_ty:ty;
-		$(
-			$(#[$attr:meta])*
-			fn $name:ident($($param:tt)*) $(-> $return:ty)? {
-				$($body:tt)*
-			}
-		)*
-	} => {
-		$(
-			$(#[$attr])*
-			unsafe extern "C-unwind" fn $name($this: $this_ty, $($param)*) $(-> $return)? {
-				$($body)*
-			}
-		)*
-	};
-}
 
 /// # Safety
 /// The implementing type must be a `repr(transparent)` wrapper around a [`VtObject<Self::VTable>`](VtObject).
