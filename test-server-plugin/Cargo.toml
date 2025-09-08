@@ -5,7 +5,7 @@ edition = "2024"
 publish = false
 
 [features]
-link-srv = ["rse-tier0-print/link-srv"]
+link-srv = ["rse-tier0/link-srv"]
 
 [lib]
 name = "test"
@@ -15,4 +15,4 @@ crate-type = ["cdylib"]
 anyhow = "1.0.99"
 printf.workspace = true
 rse-server-plugin.workspace = true
-rse-tier0-print = { path = "../rse-tier0-print", default-features = false }
+rse-tier0 = { path = "../rse-tier0", default-features = false }
