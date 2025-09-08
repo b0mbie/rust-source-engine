@@ -1,5 +1,5 @@
 [package]
-name = "test-server-plugin"
+name = "test-plugin"
 version = "0.1.0"
 edition = "2024"
 publish = false
@@ -14,5 +14,5 @@ crate-type = ["cdylib"]
 [dependencies]
 anyhow = "1.0.99"
 printf.workspace = true
-rse-server-plugin.workspace = true
+rse-plugin.workspace = true
 rse-tier0 = { path = "../rse-tier0", default-features = false }

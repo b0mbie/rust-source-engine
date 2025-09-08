@@ -1,7 +1,7 @@
 use ::anyhow::{
 	Result, Error,
 };
-use ::rse_server_plugin::prelude::*;
+use ::rse_plugin::prelude::*;
 use ::rse_tier0::prelude::*;
 
 mod std_handlers;

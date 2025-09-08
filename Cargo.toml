@@ -7,8 +7,8 @@ members = [
 	"rse-game-interfaces",
 	"rse-tier0",
 	"rse-tier0-print",
-	"rse-server-plugin",
-	"test-server-plugin",
+	"rse-plugin",
+	"test-plugin",
 ]
 
 [workspace.package]
@@ -22,4 +22,4 @@ rse-cpp = { path = "./rse-cpp" }
 rse-interface = { path = "./rse-interface" }
 rse-game = { path = "./rse-game" }
 rse-game-interfaces = { path = "./rse-game-interfaces" }
-rse-server-plugin = { path = "./rse-server-plugin" }
+rse-plugin = { path = "./rse-plugin" }

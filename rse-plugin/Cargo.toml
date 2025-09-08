@@ -1,5 +1,5 @@
 [package]
-name = "rse-server-plugin"
+name = "rse-plugin"
 version = "0.1.0"
 edition = "2024"
 authors.workspace = true
