@@ -72,8 +72,8 @@ macro_rules! export_loadable_plugin_as {
 	};
 }
 
-#[macro_export]
 /// Exports a [`LoadablePlugin`](crate::LoadablePlugin) given the plugin type.
+#[macro_export]
 macro_rules! export_loadable_plugin {
 	($ty:ty) => {
 		$crate::export_static_plugin!($crate::PluginLoader<$ty>);
