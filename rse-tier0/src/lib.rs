@@ -12,6 +12,8 @@ mod level;
 pub use level::*;
 mod mem;
 pub use mem::*;
+mod mem_alloc;
+pub use mem_alloc::*;
 mod spew;
 pub use spew::*;
 
