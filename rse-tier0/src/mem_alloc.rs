@@ -23,10 +23,7 @@ unsafe impl<A: ?Sized + Tier0Allocator> GlobalAlloc for Tier0GlobalAlloc<A> {
 			return null_mut()
 		}
 
-		let result = unsafe { aligned_ptr(result, layout) };
-		#[cfg(feature = "link-dll")]
-		crate::con_warn!("alloc({:?}) -> {result:?}", layout.size());
-		result
+		unsafe { aligned_ptr(result, layout) }
 	}
 	unsafe fn realloc(&self, ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8 {
 		if layout.align() == 1 {
@@ -40,9 +37,7 @@ unsafe impl<A: ?Sized + Tier0Allocator> GlobalAlloc for Tier0GlobalAlloc<A> {
 			return null_mut()
 		}
 		
-		let result = unsafe { aligned_ptr(result, layout) };
-		crate::con_warn!("realloc({ptr:?}, {result:?}, {new_size:?})");
-		result
+		unsafe { aligned_ptr(result, layout) }
 	}
 	unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
 		if layout.align() == 1 {
@@ -50,7 +45,6 @@ unsafe impl<A: ?Sized + Tier0Allocator> GlobalAlloc for Tier0GlobalAlloc<A> {
 		}
 
 		unsafe {
-			crate::con_warn!("free({ptr:?})");
 			let ptr = unaligned_ptr(ptr, layout);
 			self.0.free_unaligned(ptr)
 		}
@@ -95,17 +89,17 @@ const VARINT_CONT_BIT: u8 = 1 << VARINT_BITS;
 const VARINT_MAX: u8 = VARINT_CONT_BIT - 1;
 
 unsafe fn varint_write_dec(mut start: *mut u8, mut x: usize) {
-    const VARINT_SHIFT_AMOUNT: u32 = usize::BITS - VARINT_BITS;
-    const VARINT_MASK: usize = (VARINT_MAX as usize) << VARINT_SHIFT_AMOUNT;
-    while x > VARINT_MAX as usize {
-        unsafe {
+	const VARINT_SHIFT_AMOUNT: u32 = usize::BITS - VARINT_BITS;
+	const VARINT_MASK: usize = (VARINT_MAX as usize) << VARINT_SHIFT_AMOUNT;
+	while x > VARINT_MAX as usize {
+		unsafe {
 			let piece = ((x & VARINT_MASK) >> VARINT_SHIFT_AMOUNT) as u8 | VARINT_CONT_BIT;
-            *start = piece;
-            x <<= VARINT_BITS;
-            start = start.sub(1);
-        }
-    }
-    unsafe { *start = x as u8 }
+			*start = piece;
+			x <<= VARINT_BITS;
+			start = start.sub(1);
+		}
+	}
+	unsafe { *start = x as u8 }
 }
 
 unsafe fn varint_read_dec(mut start: *mut u8) -> usize {
