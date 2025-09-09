@@ -7,11 +7,12 @@ use crate::{
 	Tier0Allocator, Location,
 };
 
-use super::cppdef::*;
+use super::LinkedTier0;
 
-#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct LinkedTier0Alloc;
-impl Tier0Alloc for LinkedTier0Alloc {
+pub mod cppdef;
+use cppdef::*;
+
+impl Tier0Alloc for LinkedTier0 {
 	type Allocator<'a> = LinkedTier0Allocator where Self: 'a;
 	fn allocator(&self) -> Self::Allocator<'_> {
 		LinkedTier0Allocator

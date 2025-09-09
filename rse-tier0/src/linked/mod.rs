@@ -1,12 +1,9 @@
-pub mod cppdef;
-
 mod macros;
-
 mod errors;
-mod mem;
-pub use mem::*;
-mod spew;
-pub use spew::*;
+
+pub mod cmd;
+pub mod mem;
+pub mod spew;
 
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct LinkedTier0;

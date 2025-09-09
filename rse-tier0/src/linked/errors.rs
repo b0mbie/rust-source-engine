@@ -3,9 +3,8 @@ use ::printf::IntoFormattable;
 use crate::Tier0Errors;
 
 use super::{
-	cppdef::*,
-	LinkedTier0,
-	call_printf,
+	spew::cppdef::Error,
+	LinkedTier0, call_printf,
 };
 
 impl<T: IntoFormattable> Tier0Errors<T> for LinkedTier0 {

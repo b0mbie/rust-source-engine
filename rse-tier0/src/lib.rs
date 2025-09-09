@@ -6,6 +6,8 @@ pub use ::rse_game::cppdef::Color;
 
 pub mod fmt_adapters;
 
+mod cmd;
+pub use cmd::*;
 mod errors;
 pub use errors::*;
 mod level;
@@ -25,7 +27,10 @@ pub mod prelude {
 	pub use crate::{
 		linked::{
 			LinkedTier0,
-			con, dev, dev_con,
+			cmd::command_line,
+			spew::{
+				con, dev, dev_con,
+			},
 		},
 		dev_msg, dev_warn, con_msg, con_warn, con_color_msg,
 	};
@@ -35,6 +40,7 @@ pub mod prelude {
 		Tier0Errors,
 		Color,
 		Logger, LevelLogger, ColorLogger, ColorLevelLogger,
+		Tier0GetCommandLine, Tier0CommandLine,
 		msg, warn, log, color_msg,
 		msgln, warnln, logln,
 	};

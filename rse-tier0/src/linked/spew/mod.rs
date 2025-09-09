@@ -6,12 +6,12 @@ use crate::{
 	Level, Color,
 };
 
-use super::call_printf;
-
 use super::{
-	cppdef::*,
-	LinkedTier0,
+	call_printf, LinkedTier0,
 };
+
+pub mod cppdef;
+use cppdef::*;
 
 pub const fn dev() -> LinkedTier0Dev {
 	LinkedTier0Dev
