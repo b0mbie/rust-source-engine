@@ -1,4 +1,4 @@
-//! Implementations for implementing Source 1 plugins.
+//! Crate that allows for implementing Source 1 plugins with `no_std` in safe Rust.
 //! 
 //! Users of this crate will usually want to implement [`LoadablePlugin`]/[`StaticPlugin`] and [`Plugin`].
 //! 
