@@ -1,5 +1,6 @@
 use ::core::ffi::CStr;
 
+/// Buffer that stores the reason of rejecting a player from the server.
 #[repr(transparent)]
 pub struct RejectReason<'a> {
 	buffer: &'a mut [u8],

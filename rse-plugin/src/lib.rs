@@ -1,3 +1,17 @@
+//! Implementations for implementing Source 1 plugins.
+//! 
+//! Users of this crate will usually want to implement [`LoadablePlugin`]/[`StaticPlugin`] and [`Plugin`].
+//! 
+//! # Panicking
+//! Rust plugin methods that are called by C++ are defined with the `extern "C"` ABI,
+//! so panicking inside of such a function will typically not unwind the stack beyond the boundary between C++ and Rust.
+//! 
+//! **While it is safe to panic, it is not recommended for proper error handling.**
+//! Typically, a panic will result in the main process being abort,
+//! with no further information presented to a user of the plugin.
+//! Instead of panicking, users of this crate are encouraged to use error handling with [`Result`],
+//! where any errors are printed to the console to be presented to users of the plugin.
+
 #![no_std]
 
 pub use ::rse_game as game;

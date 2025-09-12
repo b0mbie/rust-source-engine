@@ -12,12 +12,21 @@ use crate::{
 	StaticPlugin, Plugin,
 };
 
+/// Helper for a [`LoadablePlugin`] that implements [`StaticPlugin`],
+/// which allows for exporting the plugin.
 pub struct PluginLoader<P> {
 	plugin: Option<P>,
 	had_duplicate_load: bool,
 }
 
 impl<P> PluginLoader<P> {
+	pub const fn new() -> Self {
+		Self {
+			plugin: None,
+			had_duplicate_load: false,
+		}
+	}
+
 	pub const fn plugin(&self) -> Option<&P> {
 		self.plugin.as_ref()
 	}
@@ -37,16 +46,21 @@ impl<P> Default for PluginLoader<P> {
 	}
 }
 
-impl<P> PluginLoader<P> {
-	pub const fn new() -> Self {
-		Self {
-			plugin: None,
-			had_duplicate_load: false,
-		}
-	}
-}
-
+/// Trait for plugins the instances of which are always initialized when loading,
+/// and then cleaned up with [`Drop`] when unloading.
+/// 
+/// See [`Plugin`] for functionality that can be implemented,
+/// and [`StaticPlugin`](crate::StaticPlugin) for an advanced version.
+/// 
+/// # Panicking
+/// See the [crate-level documentation](crate#panicking) for information about panicking in plugin functions.
 pub trait LoadablePlugin: Sized + Plugin {
+	/// Returns the initialized plugin,
+	/// or `None` if loading failed for whatever reason.
+	/// 
+	/// # Errors
+	/// There is no native way to report an error message to the plugin loader.
+	/// Consider using the `tier0` library for printing errors to the console.
 	fn load(factories: InterfaceFactories<'_>) -> Option<Self>;
 }
 

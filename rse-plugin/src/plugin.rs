@@ -10,6 +10,13 @@ use crate::{
 	RejectReason,
 };
 
+/// Trait for defining common functionality in plugins.
+/// 
+/// See [`LoadablePlugin`](crate::LoadablePlugin) or [`StaticPlugin`](crate::StaticPlugin)
+/// for implementations of plugin loading.
+/// 
+/// # Panicking
+/// See the [crate-level documentation](crate#panicking) for information about panicking in plugin functions.
 pub trait Plugin {
 	fn pause(&mut self) {}
 	fn unpause(&mut self) {}

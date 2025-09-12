@@ -26,12 +26,29 @@ use crate::{
 	ClientConnect, Plugin, RejectReason,
 };
 
+/// Trait for plugins that live throughout the life of the object loaded in memory that the plugin comes from.
+/// 
+/// See [`Plugin`] for functionality that can be implemented,
+/// and [`LoadablePlugin`](crate::LoadablePlugin) for a more user-friendly version.
+/// 
+/// # Panicking
+/// See the [crate-level documentation](crate#panicking) for information about panicking in plugin functions.
 pub trait StaticPlugin: Plugin {
 	const NOT_LOADED: Self;
+	/// Returns `true` if the plugin was successfully initialized,
+	/// or `false` if loading failed for whatever reason.
+	/// 
+	/// # Errors
+	/// There is no native way to report an error message to the plugin loader.
+	/// Consider using the `tier0` library for printing errors to the console.
 	fn load(&mut self, factories: InterfaceFactories<'_>) -> bool;
+	/// Called when the plugin is unloaded.
+	/// 
+	/// If [`load`](StaticPlugin::load) returns `false`, then this function is called afterwards.
 	fn unload(&mut self);
 }
 
+/// C++ object that implements `IServerPluginCallbacks` delegating calls to a [`StaticPlugin`].
 #[repr(C)]
 pub struct PluginObject<T> {
 	vtable: *mut ServerPluginCallbacksVt,
