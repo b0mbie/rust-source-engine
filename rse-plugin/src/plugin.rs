@@ -15,12 +15,23 @@ use crate::{
 /// See [`LoadablePlugin`](crate::LoadablePlugin) or [`StaticPlugin`](crate::StaticPlugin)
 /// for implementations of plugin loading.
 /// 
+/// # Default implementations
+/// The trait provides a default, no-op implementation for *most* functions.
+/// They can be freely overriden by plugin implementations.
+/// 
 /// # Panicking
 /// See the [crate-level documentation](crate#panicking) for information about panicking in plugin functions.
 pub trait Plugin {
+	/// Returns the human-readable description - the name - of the plugin.
+	/// 
+	/// This function must be manually implemented by all plugins - there is no default implementation.
+	/// Consider using [`plugin_description!`](crate::plugin_description!)
+	/// to generate a usable string that represents the plugin,
+	/// or use C string literal syntax (e.g. `c"Plugin v0.1.0"`) to safely create a static C string.
+	fn description(&mut self) -> &CStr;
+
 	fn pause(&mut self) {}
 	fn unpause(&mut self) {}
-	fn description(&mut self) -> &CStr;
 	fn level_init(&mut self, map_name: &CStr) {
 		let _ = map_name;
 	}
