@@ -1,7 +1,6 @@
 use ::core::ffi::CStr;
-use ::rse_game::{
-	Command, ServerEdict,
-};
+use ::rse_convar::Command;
+use ::rse_game::ServerEdict;
 use ::rse_game_interfaces::InterfaceFactories;
 
 use crate::{

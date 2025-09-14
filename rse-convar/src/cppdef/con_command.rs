@@ -9,11 +9,11 @@ use ::rse_cpp::{
 	RefConst, VtObjectPtr, vtable,
 	test_bits, with_bits,
 };
+use ::rse_utl::cppdef::{
+	UtlVector, UtlString,
+};
 
 use super::{
-	super::utl::{
-		UtlVector, UtlString,
-	},
 	ConCommandBaseVt, ConCommandBaseExt, Command,
 };
 

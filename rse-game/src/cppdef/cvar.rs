@@ -1,20 +1,16 @@
 use ::core::ffi::{
 	CStr, c_char, c_float, c_int,
 };
+use ::rse_convar::cppdef::{
+	ConVarVt, ConCommandBaseVt, ConCommandVt,
+	CvarDllIdentifier,
+};
 use ::rse_cpp::{
 	vtable, RefConst, VtObjectMut, VtObjectRef,
 };
+use ::rse_interface::cppdef::app_system::AppSystemVt;
 
-use super::{
-	app_system::AppSystemVt,
-	convar::{
-		ConVarVt, ConCommandBaseVt, ConCommandVt,
-	},
-	Color,
-};
-
-/// Type for a DLL identifier that's used to mark ConVars and ConCommands.
-pub type CvarDllIdentifier = c_int;
+use super::Color;
 
 pub type FnChangeCallback = unsafe extern "C-unwind" fn(
 	var: VtObjectMut<ConVarVt>, old_string: *const c_char, old_value: c_float,

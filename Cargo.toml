@@ -2,10 +2,12 @@
 resolver = "3"
 members = [
 	"rse-cpp",
+	"rse-utl",
 	"rse-interface",
+	"rse-convar",
+	"rse-math",
 	"rse-game",
 	"rse-game-interfaces",
-	"rse-math",
 	"rse-tier0",
 	"rse-plugin",
 	"test-plugin",
@@ -20,9 +22,11 @@ libc = { version = "0.2.175", default-features = false }
 cppdvt = { git = "https://github.com/b0mbie/cppdvt.git" }
 printf = { git = "https://github.com/b0mbie/printf-rs.git" }
 
+rse-convar = { path = "./rse-convar" }
 rse-cpp = { path = "./rse-cpp" }
 rse-interface = { path = "./rse-interface" }
 rse-game = { path = "./rse-game" }
 rse-game-interfaces = { path = "./rse-game-interfaces" }
 rse-math = { path = "./rse-math" }
 rse-plugin = { path = "./rse-plugin" }
+rse-utl = { path = "./rse-utl" }

@@ -14,6 +14,7 @@
 
 #![no_std]
 
+pub use ::rse_convar as convar;
 pub use ::rse_game as game;
 pub use ::rse_game_interfaces as game_interfaces;
 pub use ::rse_interface as interface;
@@ -34,13 +35,12 @@ pub use reject_reason::*;
 pub mod prelude {
 	pub use ::core::ffi::CStr;
 	pub use crate::{
+		convar::Command,
 		cppdef::{
 			ClientIndex, PluginResult,
 			QueryCvarCookie, QueryCvarValueStatus,
 		},
-		game::{
-			Command, ServerEdict,
-		},
+		game::ServerEdict,
 		game_interfaces::{
 			GameEventManager2, GameEventManager2Impl as _,
 			VEngineServer, VEngineServerImpl as _,

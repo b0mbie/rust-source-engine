@@ -5,8 +5,7 @@ use ::rse_cpp::RefConst;
 use ::rse_math::{
 	QAngle, Vector, Vector2D,
 };
-
-use super::utl::UtlVector;
+use ::rse_utl::cppdef::UtlVector;
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 #[repr(C)]

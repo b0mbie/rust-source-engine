@@ -5,8 +5,8 @@ use ::rse_cpp::{
 	RefConst, VtObjectMut, vtable,
 };
 use ::rse_interface::CreateInterfaceFn;
+use ::rse_convar::cppdef::Command;
 use ::rse_game::cppdef::{
-	convar::Command,
 	entities::Edict,
 	KeyValues,
 };

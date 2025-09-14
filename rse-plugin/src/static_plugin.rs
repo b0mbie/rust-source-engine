@@ -8,9 +8,13 @@ use ::core::{
 use ::rse_cpp::{
 	RefConst, VtObjectMut, new_vtable_self, this_to_self,
 };
+use ::rse_convar::{
+	cppdef::Command as CCommand,
+	Command,
+};
 use ::rse_game::{
 	cppdef::entities::Edict,
-	Command, ServerEdict,
+	ServerEdict,
 };
 use ::rse_game_interfaces::InterfaceFactories;
 use ::rse_interface::{
@@ -210,9 +214,9 @@ where
 				}
 			}
 		}
-		fn client_command(entity: *mut Edict, args: RefConst<Command>) -> PluginResult {
+		fn client_command(entity: *mut Edict, args: RefConst<CCommand>) -> PluginResult {
 			let entity = unsafe { ServerEdict::from_c_edict_mut(&mut *entity) };
-			let args = unsafe { args.as_ref() };
+			let args = unsafe { Command::from_ptr(args.as_ptr()) };
 			this_to_self!(mut this).inner.client_command(entity, args)
 		}
 		fn network_id_validated(user_name: *const c_char, network_id: *const c_char) -> PluginResult {

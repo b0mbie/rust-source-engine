@@ -1,13 +1,10 @@
 [package]
-name = "rse-game-interfaces"
+name = "rse-convar"
 version = "0.1.0"
 edition = "2024"
 authors.workspace = true
 
 [dependencies]
-libc.workspace = true
 rse-cpp.workspace = true
-rse-game.workspace = true
 rse-interface.workspace = true
-rse-math.workspace = true
 rse-utl.workspace = true

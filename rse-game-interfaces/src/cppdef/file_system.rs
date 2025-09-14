@@ -10,10 +10,8 @@ use ::libc::{
 use ::rse_cpp::{
 	vtable, RefMut, RefConst, VtObjectMut,
 };
-use ::rse_game::cppdef::{
-	app_system::AppSystemVt,
-	utl::FileNameHandle,
-};
+use ::rse_interface::cppdef::app_system::AppSystemVt;
+use ::rse_utl::cppdef::FileNameHandle;
 
 pub type FileHandle = *mut c_void;
 pub const FILESYSTEM_INVALID_HANDLE: FileHandle = null_mut();

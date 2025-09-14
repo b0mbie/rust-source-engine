@@ -5,10 +5,11 @@ edition = "2024"
 authors.workspace = true
 
 [features]
-xbox = []
 datatable-supports-int64 = []
 
 [dependencies]
+rse-convar.workspace = true
 rse-cpp.workspace = true
 rse-interface.workspace = true
 rse-math.workspace = true
+rse-utl.workspace = true
