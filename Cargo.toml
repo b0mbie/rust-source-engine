@@ -5,6 +5,7 @@ members = [
 	"rse-interface",
 	"rse-game",
 	"rse-game-interfaces",
+	"rse-math",
 	"rse-tier0",
 	"rse-plugin",
 	"test-plugin",
@@ -23,4 +24,5 @@ rse-cpp = { path = "./rse-cpp" }
 rse-interface = { path = "./rse-interface" }
 rse-game = { path = "./rse-game" }
 rse-game-interfaces = { path = "./rse-game-interfaces" }
+rse-math = { path = "./rse-math" }
 rse-plugin = { path = "./rse-plugin" }

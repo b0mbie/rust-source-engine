@@ -8,8 +8,6 @@ mod color;
 pub use color::*;
 mod keyvalues;
 pub use keyvalues::*;
-mod math;
-pub use math::*;
 mod model;
 pub use model::*;
 mod sound_level;

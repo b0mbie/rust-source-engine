@@ -1,10 +1,13 @@
 use ::core::ffi::{
 	c_float, c_int, c_short, c_ushort,
 };
+use ::rse_math::{
+	Vector, Plane,
+};
 
 use super::{
 	entities::BaseEntity,
-	Vector, Plane, Surface,
+	Surface,
 };
 
 // TODO: `DISPSURF_FLAG_*` as a bitset.

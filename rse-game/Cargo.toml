@@ -11,3 +11,4 @@ datatable-supports-int64 = []
 [dependencies]
 rse-cpp.workspace = true
 rse-interface.workspace = true
+rse-math.workspace = true

@@ -12,11 +12,11 @@ use ::rse_game::cppdef::{
 	},
 	scratch_pad::ScratchPad3DVt,
 	KeyValues,
-	Vector,
 	SteamId,
 	BfWrite,
 	SoundLevel,
 };
+use ::rse_math::Vector;
 
 // TODO: `INetChannelInfo`.
 vtable! {

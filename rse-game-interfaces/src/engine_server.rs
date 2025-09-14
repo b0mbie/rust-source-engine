@@ -9,9 +9,10 @@ use ::rse_cpp::{
 	AsObject, virtual_call, owned_vt_object_wrapper,
 };
 use ::rse_game::cppdef::{
-	SteamId, Vector,
+	SteamId,
 	SoundLevel,
 };
+use ::rse_math::Vector;
 
 use crate::{
 	cppdef::{

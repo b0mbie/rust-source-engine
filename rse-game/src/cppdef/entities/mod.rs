@@ -4,9 +4,11 @@ use ::core::ffi::{
 use ::rse_cpp::{
 	vtable, VtObjectMut, RefConst, RefMut,
 };
+use ::rse_math::{
+	Vector, QAngle, Matrix3x4,
+};
 
 use super::{
-	Vector, QAngle, Matrix3x4,
 	Model, SolidType,
 	Ray, Trace,
 	string_t,

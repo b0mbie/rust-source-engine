@@ -1,8 +1,7 @@
 use ::core::ffi::{
 	c_char, c_short, c_ushort, c_void,
 };
-
-use super::VectorAligned;
+use ::rse_math::VectorAligned;
 
 // `struct model_t` is never implemented, only used behind a pointer.
 #[repr(transparent)]

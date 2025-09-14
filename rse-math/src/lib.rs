@@ -1,4 +1,4 @@
-// TODO: Move somewhere else?
+#![no_std]
 
 use ::core::{
 	ffi::c_float,
