@@ -6,6 +6,7 @@ members = [
 	"rse-interface",
 	"rse-convar",
 	"rse-math",
+	"rse-scratch-pad",
 	"rse-game",
 	"rse-game-interfaces",
 	"rse-tier0",
@@ -29,4 +30,5 @@ rse-game = { path = "./rse-game" }
 rse-game-interfaces = { path = "./rse-game-interfaces" }
 rse-math = { path = "./rse-math" }
 rse-plugin = { path = "./rse-plugin" }
+rse-scratch-pad = { path = "./rse-scratch-pad" }
 rse-utl = { path = "./rse-utl" }

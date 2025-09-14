@@ -10,13 +10,13 @@ use ::rse_game::cppdef::{
 		Edict, ServerClass, PvsInfo,
 		CollideableVt,
 	},
-	scratch_pad::ScratchPad3DVt,
 	KeyValues,
 	SteamId,
 	BfWrite,
 	SoundLevel,
 };
 use ::rse_math::Vector;
+use ::rse_scratch_pad::cppdef::ScratchPad3DVt;
 
 // TODO: `INetChannelInfo`.
 vtable! {

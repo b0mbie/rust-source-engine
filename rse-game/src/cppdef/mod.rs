@@ -22,7 +22,6 @@ pub use trace::*;
 pub mod cvar;
 pub mod datatable;
 pub mod entities;
-pub mod scratch_pad;
 
 /// Representation of the bounding volume of an object.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
