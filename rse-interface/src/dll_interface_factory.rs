@@ -30,7 +30,7 @@ macro_rules! dll_interface_factory {
 	($ty:ty => $export_name:literal) => {
 		const _: () = const {
 			#[unsafe(export_name = $export_name)]
-			unsafe extern "C-unwind" fn create_interface(
+			unsafe extern "C" fn create_interface(
 				name: *const ::core::ffi::c_char, out_return_code: *mut $crate::cppdef::ReturnCode,
 			) -> Option<$crate::cppdef::RawInterface> {
 				unsafe { $crate::handle_create_interface::<$ty>(name, out_return_code) }

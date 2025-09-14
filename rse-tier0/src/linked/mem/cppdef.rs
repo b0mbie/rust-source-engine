@@ -93,7 +93,7 @@ vtable! {
 	}
 }
 
-pub type MemAllocFailHandler = unsafe extern "C-unwind" fn(usize) -> usize;
+pub type MemAllocFailHandler = unsafe extern "C" fn(usize) -> usize;
 
 // Windows thing.
 pub type CrtMemState = c_void;

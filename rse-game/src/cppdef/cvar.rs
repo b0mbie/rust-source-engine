@@ -12,7 +12,7 @@ use ::rse_interface::cppdef::app_system::AppSystemVt;
 
 use super::Color;
 
-pub type FnChangeCallback = unsafe extern "C-unwind" fn(
+pub type FnChangeCallback = unsafe extern "C" fn(
 	var: VtObjectMut<ConVarVt>, old_string: *const c_char, old_value: c_float,
 );
 

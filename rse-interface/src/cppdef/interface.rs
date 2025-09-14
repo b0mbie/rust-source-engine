@@ -15,7 +15,7 @@ impl ReturnCode {
 
 pub type RawInterface = NonNull<c_void>;
 
-pub type CreateInterfaceFn = unsafe extern "C-unwind" fn(
+pub type CreateInterfaceFn = unsafe extern "C" fn(
 	name: *const c_char, out_return_code: *mut ReturnCode,
 ) -> Option<RawInterface>;
 

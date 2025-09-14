@@ -85,8 +85,8 @@ vtable! {
 	}
 }
 
-pub type CommandCallbackFnV1 = unsafe extern "C-unwind" fn();
-pub type CommandCallbackFn = unsafe extern "C-unwind" fn(command: RefConst<Command>);
+pub type CommandCallbackFnV1 = unsafe extern "C" fn();
+pub type CommandCallbackFn = unsafe extern "C" fn(command: RefConst<Command>);
 
 #[repr(C)]
 pub union CommandCallback {
@@ -105,7 +105,7 @@ impl fmt::Debug for CommandCallback {
 pub const COMMAND_COMPLETION_MAX_ITEMS: usize = 64;
 pub const COMMAND_COMPLETION_ITEM_LENGTH: usize = 64;
 
-pub type CompletionCallbackFn = unsafe extern "C-unwind" fn(
+pub type CompletionCallbackFn = unsafe extern "C" fn(
 	partial: *const c_char,
 	out_commands: *mut [[c_char; COMMAND_COMPLETION_ITEM_LENGTH]; COMMAND_COMPLETION_MAX_ITEMS],
 ) -> c_int;
