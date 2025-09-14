@@ -26,6 +26,11 @@ pub trait ServerGameDllImpl: AsObject<ServerGameDllVt> {
 		let head = unsafe { ServerClass::from_mut_ptr(virtual_call!(self.as_object() => get_all_server_classes())) };
 		ServerClassesMut::new(head)
 	}
+	fn game_description(&self) -> &CStr {
+		unsafe { CStr::from_ptr(virtual_call!(self.as_object() => get_game_description())) }
+	}
+
+	// TODO: More functions from `ServerGameDllVt`.
 }
 impl<T: AsObject<ServerGameDllVt>> ServerGameDllImpl for T {}
 
