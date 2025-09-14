@@ -1,4 +1,9 @@
-use ::core::ffi::CStr;
+use ::core::{
+	any::type_name,
+	ffi::CStr,
+	hint::unreachable_unchecked,
+	mem::replace,
+};
 use ::rse_convar::Command;
 use ::rse_game::ServerEdict;
 use ::rse_game_interfaces::InterfaceFactories;
@@ -14,28 +19,41 @@ use crate::{
 /// Helper for a [`LoadablePlugin`] that implements [`StaticPlugin`],
 /// which allows for exporting the plugin.
 pub struct PluginLoader<P> {
-	plugin: Option<P>,
-	had_duplicate_load: bool,
+	inner: PluginLoaderInner<P>,
+}
+
+enum PluginLoaderInner<P> {
+	NotLoaded,
+	Loaded(P),
+	LoadedAgain(P),
 }
 
 impl<P> PluginLoader<P> {
 	pub const fn new() -> Self {
 		Self {
-			plugin: None,
-			had_duplicate_load: false,
+			inner: PluginLoaderInner::NotLoaded,
 		}
 	}
 
 	pub const fn plugin(&self) -> Option<&P> {
-		self.plugin.as_ref()
+		match self.inner {
+			PluginLoaderInner::NotLoaded => None,
+			PluginLoaderInner::Loaded(ref p) | PluginLoaderInner::LoadedAgain(ref p) => Some(p),
+		}
 	}
 
 	pub const fn plugin_mut(&mut self) -> Option<&mut P> {
-		self.plugin.as_mut()
+		match self.inner {
+			PluginLoaderInner::NotLoaded => None,
+			PluginLoaderInner::Loaded(ref mut p) | PluginLoaderInner::LoadedAgain(ref mut p) => Some(p),
+		}
 	}
 
-	const unsafe fn as_plugin_mut_unchecked(&mut self) -> &mut P {
-		unsafe { self.plugin.as_mut().unwrap_unchecked() }
+	const unsafe fn plugin_mut_unchecked(&mut self) -> &mut P {
+		match self.inner {
+			PluginLoaderInner::NotLoaded => unsafe { unreachable_unchecked() },
+			PluginLoaderInner::Loaded(ref mut p) | PluginLoaderInner::LoadedAgain(ref mut p) => p,
+		}
 	}
 }
 
@@ -51,34 +69,57 @@ impl<P> Default for PluginLoader<P> {
 /// See [`Plugin`] for functionality that can be implemented,
 /// and [`StaticPlugin`](crate::StaticPlugin) for an advanced version.
 /// 
+/// # Errors
+/// There is no native way to report an error message to the plugin loader.
+/// Consider using the `tier0` library for printing errors to the console.
+/// 
 /// # Panicking
 /// See the [crate-level documentation](crate#panicking) for information about panicking in plugin functions.
 pub trait LoadablePlugin: Sized + Plugin {
 	/// Returns the initialized plugin,
 	/// or `None` if loading failed for whatever reason.
-	/// 
-	/// # Errors
-	/// There is no native way to report an error message to the plugin loader.
-	/// Consider using the `tier0` library for printing errors to the console.
 	fn load(factories: InterfaceFactories<'_>) -> Option<Self>;
 }
 
 impl<P: LoadablePlugin> StaticPlugin for PluginLoader<P> {
 	const NOT_LOADED: Self = Self::new();
-	fn load(&mut self, factories: InterfaceFactories<'_>) -> bool {
-		if self.plugin.is_none() {
-			self.plugin = P::load(factories);
-			self.plugin.is_some()
-		} else {
-			self.had_duplicate_load = true;
-			false
+	unsafe fn load(&mut self, factories: InterfaceFactories<'_>) -> bool {
+		match replace(&mut self.inner, PluginLoaderInner::NotLoaded) {
+			PluginLoaderInner::NotLoaded => {
+				match P::load(factories) {
+					Some(p) => {
+						self.inner = PluginLoaderInner::Loaded(p);
+						true
+					}
+					None => false,
+				}
+			}
+			PluginLoaderInner::Loaded(p) => {
+				self.inner = PluginLoaderInner::LoadedAgain(p);
+				false
+			}
+			inner => {
+				self.inner = inner;
+
+				// This check is here in debug mode to catch a theoretical buggy plugin loader implementation.
+				if cfg!(any(test, debug_assertions)) {
+					panic!("`PluginLoader<{}>` loaded again without unloading first", type_name::<P>());
+				} else {
+					unsafe { unreachable_unchecked() }
+				}
+			}
 		}
 	}
-	fn unload(&mut self) {
-		if self.had_duplicate_load {
-			self.had_duplicate_load = false;
-		} else {
-			self.plugin = None;
+	unsafe fn unload(&mut self) {
+		match replace(&mut self.inner, PluginLoaderInner::NotLoaded) {
+			PluginLoaderInner::NotLoaded => { /* nothing to do */ }
+			PluginLoaderInner::Loaded(p) => {
+				drop(p);
+				self.inner = PluginLoaderInner::NotLoaded;
+			}
+			PluginLoaderInner::LoadedAgain(p) => {
+				self.inner = PluginLoaderInner::Loaded(p);
+			}
 		}
 	}
 }
@@ -88,7 +129,7 @@ macro_rules! delegates {
 		$(fn $name:ident(&mut self $(, $param:ident: $param_ty:ty)* $(,)?) $(-> $return:ty)?;)*
 	} => {
 		$(fn $name(&mut self $(, $param: $param_ty)*) $(-> $return)? {
-			unsafe { self.as_plugin_mut_unchecked().$name($($param,)*) }
+			unsafe { self.plugin_mut_unchecked().$name($($param,)*) }
 		})*
 	};
 }
@@ -124,5 +165,39 @@ impl<P: Plugin> Plugin for PluginLoader<P> {
 		);
 		fn on_edict_allocated(&mut self, edict: &mut ServerEdict);
 		fn on_edict_freed(&mut self, edict: &ServerEdict);
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	struct Dummy;
+	impl LoadablePlugin for Dummy {
+		fn load(factories: InterfaceFactories<'_>) -> Option<Self> {
+			let _ = factories;
+			Some(Self)
+		}
+	}
+	impl Plugin for Dummy {
+		fn description(&mut self) -> &CStr {
+			c"Dummy"
+		}
+	}
+	
+	#[test]
+	#[should_panic(expected = "loaded again without unloading first")]
+	fn plugin_loader_no_multiple_loads() {
+		let mut loader = PluginLoader::<Dummy>::new();
+		unsafe {
+			unsafe extern "C" fn factrie(
+				_: *const ::core::ffi::c_char, _: *mut ::rse_interface::ReturnCode,
+			) -> Option<::core::ptr::NonNull<::core::ffi::c_void>> {
+				None
+			}
+			assert!(loader.load(InterfaceFactories::new(factrie, factrie)));
+			assert!(!loader.load(InterfaceFactories::new(factrie, factrie)));
+			assert!(!loader.load(InterfaceFactories::new(factrie, factrie)));
+		}
 	}
 }

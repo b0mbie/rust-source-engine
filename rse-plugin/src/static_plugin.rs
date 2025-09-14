@@ -34,6 +34,11 @@ use crate::{
 /// 
 /// See [`Plugin`] for functionality that can be implemented,
 /// and [`LoadablePlugin`](crate::LoadablePlugin) for a more user-friendly version.
+/// See also the [`PluginLoader`](crate::PluginLoader), which implements this trait.
+/// 
+/// # Errors
+/// There is no native way to report an error message to the plugin loader.
+/// Implementors of this trait should consider using the `tier0` library for printing errors to the console.
 /// 
 /// # Panicking
 /// See the [crate-level documentation](crate#panicking) for information about panicking in plugin functions.
@@ -42,14 +47,18 @@ pub trait StaticPlugin: Plugin {
 	/// Returns `true` if the plugin was successfully initialized,
 	/// or `false` if loading failed for whatever reason.
 	/// 
-	/// # Errors
-	/// There is no native way to report an error message to the plugin loader.
-	/// Consider using the `tier0` library for printing errors to the console.
-	fn load(&mut self, factories: InterfaceFactories<'_>) -> bool;
+	/// # Safety
+	/// Each call to `load` *must* eventually be followed by a call to [`unload`](StaticPlugin::unload).
+	/// 
+	/// If `load` returns `false`, then it *must not* be called again until `unload` is called.
+	unsafe fn load(&mut self, factories: InterfaceFactories<'_>) -> bool;
 	/// Called when the plugin is unloaded.
 	/// 
-	/// If [`load`](StaticPlugin::load) returns `false`, then this function is called afterwards.
-	fn unload(&mut self);
+	/// # Safety
+	/// Each call to [`load`](StaticPlugin::load) *must* eventually be followed by a call to `unload`.
+	/// 
+	/// `unload` *must not* be called without a matching call to `load`.
+	unsafe fn unload(&mut self);
 }
 
 /// C++ object that implements `IServerPluginCallbacks` delegating calls to a [`StaticPlugin`].
@@ -123,10 +132,10 @@ where
 		this: VtObjectMut<ServerPluginCallbacksVt>;
 		fn load(interface_factory: CreateInterfaceFn, game_server_factory: CreateInterfaceFn) -> bool {
 			let factories = InterfaceFactories::new(interface_factory, game_server_factory);
-			this_to_self!(mut this).inner.load(factories)
+			unsafe { this_to_self!(mut this).inner.load(factories) }
 		}
 		fn unload() {
-			this_to_self!(mut this).inner.unload();
+			unsafe { this_to_self!(mut this).inner.unload() }
 		}
 		fn pause() {
 			this_to_self!(mut this).inner.pause()
