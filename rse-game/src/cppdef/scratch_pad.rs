@@ -4,8 +4,8 @@ use ::core::ffi::{
 use ::rse_cpp::RefConst;
 
 use super::{
+	utl::UtlVector,
 	QAngle, Vector, Vector2D,
-	UtlVector,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]

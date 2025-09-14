@@ -20,14 +20,6 @@ mod string;
 pub use string::*;
 mod trace;
 pub use trace::*;
-mod utl_memory;
-pub use utl_memory::*;
-mod utl_string;
-pub use utl_string::*;
-mod utl_symbol;
-pub use utl_symbol::*;
-mod utl_vector;
-pub use utl_vector::*;
 
 pub mod app_system;
 pub mod convar;
@@ -35,6 +27,7 @@ pub mod cvar;
 pub mod datatable;
 pub mod entities;
 pub mod scratch_pad;
+pub mod utl;
 
 /// Representation of the bounding volume of an object.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

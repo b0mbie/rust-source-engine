@@ -12,7 +12,7 @@ use ::rse_cpp::{
 };
 use ::rse_game::cppdef::{
 	app_system::AppSystemVt,
-	FileNameHandle,
+	utl::FileNameHandle,
 };
 
 pub type FileHandle = *mut c_void;
