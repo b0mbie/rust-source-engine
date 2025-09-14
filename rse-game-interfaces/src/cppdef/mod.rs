@@ -1,3 +1,5 @@
+mod file_system;
+pub use file_system::*;
 mod game_dll_interfaces;
 pub use game_dll_interfaces::*;
 mod game_events;

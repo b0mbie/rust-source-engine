@@ -5,6 +5,7 @@ edition = "2024"
 authors.workspace = true
 
 [dependencies]
+libc.workspace = true
 rse-cpp.workspace = true
 rse-game.workspace = true
 rse-interface.workspace = true

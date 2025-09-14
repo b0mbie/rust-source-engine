@@ -24,6 +24,8 @@ mod utl_memory;
 pub use utl_memory::*;
 mod utl_string;
 pub use utl_string::*;
+mod utl_symbol;
+pub use utl_symbol::*;
 mod utl_vector;
 pub use utl_vector::*;
 
