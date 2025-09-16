@@ -26,7 +26,7 @@ pub trait Tier0Allocator {
 	/// - must not have been freed.
 	unsafe fn free_unaligned(&self, mem: *mut u8);
 
-	/// Like [`alloc_unaligned`](Tier0Alloc::alloc_unaligned),
+	/// Like [`alloc_unaligned`](Tier0Allocator::alloc_unaligned),
 	/// but allows for specifying a [`Location`] in code for debugging purposes.
 	/// 
 	/// # Safety
@@ -34,7 +34,7 @@ pub trait Tier0Allocator {
 	/// 
 	/// The block of memory returned by this function may or may not be initialized.
 	unsafe fn debug_alloc_unaligned(&self, size: usize, loc: Location<'_>) -> *mut u8;
-	/// Like [`realloc_unaligned`](Tier0Alloc::realloc_unaligned),
+	/// Like [`realloc_unaligned`](Tier0Allocator::realloc_unaligned),
 	/// but allows for specifying a [`Location`] in code for debugging purposes.
 	/// 
 	/// # Safety
@@ -44,7 +44,7 @@ pub trait Tier0Allocator {
 	/// - must have been allocated with the implementing allocator, and
 	/// - must not have been freed.
 	unsafe fn debug_realloc_unaligned(&self, mem: *mut u8, new_size: usize, loc: Location<'_>) -> *mut u8;
-	/// Like [`free_unaligned`](Tier0Alloc::free_unaligned),
+	/// Like [`free_unaligned`](Tier0Allocator::free_unaligned),
 	/// but allows for specifying a [`Location`] in code for debugging purposes.
 	/// 
 	/// # Safety
