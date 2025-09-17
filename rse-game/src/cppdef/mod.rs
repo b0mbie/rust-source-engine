@@ -4,8 +4,6 @@ pub type wchar_t = u16;
 
 mod buffer;
 pub use buffer::*;
-mod color;
-pub use color::*;
 mod keyvalues;
 pub use keyvalues::*;
 mod model;
