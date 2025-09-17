@@ -1,6 +1,6 @@
 use ::rse_tier0::{
 	linked::mem::LinkedTier0Allocator,
-	Tier0GlobalAlloc,
+	mem_alloc::Tier0GlobalAlloc,
 };
 
 #[global_allocator]
