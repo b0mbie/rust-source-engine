@@ -15,6 +15,7 @@ link-optional = []
 memtest = []
 
 [dependencies]
+libc.workspace = true
 printf = { git = "https://github.com/b0mbie/printf-rs.git", optional = true }
 rse-cpp.workspace = true
-rse-game.workspace = true
+rse-math.workspace = true

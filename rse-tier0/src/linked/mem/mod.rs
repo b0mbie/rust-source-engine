@@ -30,23 +30,25 @@ fn mem_alloc() -> &'static VtObject<MemAllocVt> {
 
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct LinkedTier0Allocator;
-impl Tier0Allocator for LinkedTier0Allocator {
-	unsafe fn alloc_unaligned(&self, size: usize) -> *mut u8 {
+
+// SAFETY: The linked allocator uses `malloc` and friends, which are the Typical C/C++ Allocator.
+unsafe impl Tier0Allocator for LinkedTier0Allocator {
+	unsafe fn alloc(&self, size: usize) -> *mut u8 {
 		unsafe { with_alloc!(alloc(size)) as _ }
 	}
-	unsafe fn realloc_unaligned(&self, mem: *mut u8, new_size: usize) -> *mut u8 {
+	unsafe fn realloc(&self, mem: *mut u8, new_size: usize) -> *mut u8 {
 		unsafe { with_alloc!(realloc(mem as _, new_size)) as _ }
 	}
-	unsafe fn free_unaligned(&self, mem: *mut u8) {
+	unsafe fn free(&self, mem: *mut u8) {
 		unsafe { with_alloc!(free(mem as _)) }
 	}
-	unsafe fn debug_alloc_unaligned(&self, size: usize, loc: Location<'_>) -> *mut u8 {
+	unsafe fn debug_alloc(&self, size: usize, loc: Location<'_>) -> *mut u8 {
 		unsafe { with_alloc!(debug_alloc(size, loc.filename.as_ptr(), loc.line)) as _ }
 	}
-	unsafe fn debug_realloc_unaligned(&self, mem: *mut u8, new_size: usize, loc: Location<'_>) -> *mut u8 {
+	unsafe fn debug_realloc(&self, mem: *mut u8, new_size: usize, loc: Location<'_>) -> *mut u8 {
 		unsafe { with_alloc!(debug_realloc(mem as _, new_size, loc.filename.as_ptr(), loc.line)) as _ }
 	}
-	unsafe fn debug_free_unaligned(&self, mem: *mut u8, loc: Location<'_>) {
+	unsafe fn debug_free(&self, mem: *mut u8, loc: Location<'_>) {
 		unsafe { with_alloc!(debug_free(mem as _, loc.filename.as_ptr(), loc.line)) }
 	}
 	unsafe fn size_of(&self, mem: *mut u8) -> usize {

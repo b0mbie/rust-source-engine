@@ -1,10 +1,11 @@
-#![no_std]
+// #![no_std]
 
 extern crate alloc;
 
-pub use ::rse_game::cppdef::Color;
+pub use ::rse_math::Color;
 
 pub mod fmt_adapters;
+pub mod mem_alloc;
 
 mod cmd;
 pub use cmd::*;
@@ -14,8 +15,6 @@ mod level;
 pub use level::*;
 mod mem;
 pub use mem::*;
-mod mem_alloc;
-pub use mem_alloc::*;
 mod spew;
 pub use spew::*;
 

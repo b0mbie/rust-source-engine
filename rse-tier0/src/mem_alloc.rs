@@ -6,48 +6,78 @@ use ::core::{
 	ptr::null_mut,
 };
 
-use crate::Tier0Allocator;
+use crate::{
+	Tier0Allocator, TIER0_MIN_ALIGN,
+};
+
+macro_rules! check_aligned {
+	($method:literal; $align:expr, $ptr:expr) => {{
+		let ptr = $ptr;
+		debug_assert_eq!(
+			ptr.align_offset($align), 0,
+			concat!(
+				"safety invariant for `Tier0Allocator` was not upheld: ",
+				"call to '", $method, "' returned unaligned pointer",
+			),
+		);
+		ptr
+	}};
+}
+
+pub unsafe fn alloc<A: ?Sized + Tier0Allocator>(alloc: &A, layout: Layout) -> *mut u8 {
+	let align = layout.align();
+	if align <= TIER0_MIN_ALIGN {
+		return unsafe { check_aligned!("alloc"; align, alloc.alloc(layout.size())) }
+	}
+
+	let allocated_size = allocated_size(&layout);
+	let result = unsafe { alloc.alloc(allocated_size) };
+	if result.is_null() {
+		return null_mut()
+	}
+
+	unsafe { aligned_ptr(result, layout) }
+}
+
+pub unsafe fn realloc<A: ?Sized + Tier0Allocator>(alloc: &A, ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8 {
+	let align = layout.align();
+	if align <= TIER0_MIN_ALIGN {
+		return unsafe { check_aligned!("realloc"; align, alloc.realloc(ptr, new_size)) }
+	}
+
+	let layout = unsafe { Layout::from_size_align_unchecked(new_size, layout.align()) };
+	let allocated_size = allocated_size(&layout);
+	let result = unsafe { alloc.realloc(unaligned_ptr(ptr, layout), allocated_size) };
+	if result.is_null() {
+		return null_mut()
+	}
+	
+	unsafe { aligned_ptr(result, layout) }
+}
+
+pub unsafe fn dealloc<A: ?Sized + Tier0Allocator>(alloc: &A, ptr: *mut u8, layout: Layout) {
+	if layout.align() <= TIER0_MIN_ALIGN {
+		return unsafe { alloc.free(ptr) }
+	}
+
+	unsafe {
+		let ptr = unaligned_ptr(ptr, layout);
+		alloc.free(ptr)
+	}
+}
 
 /// Wrapper for [`Tier0Allocator`] unaligned allocators to implement [`GlobalAlloc`].
 #[repr(transparent)]
 pub struct Tier0GlobalAlloc<A: ?Sized + Tier0Allocator>(pub A);
 unsafe impl<A: ?Sized + Tier0Allocator> GlobalAlloc for Tier0GlobalAlloc<A> {
 	unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-		if layout.align() == 1 {
-			unsafe { return self.0.alloc_unaligned(layout.size()) }
-		}
-
-		let allocated_size = allocated_size(&layout);
-		let result = unsafe { self.0.alloc_unaligned(allocated_size) };
-		if result.is_null() {
-			return null_mut()
-		}
-
-		unsafe { aligned_ptr(result, layout) }
+		unsafe { alloc(&self.0, layout) }
 	}
 	unsafe fn realloc(&self, ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8 {
-		if layout.align() == 1 {
-			unsafe { return self.0.realloc_unaligned(ptr, new_size) }
-		}
-
-		let layout = unsafe { Layout::from_size_align_unchecked(new_size, layout.align()) };
-		let allocated_size = allocated_size(&layout);
-		let result = unsafe { self.0.realloc_unaligned(unaligned_ptr(ptr, layout), allocated_size) };
-		if result.is_null() {
-			return null_mut()
-		}
-		
-		unsafe { aligned_ptr(result, layout) }
+		unsafe { realloc(&self.0, ptr, layout, new_size) }
 	}
 	unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
-		if layout.align() == 1 {
-			unsafe { return self.0.free_unaligned(ptr) }
-		}
-
-		unsafe {
-			let ptr = unaligned_ptr(ptr, layout);
-			self.0.free_unaligned(ptr)
-		}
+		unsafe { dealloc(&self.0, ptr, layout) }
 	}
 }
 
