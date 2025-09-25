@@ -5,6 +5,15 @@ edition = "2024"
 authors.workspace = true
 
 [features]
-xbox = []
+default = ["tier0"]
+tier0 = ["dep:rse-tier0"]
+xbox360 = []
 
 [dependencies]
+rse-cpp.workspace = true
+
+[dependencies.rse-tier0]
+path = "../rse-tier0"
+optional = true
+default-features = false
+features = ["link-dll"]

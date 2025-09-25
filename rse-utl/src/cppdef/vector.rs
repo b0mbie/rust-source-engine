@@ -9,7 +9,7 @@ pub struct UtlVector<T, A = UtlMemory<T>> {
 	pub memory: A,
 	/// Number of initialized elements in this vector.
 	pub size: c_int,
+	#[cfg(not(feature = "xbox360"))]
 	/// Field for easier access to the elements through a debugger.
-	#[cfg(not(feature = "xbox"))]
 	pub elements: *mut T,
 }
