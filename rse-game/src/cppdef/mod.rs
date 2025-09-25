@@ -4,6 +4,8 @@ pub type wchar_t = u16;
 
 mod buffer;
 pub use buffer::*;
+mod global_vars;
+pub use global_vars::*;
 mod keyvalues;
 pub use keyvalues::*;
 mod model;
