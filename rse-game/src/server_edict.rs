@@ -7,7 +7,6 @@ pub use crate::cppdef::entities::EdictIndex;
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct ServerEdict(edict_t);
-
 impl ServerEdict {
 	/// # Safety
 	/// `c_edict` must exist in-game.
@@ -20,6 +19,16 @@ impl ServerEdict {
 	pub const unsafe fn from_c_edict_mut(c_edict: &mut edict_t) -> &mut Self {
 		unsafe { &mut *(c_edict as *mut _ as *mut Self) }
 	}
+
+	pub const fn as_ptr(&self) -> *const edict_t {
+		self as *const _ as *const _
+	}
+
+	pub const fn as_mut_ptr(&mut self) -> *mut edict_t {
+		self as *mut _ as *mut _
+	}
+
+	::rse_cpp::transparent_wrapper_inner_impls!(ServerEdict for edict_t as "edict_t");
 
 	pub const fn index(&self) -> EdictIndex {
 		self.0.base_edict.edict_index
