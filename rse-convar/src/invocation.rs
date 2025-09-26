@@ -10,14 +10,18 @@ use ::core::{
 };
 
 use crate::cppdef::{
-	Command as CCommand, COMMAND_MAX_LENGTH,
+	Command, COMMAND_MAX_LENGTH,
 };
 
 ::rse_cpp::transparent_wrapper! {
-	pub struct Command for CCommand as "Command";
+	/// Transparent wrapper for a parsed command invocation (`CCommand`).
+	/// 
+	/// # Layout
+	/// This type has the exact same layout and ABI as [`Command`].
+	pub struct Invocation for Command as "Command";
 }
 
-impl Command {
+impl Invocation {
 	pub const MAX_COMMAND_LENGTH: usize = COMMAND_MAX_LENGTH - 1;
 	
 	pub const fn n_args(&self) -> usize {

@@ -4,7 +4,7 @@ use ::core::{
 	hint::unreachable_unchecked,
 	mem::replace,
 };
-use ::rse_convar::Command;
+use ::rse_convar::Invocation;
 use ::rse_game::ServerEdict;
 use ::rse_game_interfaces::InterfaceFactories;
 
@@ -154,7 +154,7 @@ impl<P: Plugin> Plugin for PluginLoader<P> {
 			name: &CStr, address: &CStr,
 			reject_reason: RejectReason<'_>,
 		) -> ClientConnect;
-		fn client_command(&mut self, entity: &mut ServerEdict, command: &Command) -> PluginResult;
+		fn client_command(&mut self, entity: &mut ServerEdict, invocation: &Invocation) -> PluginResult;
 		fn network_id_validated(&mut self, user_name: &CStr, network_id: &CStr) -> PluginResult;
 		fn on_query_cvar_value_finished(
 			&mut self,

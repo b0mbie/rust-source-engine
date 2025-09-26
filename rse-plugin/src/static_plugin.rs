@@ -11,7 +11,7 @@ use ::rse_cpp::{
 };
 use ::rse_convar::{
 	cppdef::Command as CCommand,
-	Command,
+	Invocation,
 };
 use ::rse_game::{
 	cppdef::entities::edict_t,
@@ -226,7 +226,7 @@ where
 		}
 		fn client_command(entity: *mut edict_t, args: RefConst<CCommand>) -> PluginResult {
 			let entity = unsafe { ServerEdict::from_c_edict_mut(&mut *entity) };
-			let args = unsafe { Command::from_ptr(args.as_ptr()) };
+			let args = unsafe { Invocation::from_ptr(args.as_ptr()) };
 			this_to_self!(mut this).inner.client_command(entity, args)
 		}
 		fn network_id_validated(user_name: *const c_char, network_id: *const c_char) -> PluginResult {

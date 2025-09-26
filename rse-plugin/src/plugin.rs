@@ -1,5 +1,5 @@
 use ::core::ffi::CStr;
-use ::rse_convar::Command;
+use ::rse_convar::Invocation;
 use ::rse_game::ServerEdict;
 
 use crate::{
@@ -70,9 +70,9 @@ pub trait Plugin {
 		let _ = reject_reason;
 		ClientConnect::Allow
 	}
-	fn client_command(&mut self, entity: &mut ServerEdict, command: &Command) -> PluginResult {
+	fn client_command(&mut self, entity: &mut ServerEdict, invocation: &Invocation) -> PluginResult {
 		let _ = entity;
-		let _ = command;
+		let _ = invocation;
 		PluginResult::Continue
 	}
 	fn network_id_validated(&mut self, user_name: &CStr, network_id: &CStr) -> PluginResult {
