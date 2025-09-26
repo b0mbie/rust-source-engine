@@ -3,17 +3,18 @@ use ::core::{
 		CStr, c_char, c_int,
 	},
 	mem::size_of,
+	ptr::NonNull,
 	slice::from_raw_parts_mut as slice_from_raw_parts_mut,
 };
 use ::rse_cpp::{
-	RefConst, VtObjectMut, new_vtable_self, this_to_self,
+	RefConst, VtObjectPtr, new_vtable_self, this_to_self,
 };
 use ::rse_convar::{
 	cppdef::Command as CCommand,
 	Command,
 };
 use ::rse_game::{
-	cppdef::entities::Edict,
+	cppdef::entities::edict_t,
 	ServerEdict,
 };
 use ::rse_game_interfaces::InterfaceFactories;
@@ -64,7 +65,7 @@ pub trait StaticPlugin: Plugin {
 /// C++ object that implements `IServerPluginCallbacks` delegating calls to a [`StaticPlugin`].
 #[repr(C)]
 pub struct PluginObject<T> {
-	vtable: *mut ServerPluginCallbacksVt,
+	vtable: NonNull<ServerPluginCallbacksVt>,
 	inner: T,
 }
 
@@ -92,7 +93,7 @@ where
 {
 	pub const fn new(inner: T) -> Self {
 		Self {
-			vtable: Self::VTABLE as *const _ as *mut _,
+			vtable: unsafe { NonNull::new_unchecked(Self::VTABLE as *const _ as *mut _) },
 			inner,
 		}
 	}
@@ -129,7 +130,7 @@ where
 	});
 
 	::rse_cpp::vtable_methods! {
-		this: VtObjectMut<ServerPluginCallbacksVt>;
+		this: VtObjectPtr<ServerPluginCallbacksVt>;
 		fn load(interface_factory: CreateInterfaceFn, game_server_factory: CreateInterfaceFn) -> bool {
 			let factories = InterfaceFactories::new(interface_factory, game_server_factory);
 			unsafe { this_to_self!(mut this).inner.load(factories) }
@@ -150,7 +151,7 @@ where
 			let map_name = unsafe { CStr::from_ptr(map_name) };
 			this_to_self!(mut this).inner.level_init(map_name)
 		}
-		fn server_activate(edict_list: *mut Edict, edict_count: c_int, client_max: ClientIndex) {
+		fn server_activate(edict_list: *mut edict_t, edict_count: c_int, client_max: ClientIndex) {
 			// SAFETY: `Edict` is a transparent wrapper around `Edict`.
 			let edicts = unsafe {
 				slice_from_raw_parts_mut(edict_list as *mut ServerEdict, edict_count as _)
@@ -163,15 +164,15 @@ where
 		fn level_shutdown() {
 			this_to_self!(mut this).inner.level_shutdown()
 		}
-		fn client_active(entity: *mut Edict) {
+		fn client_active(entity: *mut edict_t) {
 			let entity = unsafe { ServerEdict::from_c_edict_mut(&mut *entity) };
 			this_to_self!(mut this).inner.client_active(entity)
 		}
-		fn client_disconnect(entity: *mut Edict) {
+		fn client_disconnect(entity: *mut edict_t) {
 			let entity = unsafe { ServerEdict::from_c_edict_mut(&mut *entity) };
 			this_to_self!(mut this).inner.client_disconnect(entity)
 		}
-		fn client_put_in_server(entity: *mut Edict, player_name: *const c_char) {
+		fn client_put_in_server(entity: *mut edict_t, player_name: *const c_char) {
 			let entity = unsafe { ServerEdict::from_c_edict_mut(&mut *entity) };
 			let player_name = unsafe { CStr::from_ptr(player_name) };
 			this_to_self!(mut this).inner.client_put_in_server(entity, player_name)
@@ -179,13 +180,13 @@ where
 		fn set_command_client(index: c_int) {
 			this_to_self!(mut this).inner.set_command_client(index)
 		}
-		fn client_settings_changed(edict: *mut Edict) {
+		fn client_settings_changed(edict: *mut edict_t) {
 			let edict = unsafe { ServerEdict::from_c_edict_mut(&mut *edict) };
 			this_to_self!(mut this).inner.client_settings_changed(edict)
 		}
 		fn client_connect(
 			out_allow_connect: *mut bool,
-			entity: *mut Edict,
+			entity: *mut edict_t,
 			name: *const c_char, address: *const c_char,
 			out_reject: *mut c_char, out_reject_len: c_int,
 		) -> PluginResult {
@@ -223,7 +224,7 @@ where
 				}
 			}
 		}
-		fn client_command(entity: *mut Edict, args: RefConst<CCommand>) -> PluginResult {
+		fn client_command(entity: *mut edict_t, args: RefConst<CCommand>) -> PluginResult {
 			let entity = unsafe { ServerEdict::from_c_edict_mut(&mut *entity) };
 			let args = unsafe { Command::from_ptr(args.as_ptr()) };
 			this_to_self!(mut this).inner.client_command(entity, args)
@@ -235,7 +236,7 @@ where
 		}
 		fn on_query_cvar_value_finished(
 			cookie: QueryCvarCookie,
-			player_entity: *mut Edict,
+			player_entity: *mut edict_t,
 			status: QueryCvarValueStatus,
 			cvar_name: *const c_char, cvar_value: *const c_char,
 		) {
@@ -247,11 +248,11 @@ where
 				cvar_name, cvar_value,
 			)
 		}
-		fn on_edict_allocated(edict: *mut Edict) {
+		fn on_edict_allocated(edict: *mut edict_t) {
 			let edict = unsafe { ServerEdict::from_c_edict_mut(&mut *edict) };
 			this_to_self!(mut this).inner.on_edict_allocated(edict)
 		}
-		fn on_edict_freed(edict: *const Edict) {
+		fn on_edict_freed(edict: *const edict_t) {
 			let edict = unsafe { ServerEdict::from_c_edict(&*edict) };
 			this_to_self!(mut this).inner.on_edict_freed(edict)
 		}

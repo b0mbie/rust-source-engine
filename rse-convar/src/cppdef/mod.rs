@@ -1,5 +1,8 @@
-use ::core::ffi::{
-	c_char, c_float, c_int,
+use ::core::{
+	ffi::{
+		c_char, c_float, c_int,
+	},
+	ptr::NonNull,
 };
 use ::rse_cpp::{
 	VtObjectPtr, vtable,
@@ -18,7 +21,7 @@ pub mod flags;
 #[derive(Debug)]
 #[repr(C)]
 pub struct ConCommandBase {
-	pub vtable: *mut ConCommandBaseVt,
+	pub vtable: NonNull<ConCommandBaseVt>,
 	pub ext: ConCommandBaseExt,
 }
 

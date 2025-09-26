@@ -1,5 +1,6 @@
+use ::core::ptr::NonNull;
 use ::rse_cpp::{
-	VtObjectMut, new_vtable_self, this_to_self,
+	VtObjectPtr, VtObjectMut, new_vtable_self, this_to_self,
 	VtObject,
 };
 
@@ -28,7 +29,7 @@ pub trait RawEventListener {
 
 #[repr(C)]
 pub struct EventListenerObject<T> {
-	vtable: *mut GameEventListener2Vt,
+	vtable: NonNull<GameEventListener2Vt>,
 	inner: T,
 }
 
@@ -47,7 +48,7 @@ where
 {
 	pub const fn new(inner: T) -> Self {
 		Self {
-			vtable: Self::VTABLE as *const _ as *mut _,
+			vtable: unsafe { NonNull::new_unchecked(Self::VTABLE as *const _ as *mut _) },
 			inner,
 		}
 	}
@@ -68,7 +69,7 @@ where
 	});
 
 	::rse_cpp::vtable_methods! {
-		this: VtObjectMut<GameEventListener2Vt>;
+		this: VtObjectPtr<GameEventListener2Vt>;
 		fn destructor() {
 			unsafe { this.cast::<Self>().drop_in_place() }
 		}

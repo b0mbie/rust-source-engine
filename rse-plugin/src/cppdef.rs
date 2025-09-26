@@ -7,7 +7,7 @@ use ::rse_cpp::{
 use ::rse_interface::CreateInterfaceFn;
 use ::rse_convar::cppdef::Command;
 use ::rse_game::cppdef::{
-	entities::Edict,
+	entities::edict_t,
 	KeyValues,
 };
 
@@ -63,30 +63,30 @@ vtable! {
 		pub fn unpause();
 		pub fn get_plugin_description() -> *const c_char;
 		pub fn level_init(map_name: *const c_char);
-		pub fn server_activate(edict_list: *mut Edict, edict_count: c_int, client_max: ClientIndex);
+		pub fn server_activate(edict_list: *mut edict_t, edict_count: c_int, client_max: ClientIndex);
 		pub fn game_frame(simulating: bool);
 		pub fn level_shutdown();
-		pub fn client_active(entity: *mut Edict);
-		pub fn client_disconnect(entity: *mut Edict);
-		pub fn client_put_in_server(entity: *mut Edict, player_name: *const c_char);
+		pub fn client_active(entity: *mut edict_t);
+		pub fn client_disconnect(entity: *mut edict_t);
+		pub fn client_put_in_server(entity: *mut edict_t, player_name: *const c_char);
 		pub fn set_command_client(index: ClientIndex);
-		pub fn client_settings_changed(edict: *mut Edict);
+		pub fn client_settings_changed(edict: *mut edict_t);
 		pub fn client_connect(
 			out_allow_connect: *mut bool,
-			entity: *mut Edict,
+			entity: *mut edict_t,
 			name: *const c_char, address: *const c_char,
 			out_reject: *mut c_char, out_reject_len: c_int,
 		) -> PluginResult;
-		pub fn client_command(entity: *mut Edict, args: RefConst<Command>) -> PluginResult;
+		pub fn client_command(entity: *mut edict_t, args: RefConst<Command>) -> PluginResult;
 		pub fn network_id_validated(user_name: *const c_char, network_id: *const c_char) -> PluginResult;
 		pub fn on_query_cvar_value_finished(
 			cookie: QueryCvarCookie,
-			player_entity: *mut Edict,
+			player_entity: *mut edict_t,
 			status: QueryCvarValueStatus,
 			cvar_name: *const c_char, cvar_value: *const c_char,
 		);
-		pub fn on_edict_allocated(edict: *mut Edict);
-		pub fn on_edict_freed(edict: *const Edict);
+		pub fn on_edict_allocated(edict: *mut edict_t);
+		pub fn on_edict_freed(edict: *const edict_t);
 	}
 }
 
@@ -110,11 +110,11 @@ pub enum DialogType {
 vtable! {
 	pub ServerPluginHelpersVt {
 		pub fn create_message(
-			entity: *mut Edict,
+			entity: *mut edict_t,
 			dialog_type: DialogType, data: *mut KeyValues,
 			plugin: VtObjectMut<ServerPluginCallbacksVt>,
 		);
-		pub fn client_command(entity: *mut Edict, cmd: *const c_char);
-		pub fn start_query_cvar_value(entity: *mut Edict, name: *const c_char) -> QueryCvarCookie;
+		pub fn client_command(entity: *mut edict_t, cmd: *const c_char);
+		pub fn start_query_cvar_value(entity: *mut edict_t, name: *const c_char) -> QueryCvarCookie;
 	}
 }

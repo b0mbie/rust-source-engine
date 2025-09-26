@@ -7,7 +7,7 @@ use ::rse_cpp::{
 use ::rse_game::cppdef::{
 	datatable::SendTable,
 	entities::{
-		Edict, ServerClass, PvsInfo,
+		edict_t, ServerClass, PvsInfo,
 		CollideableVt,
 	},
 	KeyValues,
@@ -129,14 +129,14 @@ vtable! {
 			mins: RefConst<Vector>, maxs: RefConst<Vector>,
 			check_pvs: *const c_uchar, check_pvs_size: c_int,
 		) -> bool;
-		pub fn get_player_user_id(e: *const Edict) -> c_int;
-		pub fn get_player_network_id_string(e: *const Edict) -> *const c_char;
+		pub fn get_player_user_id(e: *const edict_t) -> c_int;
+		pub fn get_player_network_id_string(e: *const edict_t) -> *const c_char;
 		pub fn get_entity_count() -> c_int;
-		pub fn index_of_edict(edict: *const Edict) -> c_int;
-		pub fn entity_of_ent_index(ent_index: c_int) -> *mut Edict;
+		pub fn index_of_edict(edict: *const edict_t) -> c_int;
+		pub fn entity_of_ent_index(ent_index: c_int) -> *mut edict_t;
 		pub fn get_player_net_info(player_index: c_int) -> VtObjectMut<NetChannelInfoVt>;
-		pub fn create_edict(force_edict_index: c_int) -> *mut Edict;
-		pub fn remove_edict(e: *mut Edict);
+		pub fn create_edict(force_edict_index: c_int) -> *mut edict_t;
+		pub fn remove_edict(e: *mut edict_t);
 		pub fn alloc_ent_private_data(cb: c_long) -> *mut c_void;
 		pub fn free_ent_private_data(entity: *mut c_void);
 		pub fn save_alloc_memory(num: usize, size: usize) -> *mut c_void;
@@ -148,7 +148,7 @@ vtable! {
 			flags: c_int, pitch: c_int, delay: c_float,
 		);
 		pub fn fade_client_volume(
-			edict: *const Edict,
+			edict: *const edict_t,
 			fade_percent: c_float, fade_out_seconds: c_float, hold_time: c_float, fade_in_seconds: c_float,
 		);
 		pub fn sentence_group_pick(group_index: c_int, out_name: *mut c_char, name_buf_len: c_int) -> c_int;
@@ -164,7 +164,7 @@ vtable! {
 		pub fn sentence_length(sentence_index: c_int) -> c_float;
 		pub fn server_command(str: *const c_char);
 		pub fn server_execute();
-		pub fn client_command(edict: *mut Edict, fmt: *const c_char, ...);
+		pub fn client_command(edict: *mut edict_t, fmt: *const c_char, ...);
 		pub fn light_style(style: c_int, val: *const c_char);
 		pub fn static_decal(
 			origin_in_entity_space: RefConst<Vector>,
@@ -177,16 +177,16 @@ vtable! {
 		pub fn entity_message_begin(ent_index: c_int, ent_class: *mut ServerClass, reliable: bool) -> *mut BfWrite;
 		pub fn user_message_begin(filter: VtObjectMut<RecipientFilterVt>, msg_type: c_int) -> *mut BfWrite;
 		pub fn message_end();
-		pub fn client_printf(edict: *mut Edict, msg: *const c_char);
+		pub fn client_printf(edict: *mut edict_t, msg: *const c_char);
 		pub fn con_n_printf(pos: c_int, fmt: *const c_char, ...);
 		pub fn con_nx_printf(info: *const ConNPrint, fmt: *const c_char, ...);
-		pub fn set_view(client: *const Edict, view_ent: *const Edict);
+		pub fn set_view(client: *const edict_t, view_ent: *const edict_t);
 		pub fn time() -> c_float;
-		pub fn crosshair_angle(client: *const Edict, pitch: c_float, yaw: c_float);
+		pub fn crosshair_angle(client: *const edict_t, pitch: c_float, yaw: c_float);
 		pub fn get_game_dir(out_game_dir: *mut c_char, max_length: c_int);
 		pub fn compare_file_time(filename1: *const c_char, filename2: *const c_char, out_compare: *mut c_int) -> c_int;
 		pub fn lock_network_string_tables(lock: bool) -> bool;
-		pub fn create_fake_client(net_name: *const c_char) -> *mut Edict;
+		pub fn create_fake_client(net_name: *const c_char) -> *mut edict_t;
 		pub fn get_client_convar_value(client_index: c_int, name: *const c_char) -> *const c_char;
 		pub fn parse_file(data: *const c_char, out_token: *mut c_char, max_len: c_int) -> *const c_char;
 		pub fn copy_file(source: *const c_char, destination: *const c_char) -> bool;
@@ -208,13 +208,13 @@ vtable! {
 		pub fn get_map_entities_string() -> *const c_char;
 		pub fn text_message_get(name: *const c_char) -> *mut ClientTextMessage;
 		pub fn log_print(msg: *const c_char);
-		pub fn build_entity_cluster_list(edict: *mut Edict, out_pvs_info: *mut PvsInfo);
+		pub fn build_entity_cluster_list(edict: *mut edict_t, out_pvs_info: *mut PvsInfo);
 		pub fn solid_moved(
-			solid_ent: *mut Edict, solid_collide: VtObjectMut<CollideableVt>,
+			solid_ent: *mut edict_t, solid_collide: VtObjectMut<CollideableVt>,
 			prev_abs_origin: *const Vector,
 			test_surrounding_bounds_only: bool,
 		);
-		pub fn trigger_moved(trigger_ent: *mut Edict, test_surrounding_bounds_only: bool);
+		pub fn trigger_moved(trigger_ent: *mut edict_t, test_surrounding_bounds_only: bool);
 		pub fn create_spatial_partition(
 			world_min: RefConst<Vector>, world_max: RefConst<Vector>,
 		) -> VtObjectMut<SpatialPartitionVt>;
@@ -225,16 +225,16 @@ vtable! {
 		pub fn force_exact_file(s: *const c_char);
 		pub fn force_model_bounds(s: *const c_char, mins: RefConst<Vector>, maxs: RefConst<Vector>);
 		pub fn clear_save_dir_after_client_load();
-		pub fn set_fake_client_convar_value(entity: *mut Edict, cvar: *const c_char, value: *const c_char);
+		pub fn set_fake_client_convar_value(entity: *mut edict_t, cvar: *const c_char, value: *const c_char);
 		pub fn force_simple_material(s: *const c_char);
 		pub fn is_in_commentary_mode() -> bool;
 		pub fn set_area_portal_states(portal_numbers: *const c_int, is_open: *const c_int, n_portals: c_int);
 		pub fn notify_edict_flags_change(edict: c_int);
-		pub fn get_prev_check_transmit_info(player_edict: *mut Edict) -> *const CheckTransmitInfo;
+		pub fn get_prev_check_transmit_info(player_edict: *mut edict_t) -> *const CheckTransmitInfo;
 		pub fn get_shared_edict_change_info() -> *mut SharedEdictChangeInfo;
 		pub fn allow_immediate_edict_reuse();
 		pub fn is_internal_build() -> bool;
-		pub fn get_change_accessor(edict: *const Edict) -> VtObjectMut<ChangeInfoAccessorVt>;
+		pub fn get_change_accessor(edict: *const edict_t) -> VtObjectMut<ChangeInfoAccessorVt>;
 		pub fn get_most_recently_load_file_name() -> *const c_char;
 		pub fn get_save_file_name() -> *const c_char;
 		pub fn multiplayer_end_game();
@@ -244,25 +244,25 @@ vtable! {
 		pub fn get_achievement_mgr() -> VtObjectMut<AchievementMgrVt>;
 		pub fn get_app_id() -> c_int;
 		pub fn is_low_violence() -> bool;
-		pub fn start_query_cvar_value(player_entity: *mut Edict, name: *const c_char);
+		pub fn start_query_cvar_value(player_entity: *mut edict_t, name: *const c_char);
 		pub fn insert_server_command(str: *const c_char);
 		pub fn get_player_info(ent_num: c_int, out_pinfo: *mut PlayerInfo) -> bool;
-		pub fn is_client_fully_authenticated(edict: *mut Edict) -> bool;
+		pub fn is_client_fully_authenticated(edict: *mut edict_t) -> bool;
 		pub fn set_dedicated_server_benchmark_mode(benchmark_mode: bool);
 		pub fn set_gamestats_data(gamestats_data: *mut GamestatsData);
 		pub fn get_gamestats_data() -> *mut GamestatsData;
-		pub fn get_client_steam_id(player_edict: *mut Edict) -> *const SteamId;
+		pub fn get_client_steam_id(player_edict: *mut edict_t) -> *const SteamId;
 		pub fn get_game_server_steam_id() -> *const SteamId;
-		pub fn client_command_key_values(edict: *mut Edict, command: *mut KeyValues);
+		pub fn client_command_key_values(edict: *mut edict_t, command: *mut KeyValues);
 		pub fn get_client_steam_id_by_player_index(ent_num: c_int) -> *const SteamId;
 		pub fn get_cluster_count() -> c_int;
 		pub fn get_all_cluster_bounds(bbox_list: *mut Bbox, max_bbox: c_int) -> c_int;
-		pub fn create_fake_client_ex(net_name: *const c_char, report_fake_client: bool) -> *mut Edict;
+		pub fn create_fake_client_ex(net_name: *const c_char, report_fake_client: bool) -> *mut edict_t;
 		pub fn get_server_version() -> c_int;
 		pub fn get_server_time() -> c_float;
 		pub fn get_iserver() -> VtObjectMut<ServerVt>;
-		pub fn is_player_name_locked(edict: *const Edict) -> bool;
-		pub fn can_player_change_name(edict: *const Edict) -> bool;
+		pub fn is_player_name_locked(edict: *const edict_t) -> bool;
+		pub fn can_player_change_name(edict: *const edict_t) -> bool;
 		pub fn find_map(in_out_map_name: *mut c_char, map_name_max: c_int) -> FindMapResult;
 		pub fn set_paused_forced(paused: bool, duration: c_float);
 	}

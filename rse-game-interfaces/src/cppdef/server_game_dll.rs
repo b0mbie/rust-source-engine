@@ -1,7 +1,9 @@
 use ::core::ffi::{
 	CStr, c_char, c_float, c_int,
 };
-use ::rse_game::cppdef::entities::{Edict, ServerClass};
+use ::rse_game::cppdef::entities::{
+	edict_t, ServerClass,
+};
 use ::rse_interface::CreateInterfaceFn;
 
 // TODO: `CGlobalVars`.
@@ -29,7 +31,7 @@ pub type TickInterval = c_float;
 			old_level: *const c_char, landmark_name: *const c_char,
 			load_game: bool, background: bool,
 		) -> bool;
-		pub fn server_activate(edict_list: *mut Edict, edict_count: c_int, client_max: c_int);
+		pub fn server_activate(edict_list: *mut edict_t, edict_count: c_int, client_max: c_int);
 		pub fn game_frame(simulating: bool);
 		pub fn pre_client_update(simulating: bool);
 		pub fn level_shutdown();

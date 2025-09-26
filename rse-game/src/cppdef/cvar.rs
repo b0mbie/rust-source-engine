@@ -6,7 +6,7 @@ use ::rse_convar::cppdef::{
 	CvarDllIdentifier,
 };
 use ::rse_cpp::{
-	vtable, RefConst, VtObjectMut, VtObjectRef,
+	vtable, RefConst, VtObjectMut, VtObjectRef, VtObjectPtr,
 };
 use ::rse_interface::cppdef::app_system::AppSystemVt;
 use ::rse_math::Color;
@@ -17,7 +17,7 @@ pub type FnChangeCallback = unsafe extern "C" fn(
 
 pub const CVAR_INTERFACE_VERSION: &CStr = c"VEngineCvar004";
 vtable! {
-	pub CvarVtBase for VtObjectMut<CvarVt> {
+	pub CvarVtBase for VtObjectPtr<CvarVt> {
 		pub fn allocate_dll_identifier() -> CvarDllIdentifier;
 		pub fn register_con_command(command_base: VtObjectMut<ConCommandBaseVt>);
 		pub fn unregister_con_command(command_base: VtObjectMut<ConCommandBaseVt>);
@@ -66,7 +66,7 @@ vtable! {
 
 pub const CVAR_QUERY_INTERFACE_VERSION: &CStr = c"VCvarQuery001";
 vtable! {
-	pub CvarQueryVtBase for VtObjectMut<CvarQueryVt> {
+	pub CvarQueryVtBase for VtObjectPtr<CvarQueryVt> {
 		pub fn are_convars_linkable(child: VtObjectRef<ConVarVt>, parent: VtObjectRef<ConVarVt>) -> bool;
 	}
 }

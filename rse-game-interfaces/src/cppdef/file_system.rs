@@ -8,7 +8,7 @@ use ::libc::{
 	SEEK_SET, SEEK_CUR, SEEK_END,
 };
 use ::rse_cpp::{
-	vtable, RefMut, RefConst, VtObjectMut,
+	vtable, RefMut, RefConst, VtObjectPtr,
 };
 use ::rse_interface::cppdef::app_system::AppSystemVt;
 use ::rse_utl::cppdef::FileNameHandle;
@@ -28,7 +28,7 @@ pub struct FileSystemVt {
 }
 
 vtable! {
-	pub FileSystemVtBase for VtObjectMut<FileSystemVt> {
+	pub FileSystemVtBase for VtObjectPtr<FileSystemVt> {
 		pub fn is_steam() -> bool;
 		pub fn mount_steam_content(extra_app_id: c_int) -> FileSystemMount;
 

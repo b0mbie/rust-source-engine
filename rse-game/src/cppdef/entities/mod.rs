@@ -2,7 +2,7 @@ use ::core::ffi::{
 	c_char, c_float, c_int, c_short, c_uint, c_ulong, c_ushort, c_void,
 };
 use ::rse_cpp::{
-	vtable, VtObjectMut, RefConst, RefMut,
+	vtable, VtObjectMut, VtObjectPtr, RefConst, RefMut,
 };
 use ::rse_math::{
 	Vector, QAngle, Matrix3x4,
@@ -47,7 +47,8 @@ impl BaseEdict {
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 #[repr(C)]
-pub struct Edict {
+#[allow(non_camel_case_types)]
+pub struct edict_t {
 	pub base_edict: BaseEdict,
 	pub free_time: c_float,
 }
@@ -76,7 +77,7 @@ vtable! {
 	pub ServerNetworkableVt {
 		pub fn get_entity_handle() -> VtObjectMut<HandleEntityVt>;
 		pub fn get_server_class() -> *mut ServerClass;
-		pub fn get_edict() -> *mut Edict;
+		pub fn get_edict() -> *mut edict_t;
 		pub fn get_class_name() -> *const c_char;
 		pub fn release();
 		pub fn area_num() -> c_int;
@@ -96,7 +97,7 @@ pub struct ServerEntityVt {
 }
 
 vtable! {
-	pub ServerEntityVtBase for VtObjectMut<ServerEntityVt> {
+	pub ServerEntityVtBase for VtObjectPtr<ServerEntityVt> {
 		pub fn destructor();
 		#[cfg(not(windows))]
 		pub fn destructor_2();
@@ -113,7 +114,7 @@ pub struct ServerUnknownVt {
 }
 
 vtable! {
-	pub ServerUnknownVtBase for VtObjectMut<ServerUnknownVt> {
+	pub ServerUnknownVtBase for VtObjectPtr<ServerUnknownVt> {
 		pub fn get_collideable() -> VtObjectMut<CollideableVt>;
 		pub fn get_networkable() -> VtObjectMut<ServerNetworkableVt>;
 		pub fn get_base_entity() -> *mut BaseEntity;
