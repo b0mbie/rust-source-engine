@@ -4,7 +4,9 @@ use ::core::{
 	},
 	fmt,
 	mem::size_of,
-	slice::from_raw_parts as slice_from_raw_parts,
+	slice::{
+		from_raw_parts, from_raw_parts_mut,
+	},
 };
 
 use crate::cppdef::{
@@ -24,20 +26,20 @@ impl Command {
 
 	pub const fn args(&self) -> &[Arg] {
 		unsafe {
-			::core::slice::from_raw_parts(self.0.argv.as_ptr() as *const Arg, self.n_args())
+			from_raw_parts(self.0.argv.as_ptr() as *const Arg, self.n_args())
 		}
 	}
 
 	pub const fn args_mut(&mut self) -> &mut [Arg] {
 		unsafe {
-			::core::slice::from_raw_parts_mut(self.0.argv.as_mut_ptr() as *mut Arg, self.n_args())
+			from_raw_parts_mut(self.0.argv.as_mut_ptr() as *mut Arg, self.n_args())
 		}
 	}
 
 	pub fn arg_string(&self) -> Option<&CStr> {
 		if self.0.argc != 0 {
 			let c_str_bytes = unsafe {
-				slice_from_raw_parts(
+				from_raw_parts(
 					self.0.arg_string_buffer.as_ptr() as *const u8,
 					self.0.arg_string_buffer.len() * size_of::<c_char>() / size_of::<u8>(),
 				)
