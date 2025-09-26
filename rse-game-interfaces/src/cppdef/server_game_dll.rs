@@ -1,13 +1,13 @@
 use ::core::ffi::{
 	CStr, c_char, c_float, c_int,
 };
-use ::rse_game::cppdef::entities::{
-	edict_t, ServerClass,
+use ::rse_game::cppdef::{
+	entities::{
+		edict_t, ServerClass,
+	},
+	GlobalVars,
 };
 use ::rse_interface::CreateInterfaceFn;
-
-// TODO: `CGlobalVars`.
-pub type GlobalVars = ::core::ffi::c_void;
 
 pub const INTERFACEVERSION_SERVERGAMEDLL_VERSION_8: &CStr = c"ServerGameDLL008";
 pub const INTERFACEVERSION_SERVERGAMEDLL_VERSION_9: &CStr = c"ServerGameDLL009";
