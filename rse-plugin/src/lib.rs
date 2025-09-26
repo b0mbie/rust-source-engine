@@ -47,6 +47,8 @@ pub mod prelude {
 			ServerGameDll, ServerGameDllImpl as _,
 			InterfaceFactories,
 			EmitSound,
+			PlayerInfoManager, PlayerInfoManagerImpl,
+			PlayerInfoImpl, PlayerInfo2Impl,
 		},
 		interface::{
 			InterfaceFactory, RawInterfaceFactory,
