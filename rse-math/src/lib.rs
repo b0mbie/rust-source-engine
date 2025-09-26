@@ -8,9 +8,7 @@ mod matrix;
 pub use matrix::*;
 mod plane;
 pub use plane::*;
+mod qangle;
+pub use qangle::*;
 mod vector;
 pub use vector::*;
-
-/// Vector that represents three-dimensional extrinsic Tait-Bryan rotations following the right-hand rule,
-/// offset from the cardinal Z axis.
-pub type QAngle = Vector;
