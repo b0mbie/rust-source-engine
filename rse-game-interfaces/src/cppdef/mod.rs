@@ -4,5 +4,7 @@ mod game_dll_interfaces;
 pub use game_dll_interfaces::*;
 mod game_events;
 pub use game_events::*;
+mod player_info;
+pub use player_info::*;
 mod server_game_dll;
 pub use server_game_dll::*;
