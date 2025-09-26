@@ -2,6 +2,7 @@ use ::core::ffi::c_float;
 
 /// Source Engine 2D vector type.
 #[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
+#[repr(C)]
 pub struct Vector2D {
 	pub x: vec_t,
 	pub y: vec_t,
@@ -10,6 +11,7 @@ pub struct Vector2D {
 /// Source Engine 3D vector type.
 // Cross-referenced with `vector.h` in `mathlib`.
 #[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
+#[repr(C)]
 pub struct Vector {
 	pub x: vec_t,
 	pub y: vec_t,
