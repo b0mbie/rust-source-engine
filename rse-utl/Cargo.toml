@@ -8,6 +8,8 @@ authors.workspace = true
 default = ["tier0"]
 tier0 = ["dep:rse-tier0"]
 xbox360 = []
+doc = ["tier0", "rse-tier0/doc"]
+test = ["rse-tier0/link-optional"]
 
 [dependencies]
 rse-cpp.workspace = true
