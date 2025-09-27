@@ -61,7 +61,7 @@ impl fmt::Display for Variant {
 					let c_str = CStr::from_ptr(string_ptr);
 					for chunk in c_str.to_bytes().utf8_chunks() {
 						f.write_str(chunk.valid())?;
-						for _ in 0..chunk.invalid().len() {
+						if !chunk.invalid().is_empty() {
 							f.write_char(char::REPLACEMENT_CHARACTER)?;
 						}
 					}
