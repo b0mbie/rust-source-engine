@@ -28,7 +28,7 @@ impl ServerEdict {
 		self as *mut _ as *mut _
 	}
 
-	::rse_cpp::transparent_wrapper_inner_impls!(ServerEdict for edict_t as "edict_t");
+	::rse_cpp::transparent_inner_impls!(ServerEdict for edict_t as "edict_t");
 
 	pub const fn index(&self) -> EdictIndex {
 		self.0.base_edict.edict_index
