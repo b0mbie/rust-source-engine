@@ -79,7 +79,7 @@ pub struct ConCommandVt {
 
 vtable! {
 	pub ConCommandVtBase for VtObjectPtr<ConCommandVt> {
-		pub fn auto_complete_suggest(partial: *const c_char, commands: RefConst<UtlVector<UtlString>>);
+		pub fn auto_complete_suggest(partial: *const c_char, commands: RefConst<UtlVector<UtlString>>) -> c_int;
 		pub fn can_auto_complete() -> bool;
 		pub fn dispatch(command: RefConst<Command>);
 	}
