@@ -1,3 +1,5 @@
+mod cvar;
+pub use cvar::*;
 mod file_system;
 pub use file_system::*;
 mod game_dll_interfaces;

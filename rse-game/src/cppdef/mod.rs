@@ -19,7 +19,6 @@ pub use string::*;
 mod trace;
 pub use trace::*;
 
-pub mod cvar;
 pub mod datatable;
 pub mod entities;
 
