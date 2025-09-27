@@ -2,10 +2,8 @@
 
 pub mod cppdef;
 
-pub mod memory;
-pub mod vector;
+mod vector;
+pub use vector::*;
 
-pub use {
-	memory::Memory,
-	vector::Vector,
-};
+pub mod memory;
+pub use memory::Memory;
