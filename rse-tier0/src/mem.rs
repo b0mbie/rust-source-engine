@@ -8,6 +8,10 @@ pub const fn can_be_aligned<T>() -> bool {
 	align_of::<T>() <= TIER0_MIN_ALIGN
 }
 
+pub const fn can_be_allocated<T>() -> bool {
+	size_of::<T>() > 0 && can_be_aligned::<T>()
+}
+
 pub trait Tier0Alloc {
 	type Allocator<'a>: Tier0Allocator where Self: 'a;
 	fn allocator(&self) -> Self::Allocator<'_>;
