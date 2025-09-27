@@ -1,6 +1,15 @@
 #[macro_export]
 macro_rules! transparent_wrapper_impls {
 	($name:ident for $target:ty as $target_name:literal) => {
+		$crate::transparent_ref_impls!($name for $target as $target_name);
+		$crate::transparent_ptr_impls!($name for $target as $target_name);
+		$crate::transparent_inner_impls!($name for $target as $target_name);
+	};
+}
+
+#[macro_export]
+macro_rules! transparent_ref_impls {
+	($name:ident for $target:ty as $target_name:literal) => {
 		/// Returns a mutable reference to a value of type
 		#[doc = concat!("[`", stringify!($name), "`]")]
 		/// given a reference to the inner type.
@@ -14,7 +23,12 @@ macro_rules! transparent_wrapper_impls {
 		pub const fn from_ref(inner: &$target) -> &Self {
 			unsafe { &*(inner as *const $target as *const Self) }
 		}
+	};
+}
 
+#[macro_export]
+macro_rules! transparent_ptr_impls {
+	($name:ident for $target:ty as $target_name:literal) => {
 		/// Returns a mutable reference to a value of type
 		#[doc = concat!("[`", stringify!($name), "`]")]
 		/// given a raw pointer.
@@ -52,8 +66,6 @@ macro_rules! transparent_wrapper_impls {
 		pub const fn as_ptr(&self) -> *const $target {
 			self as *const Self as *const $target
 		}
-
-		$crate::transparent_inner_impls!($name for $target as $target_name);
 	};
 }
 
