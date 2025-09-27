@@ -53,12 +53,12 @@ macro_rules! transparent_wrapper_impls {
 			self as *const Self as *const $target
 		}
 
-		$crate::transparent_wrapper_inner_impls!($name for $target as $target_name);
+		$crate::transparent_inner_impls!($name for $target as $target_name);
 	};
 }
 
 #[macro_export]
-macro_rules! transparent_wrapper_inner_impls {
+macro_rules! transparent_inner_impls {
 	($name:ident for $target:ty as $target_name:literal) => {
 		/// Returns an immutable reference to the inner C++ structure
 		/// given an immutable reference to a value of type
