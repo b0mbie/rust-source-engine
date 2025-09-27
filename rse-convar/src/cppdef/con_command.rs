@@ -113,6 +113,7 @@ pub type CompletionCallbackFn = unsafe extern "C" fn(
 #[repr(C)]
 pub union CompletionCallback {
 	pub function: CompletionCallbackFn,
+	pub interface: Option<VtObjectPtr<CommandCompletionCallbackVt>>,
 	pub not_used: (),
 }
 
@@ -130,6 +131,6 @@ vtable! {
 
 vtable! {
 	pub CommandCompletionCallbackVt {
-		pub fn command_completion_callback(partial: *const c_char, commands: RefConst<UtlVector<UtlString>>);
+		pub fn command_completion_callback(partial: *const c_char, commands: RefConst<UtlVector<UtlString>>) -> c_int;
 	}
 }
