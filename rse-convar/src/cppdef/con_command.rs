@@ -6,7 +6,7 @@ use ::core::{
 	ptr::NonNull,
 };
 use ::rse_cpp::{
-	RefConst, VtObjectPtr, vtable,
+	RefConst, RefMut, VtObjectPtr, vtable,
 	test_bits, with_bits,
 };
 use ::rse_utl::cppdef::{
@@ -141,6 +141,6 @@ vtable! {
 
 vtable! {
 	pub CommandCompletionCallbackVt {
-		pub fn command_completion_callback(partial: *const c_char, commands: RefConst<UtlVector<UtlString>>) -> c_int;
+		pub fn command_completion_callback(partial: *const c_char, commands: RefMut<UtlVector<UtlString>>) -> c_int;
 	}
 }
