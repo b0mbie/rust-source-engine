@@ -105,9 +105,19 @@ impl fmt::Debug for CommandCallback {
 pub const COMMAND_COMPLETION_MAX_ITEMS: usize = 64;
 pub const COMMAND_COMPLETION_ITEM_LENGTH: usize = 64;
 
+/// Type for the output of a command completion callback.
+pub type CompletionArray = [CompletionArrayItem; COMMAND_COMPLETION_MAX_ITEMS];
+
+/// Type for one item of the output of a command completion callback.
+pub type CompletionArrayItem = [c_char; COMMAND_COMPLETION_ITEM_LENGTH];
+
+const _ASSERT_COMPLETION_ARRAY_PTR_IS_THIN: () = {
+	assert!(size_of::<*mut CompletionArray>() == size_of::<*mut ()>(), "`CompletionArray` pointers must be thin");
+};
+
 pub type CompletionCallbackFn = unsafe extern "C" fn(
 	partial: *const c_char,
-	out_commands: *mut [[c_char; COMMAND_COMPLETION_ITEM_LENGTH]; COMMAND_COMPLETION_MAX_ITEMS],
+	out_commands: *mut CompletionArray,
 ) -> c_int;
 
 #[repr(C)]
