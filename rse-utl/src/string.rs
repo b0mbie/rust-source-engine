@@ -61,7 +61,7 @@ impl CString {
 	}
 
 	/// Clears the string, making it empty.
-	#[doc(alias = "purge")]
+	#[doc(alias = "Purge")]
 	pub fn clear(&mut self) {
 		let ptr = self.0.string;
 		if !ptr.is_null() {
