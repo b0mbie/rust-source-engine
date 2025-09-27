@@ -24,6 +24,15 @@ macro_rules! check_aligned {
 	}};
 }
 
+/// Allocates memory as described by the given `layout`,
+/// returning a pointer to the newly-allocated memory,
+/// or null to indicate failure.
+/// 
+/// # Safety
+/// `layout` must have non-zero size.
+/// Attempting to allocate for a zero-sized `layout` may result in undefined behavior.
+/// 
+/// The returned block of memory may or may not be initialized.
 pub unsafe fn alloc<A: ?Sized + Tier0Allocator>(alloc: &A, layout: Layout) -> *mut u8 {
 	let align = layout.align();
 	if align <= TIER0_MIN_ALIGN {
@@ -39,6 +48,22 @@ pub unsafe fn alloc<A: ?Sized + Tier0Allocator>(alloc: &A, layout: Layout) -> *m
 	unsafe { aligned_ptr(result, layout) }
 }
 
+/// Shrinks or grows the block of memory pointed to by `ptr` to the given `new_size` in bytes.
+/// 
+/// The block is described by the given `ptr` and `layout`.
+/// 
+/// If this function returns null,
+/// then ownership of the memory block has not been transferred to this allocator,
+/// and the contents of the memory block are unaltered.
+/// 
+/// # Safety
+/// The caller must ensure that:
+/// - `ptr` is allocated via this allocator,
+/// - `layout` is the same layout that was used to allocate that block of memory,
+/// - `new_size` is greater than zero, and
+/// - `new_size`, when rounded up to the nearest multiple of `layout.align()`,
+///   does not overflow [`isize`]
+///   (i.e. the rounded value must be less than or equal to [`isize::MAX`]).
 pub unsafe fn realloc<A: ?Sized + Tier0Allocator>(alloc: &A, ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8 {
 	let align = layout.align();
 	if align <= TIER0_MIN_ALIGN {
@@ -55,6 +80,12 @@ pub unsafe fn realloc<A: ?Sized + Tier0Allocator>(alloc: &A, ptr: *mut u8, layou
 	unsafe { aligned_ptr(result, layout) }
 }
 
+/// Deallocates the block of memory at the given `ptr` with the given `layout`.
+/// 
+/// # Safety
+/// The caller must ensure that:
+/// - `ptr` is a block of memory currently allocated via this allocator, and
+/// - `layout` is the same layout that was used to allocate that block of memory.
 pub unsafe fn dealloc<A: ?Sized + Tier0Allocator>(alloc: &A, ptr: *mut u8, layout: Layout) {
 	if layout.align() <= TIER0_MIN_ALIGN {
 		return unsafe { alloc.free(ptr) }
