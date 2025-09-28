@@ -1,5 +1,3 @@
-extern crate alloc;
-
 use ::core::{
 	alloc::Layout,
 	cmp::Ordering,
@@ -189,7 +187,7 @@ impl CString {
 		};
 
 		if block.is_null() {
-			alloc::alloc::handle_alloc_error(unsafe {
+			::alloc::alloc::handle_alloc_error(unsafe {
 				Layout::from_size_align_unchecked(alloc_length, 1)
 			});
 		}
