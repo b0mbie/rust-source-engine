@@ -6,7 +6,7 @@ pub use ::cppdvt::*;
 
 mod flag_utils;
 mod transparent_wrappers;
-mod vtable;
+mod vtable_macros;
 
 /// Type of pointers to immutable C++ objects with v-tables (`const IObject *`).
 pub type VtObjectRef<VTable> = VtObjectPtr<VTable>;
