@@ -5,6 +5,7 @@ use ::core::{
 	fmt::{
 		self, Write,
 	},
+	mem::forget,
 	ptr::null_mut,
 	slice::from_raw_parts_mut,
 };
@@ -33,6 +34,15 @@ impl CString {
 		Self(UtlString {
 			string: null_mut(),
 		})
+	}
+
+	/// Consumes a [`CString`], returning the inner [`UtlString`].
+	pub const fn into_inner(self) -> UtlString {
+		let inner = UtlString {
+			string: self.0.string,
+		};
+		forget(self);
+		inner
 	}
 
 	/// Returns a mutable reference to a [`CString`] given a reference to the inner type.
