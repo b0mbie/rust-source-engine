@@ -19,6 +19,7 @@ authors = ["b0mbie"]
 
 [workspace.dependencies]
 libc = { version = "0.2.175", default-features = false }
+thiserror = { version = "2.0.16", default-features = false }
 
 cppdvt = { git = "https://github.com/b0mbie/cppdvt.git" }
 printf = { git = "https://github.com/b0mbie/printf-rs.git" }

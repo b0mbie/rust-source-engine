@@ -1,17 +1,15 @@
 use ::core::{
-	ffi::c_int,
 	mem::MaybeUninit,
 	slice::{
 		from_raw_parts, from_raw_parts_mut,
 	},
 };
 
-use crate::cppdef::{
-	UtlMemory, EXTERNAL_CONST_BUFFER_MARKER,
-};
+use crate::cppdef::UtlMemory;
 
 use super::{
 	UtlMemoryOf, GrowSize,
+	check_null_allocation, check_writable_memory, is_read_only,
 };
 
 /// Transparent wrapper for `CUtlMemory<T>`.
@@ -86,24 +84,6 @@ impl<T> Memory<T> {
 	}
 
 	::rse_cpp::transparent_wrapper_impls!(Memory for UtlMemory<T> as "UtlMemory");
-}
-
-const fn is_read_only(grow_size: c_int) -> bool {
-	grow_size == EXTERNAL_CONST_BUFFER_MARKER
-}
-
-const fn check_writable_memory(_grow_size: c_int) {
-	#[cfg(any(test, debug_assertions))]
-	if is_read_only(_grow_size) {
-		panic!("`Memory` function called with read-only slice")
-	}
-}
-
-const fn check_null_allocation(_allocation_count: c_int) {
-	#[cfg(any(test, debug_assertions))]
-	if _allocation_count != 0 {
-		panic!("allocation count was not 0 for a null allocation")
-	}
 }
 
 unsafe impl<T> UtlMemoryOf<T> for Memory<T> {

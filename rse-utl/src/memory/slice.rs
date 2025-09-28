@@ -1,20 +1,26 @@
 use ::core::{
 	marker::PhantomData,
 	mem::MaybeUninit,
+	ptr::null_mut,
 	slice::{
 		from_raw_parts, from_raw_parts_mut,
 	},
 };
 
-use crate::cppdef::{
-	UtlMemory,
-	EXTERNAL_BUFFER_MARKER, EXTERNAL_CONST_BUFFER_MARKER,
+use crate::{
+	cppdef::{
+		UtlMemory,
+		EXTERNAL_BUFFER_MARKER, EXTERNAL_CONST_BUFFER_MARKER,
+	},
+	util::clamp_len_to_c_int,
 };
 
 use super::{
-	Memory, slice_len_c_int,
+	Memory,
+	UtlMemoryEmpty,
 	UtlMemoryOf, impl_utl_memory_of,
 	UtlMemoryOfMut, impl_utl_memory_of_mut,
+	UtlMemoryGrowable,
 };
 
 /// Returns a [`SliceMemory`] backed by an immutable slice of `T`.
@@ -36,6 +42,18 @@ pub struct SliceMemory<T, S> {
 }
 
 impl<T, S> SliceMemory<T, S> {
+	/// Returns an empty slice-backed memory.
+	pub const fn empty() -> Self {
+		Self {
+			memory: Memory::new(UtlMemory {
+				memory: null_mut(),
+				allocation_count: 0,
+				grow_size: EXTERNAL_BUFFER_MARKER,
+			}),
+			_slice: PhantomData,
+		}
+	}
+
 	/// Returns an immutable reference to the inner [`Memory<T>`].
 	pub const fn as_memory(&self) -> &Memory<T> {
 		&self.memory
@@ -63,7 +81,7 @@ impl<'a, T> SliceMemory<T, &'a [MaybeUninit<T>]> {
 		Self {
 			memory: Memory::new(UtlMemory {
 				memory: slice.as_ptr() as _,
-				allocation_count: slice_len_c_int(slice.len()),
+				allocation_count: clamp_len_to_c_int(slice.len()),
 				grow_size: EXTERNAL_CONST_BUFFER_MARKER,
 			}),
 			_slice: PhantomData,
@@ -88,7 +106,7 @@ impl<'a, T> SliceMemory<T, &'a mut [MaybeUninit<T>]> {
 		Self {
 			memory: Memory::new(UtlMemory {
 				memory: slice.as_mut_ptr(),
-				allocation_count: slice_len_c_int(slice.len()),
+				allocation_count: clamp_len_to_c_int(slice.len()),
 				grow_size: EXTERNAL_BUFFER_MARKER,
 			}),
 			_slice: PhantomData,
@@ -111,6 +129,9 @@ impl<'a, T> SliceMemory<T, &'a mut [MaybeUninit<T>]> {
 	}
 }
 
+impl<T, S> UtlMemoryEmpty<T> for SliceMemory<T, S> {
+	const EMPTY: Self = Self::empty();
+}
 unsafe impl<T, S> UtlMemoryOf<T> for SliceMemory<T, S> {
 	impl_utl_memory_of! {
 		self = self;
@@ -123,3 +144,27 @@ unsafe impl<T> UtlMemoryOfMut<T> for SliceMemory<T, &mut [MaybeUninit<T>]> {
 		inner_mut = self.as_mut_memory();
 	}
 }
+impl<T, S> UtlMemoryGrowable<T> for SliceMemory<T, S> {
+	type EnsureCapacityError = SliceGrowError;
+	fn ensure_capacity(&mut self, min_capacity: usize) -> Result<(), Self::EnsureCapacityError> {
+		if self.memory.n_allocations() >= min_capacity {
+			Ok(())
+		} else {
+			Err(SliceGrowError)
+		}
+	}
+
+	type ResizeError = SliceGrowError;
+	fn resize_to(&mut self, new_size: usize) -> Result<(), Self::ResizeError> {
+		if new_size <= self.memory.n_allocations() {
+			unsafe { self.memory.as_mut_inner().allocation_count = clamp_len_to_c_int(new_size) };
+			Ok(())
+		} else {
+			Err(SliceGrowError)
+		}
+	}
+}
+
+#[derive(Debug, thiserror::Error)]
+#[error("slice-backed memory cannot be grown")]
+pub struct SliceGrowError;

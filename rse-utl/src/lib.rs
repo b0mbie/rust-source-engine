@@ -1,9 +1,13 @@
 #![no_std]
 
+extern crate alloc;
+
 pub mod cppdef;
 
-mod vector;
-pub use vector::*;
+mod util;
+
+pub mod vector;
+pub use vector::Vector;
 
 #[cfg(feature = "tier0")]
 mod string;

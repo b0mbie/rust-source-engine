@@ -13,6 +13,7 @@ test = ["rse-tier0/link-optional"]
 
 [dependencies]
 rse-cpp.workspace = true
+thiserror.workspace = true
 
 [dependencies.rse-tier0]
 path = "../rse-tier0"
