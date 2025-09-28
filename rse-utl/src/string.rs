@@ -17,18 +17,17 @@ use ::rse_tier0::{
 
 use crate::cppdef::UtlString;
 
-::rse_cpp::transparent_wrapper! {
-	/// Transparent wrapper for `CUtlString`.
-	/// Not to be confused with Rust's `alloc::ffi::CString` type.
-	/// 
-	/// This is a buffer that stores a mutable C string inside of it
-	/// allocated on the heap with the global `tier0` allocator.
-	/// It emulates the C++ `CUtlString` type for interacting with C++ code.
-	/// 
-	/// # Layout
-	/// This type has the exact same layout and ABI as [`UtlString`].
-	pub struct CString for UtlString as "UtlString";
-}
+/// Transparent wrapper for `CUtlString`.
+/// Not to be confused with Rust's [`CString`](::alloc::ffi::CString) type.
+/// 
+/// This is a buffer that stores a mutable C string inside of it
+/// allocated on the heap with the [`LinkedTier0Allocator`].
+/// It emulates the C++ `CUtlString` type for interacting with C++ code.
+/// 
+/// # Layout
+/// This type has the exact same layout and ABI as [`UtlString`].
+#[repr(transparent)]
+pub struct CString(UtlString);
 
 impl CString {
 	/// Returns an empty [`CString`].
@@ -37,6 +36,53 @@ impl CString {
 			string: null_mut(),
 		})
 	}
+
+	/// Returns a mutable reference to a [`CString`] given a reference to the inner type.
+	/// 
+	/// # Safety
+	/// [`inner.string`](UtlString::string) must point to a valid, mutable C string
+	/// allocated with the [`LinkedTier0Allocator`].
+	pub const unsafe fn from_mut(inner: &mut UtlString) -> &mut Self {
+		unsafe { &mut *(inner as *mut UtlString as *mut Self) }
+	}
+
+	/// Returns an immutable reference to a [`CString`] given a reference to the inner type.
+	/// 
+	/// # Safety
+	/// [`inner.string`](UtlString::string) must point to a valid, immutable C string
+	/// allocated with the [`LinkedTier0Allocator`].
+	pub const unsafe fn from_ref(inner: &UtlString) -> &Self {
+		unsafe { &*(inner as *const UtlString as *const Self) }
+	}
+
+	/// Returns a mutable reference to a [`CString`] given a raw pointer.
+	/// 
+	/// See also [`from_mut`](Self::from_mut).
+	/// 
+	/// # Safety
+	/// `ptr` must point to a valid, mutable [`UtlString`].
+	/// Moreover,
+	/// [`(*ptr).string`](UtlString::string) must point to a valid, immutable C string
+	/// allocated with the [`LinkedTier0Allocator`].
+	pub const unsafe fn from_mut_ptr<'a>(ptr: *mut UtlString) -> &'a mut Self {
+		unsafe { &mut *(ptr as *mut Self) }
+	}
+
+	/// Returns an immutable reference to a [`CString`] given a raw pointer.
+	/// 
+	/// See also [`from_ref`](Self::from_ref).
+	/// 
+	/// # Safety
+	/// `ptr` must point to a valid, immutable [`UtlString`].
+	/// Moreover,
+	/// [`(*ptr).string`](UtlString::string) must point to a valid, immutable C string
+	/// allocated with the [`LinkedTier0Allocator`].
+	pub const unsafe fn from_ptr<'a>(ptr: *const UtlString) -> &'a Self {
+		unsafe { &*(ptr as *const Self) }
+	}
+
+	::rse_cpp::transparent_as_ptr_impls!(CString for UtlString as "UtlString");
+	::rse_cpp::transparent_inner_impls!(CString for UtlString as "UtlString");
 
 	/// Returns the [`CStr`] stored inside of this value,
 	/// returning a static, immutable string for empty strings.
