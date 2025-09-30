@@ -104,7 +104,7 @@ where
 		&self.object.data
 	}
 
-	pub const fn as_inner_mut(&mut self) -> &mut T {
+	pub const fn as_mut_inner(&mut self) -> &mut T {
 		&mut self.object.data
 	}
 
