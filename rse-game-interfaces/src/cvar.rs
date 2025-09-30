@@ -21,6 +21,9 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	fn allocate_dll_identifier(&mut self) -> CvarDllIdentifier {
 		unsafe { cvar_call!(self.as_object() => allocate_dll_identifier()) }
 	}
+	fn is_material_thread_set_allowed(&self) -> bool {
+		unsafe { cvar_call!(self.as_object() => is_material_thread_set_allowed()) }
+	}
 }
 impl<T: AsObject<CvarVt>> CvarImpl for T {}
 
