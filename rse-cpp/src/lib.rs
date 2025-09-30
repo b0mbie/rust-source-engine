@@ -10,6 +10,8 @@ mod vtable_macros;
 
 pub mod ptr_compat;
 
+mod vt_object_convert;
+pub use vt_object_convert::*;
 mod vt_object_wrapper;
 pub use vt_object_wrapper::*;
 mod with_vtable;
