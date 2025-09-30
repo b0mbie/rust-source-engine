@@ -17,8 +17,10 @@ pub struct ConCommandBaseExt {
 	pub registered: bool,
 	pub name: *const c_char,
 	pub help_string: *const c_char,
-	pub flags: c_int,
+	pub flags: CvarFlags,
 }
+
+pub type CvarFlags = c_int;
 
 vtable! {
 	pub ConCommandBaseVt for VtObjectPtr<ConCommandBaseVt> {
