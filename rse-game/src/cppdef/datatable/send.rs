@@ -1,10 +1,9 @@
-use ::core::{
-	ffi::{
-		c_char, c_float, c_int, c_void,
-	},
-	ptr::NonNull,
+use ::core::ffi::{
+	c_char, c_float, c_int, c_void,
 };
-use ::rse_cpp::vtable;
+use ::rse_cpp::{
+	vtable, WithVTable,
+};
 
 use super::{
 	Variant, SendPropType, SendPropFlags,
@@ -49,9 +48,10 @@ vtable! {
 	}
 }
 
+pub type SendProp = WithVTable<SendTableVt, SendPropExt>;
+
 #[repr(C)]
-pub struct SendProp {
-	pub vtable: NonNull<SendTableVt>,
+pub struct SendPropExt {
 	pub matching_recv_prop: *mut RecvProp,
 	pub prop_type: SendPropType,
 	pub bits: c_int,

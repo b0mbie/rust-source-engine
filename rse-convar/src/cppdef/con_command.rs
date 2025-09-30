@@ -3,11 +3,11 @@ use ::core::{
 		c_char, c_int,
 	},
 	fmt,
-	ptr::NonNull,
 };
 use ::rse_cpp::{
 	RefConst, RefMut, VtObjectPtr, vtable,
 	test_bits, with_bits,
+	WithVTable,
 };
 use ::rse_utl::cppdef::{
 	UtlVector, UtlString,
@@ -17,20 +17,15 @@ use super::{
 	ConCommandBaseVt, ConCommandBaseExt, Command,
 };
 
+pub type ConCommand = WithVTable<ConCommandVt, ConCommandExt>;
+
 #[derive(Debug)]
 #[repr(C)]
-pub struct ConCommand {
-	pub vtable: NonNull<ConCommandVt>,
+pub struct ConCommandExt {
 	pub base: ConCommandBaseExt,
 	pub command_callback: CommandCallback,
 	pub completion_callback: CompletionCallback,
 	pub bits: ConCommandBits,
-}
-
-impl ConCommand {
-	pub const fn as_base_ptr(&mut self) -> VtObjectPtr<ConCommandBaseVt> {
-		unsafe { VtObjectPtr::new_unchecked(self as *mut Self as *mut NonNull<ConCommandBaseVt>) }
-	}
 }
 
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

@@ -1,12 +1,10 @@
-use ::core::{
-	ffi::{
-		CStr, c_char, c_float, c_int, c_short,
-	},
-	ptr::NonNull,
+use ::core::ffi::{
+	CStr, c_char, c_float, c_int, c_short,
 };
 use ::rse_cpp::{
 	vtable, VtObjectMut, VtObjectPtr,
 	RefConst, RefMut,
+	WithVTable,
 };
 use ::rse_game::cppdef::{
 	entities::edict_t,
@@ -68,11 +66,11 @@ vtable! {
 	}
 }
 
+pub type BotCmd = WithVTable<BotCmdVt, BotCmdExt>;
+
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 #[repr(C)]
-pub struct BotCmd {
-	/// VTable for `CBotCmd`.
-	pub vtable: NonNull<BotCmdVt>,
+pub struct BotCmdExt {
 	/// Number for matching server and client commands for debugging.
 	pub command_number: c_int,
 	/// Tick the client created this command.
@@ -118,25 +116,6 @@ pub struct BotCmd {
 	/// **Client-only:**
 	/// `true` if this command was predicted at least once.
 	pub has_been_predicted: bool,
-}
-
-impl BotCmd {
-	pub const VTABLE: &BotCmdVt = &::rse_cpp::new_vtable_self!(BotCmdVt {
-		destructor,
-		#[cfg(not(windows))]
-		destructor_2
-	});
-
-	::rse_cpp::vtable_methods! {
-		this: VtObjectPtr<BotCmdVt>;
-		fn destructor() {
-			unsafe { this.cast::<Self>().drop_in_place() }
-		}
-		#[cfg(not(windows))]
-		fn destructor_2() {
-			unsafe { this.cast::<Self>().drop_in_place() }
-		}
-	}
 }
 
 vtable! {

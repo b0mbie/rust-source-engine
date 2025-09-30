@@ -30,19 +30,19 @@ transparent_wrapper! {
 
 impl SendProp {
 	pub const fn name(&self) -> &CStr {
-		unsafe { CStr::from_ptr(self.0.var_name) }
+		unsafe { CStr::from_ptr(self.0.data.var_name) }
 	}
 
 	pub const fn prop_type(&self) -> SendPropType {
-		self.0.prop_type
+		self.0.data.prop_type
 	}
 
 	pub const fn offset(&self) -> isize {
-		self.0.offset as _
+		self.0.data.offset as _
 	}
 
 	pub const fn table(&self) -> Option<&SendTable> {
-		let ptr = self.0.data_table;
+		let ptr = self.0.data.data_table;
 		if !ptr.is_null() {
 			unsafe { Some(SendTable::from_ptr(ptr)) }
 		} else {
@@ -51,7 +51,7 @@ impl SendProp {
 	}
 
 	pub const fn table_mut(&mut self) -> Option<&mut SendTable> {
-		let ptr = self.0.data_table;
+		let ptr = self.0.data.data_table;
 		if !ptr.is_null() {
 			unsafe { Some(SendTable::from_mut_ptr(ptr)) }
 		} else {
@@ -62,25 +62,25 @@ impl SendProp {
 	/// # Safety
 	/// The [`SendProp`] must be a [`SendPropType::DataTable`].
 	pub const unsafe fn table_unchecked(&self) -> &SendTable {
-		unsafe { SendTable::from_ptr(self.0.data_table) }
+		unsafe { SendTable::from_ptr(self.0.data.data_table) }
 	}
 
 	/// # Safety
 	/// The [`SendProp`] must be a [`SendPropType::DataTable`].
 	pub const unsafe fn table_unchecked_mut(&mut self) -> &mut SendTable {
-		unsafe { SendTable::from_mut_ptr(self.0.data_table) }
+		unsafe { SendTable::from_mut_ptr(self.0.data.data_table) }
 	}
 
 	pub const fn low_value(&self) -> ValueLimit {
-		self.0.low_value
+		self.0.data.low_value
 	}
 
 	pub const fn high_value(&self) -> ValueLimit {
-		self.0.high_value
+		self.0.data.high_value
 	}
 
 	pub const fn n_bits(&self) -> usize {
-		self.0.bits as _
+		self.0.data.bits as _
 	}
 }
 

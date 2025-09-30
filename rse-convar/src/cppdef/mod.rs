@@ -1,11 +1,9 @@
-use ::core::{
-	ffi::{
-		c_char, c_float, c_int,
-	},
-	ptr::NonNull,
+use ::core::ffi::{
+	c_char, c_float, c_int,
 };
 use ::rse_cpp::{
 	VtObjectPtr, vtable,
+	WithVTable,
 };
 
 /// Type for a DLL identifier that's used to mark ConVars and ConCommands.
@@ -18,12 +16,7 @@ pub use command::*;
 
 pub mod flags;
 
-#[derive(Debug)]
-#[repr(C)]
-pub struct ConCommandBase {
-	pub vtable: NonNull<ConCommandBaseVt>,
-	pub ext: ConCommandBaseExt,
-}
+pub type ConCommandBase = WithVTable<ConCommandBaseVt, ConCommandBaseExt>;
 
 #[derive(Debug)]
 #[repr(C)]

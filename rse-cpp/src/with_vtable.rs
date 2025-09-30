@@ -12,14 +12,14 @@ use crate::{
 #[repr(C)]
 pub struct WithVTable<VTable, T> {
 	pub vtable: VTablePtr<VTable>,
-	pub inner: T,
+	pub data: T,
 }
 
 impl<VTable, T> WithVTable<VTable, T> {
-	pub const fn new(vtable: VTablePtr<VTable>, inner: T) -> Self {
+	pub const fn new(vtable: VTablePtr<VTable>, data: T) -> Self {
 		Self {
 			vtable,
-			inner,
+			data,
 		}
 	}
 
