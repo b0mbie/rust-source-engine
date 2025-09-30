@@ -1,3 +1,7 @@
+use ::core::ffi::c_int;
+
+// TODO: Make this more usable?
+
 macro_rules! flags {
 	{
 		for $ty:ty:
@@ -6,12 +10,12 @@ macro_rules! flags {
 			$vis:vis $name:ident = $offset:expr;
 		)*
 	} => {
-		$(pub const $name: $ty = 1 << $offset;)*
+		$($vis const $name: $ty = 1 << $offset;)*
 	};
 }
 
 flags! {
-	for ::core::ffi::c_int:
+	for c_int:
 	pub UNREGISTERED = 0;
 	pub DEVELOPMENT_ONLY = 1;
 	pub GAMEDLL = 2;
@@ -44,4 +48,11 @@ flags! {
 	pub SERVER_CAN_EXECUTE = 28;
 	pub SERVER_CANNOT_QUERY = 29;
 	pub CLIENTCMD_CAN_EXECUTE = 30;
+
+	pub EXEC_DESPITE_DEFAULT = 31;
+
+	pub INTERNAL_USE = 13;
+	pub ALLOWED_IN_COMPETITIVE = 18;
 }
+
+pub const MATERIAL_THREAD_MASK: c_int = RELOAD_MATERIALS | RELOAD_TEXTURES | MATERIAL_SYSTEM_THREAD;

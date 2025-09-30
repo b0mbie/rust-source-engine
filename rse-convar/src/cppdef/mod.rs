@@ -10,4 +10,4 @@ pub use con_var::*;
 mod command;
 pub use command::*;
 
-pub mod flags;
+pub mod fcvar;
