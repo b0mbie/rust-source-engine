@@ -14,14 +14,20 @@ macro_rules! transparent_ref_impls {
 		/// Returns a mutable reference to a value of type
 		#[doc = concat!("[`", stringify!($name), "`]")]
 		/// given a reference to the inner type.
-		pub const fn from_mut(inner: &mut $target) -> &mut Self {
+		/// 
+		/// # Safety
+		/// The structure's public fields *must* be set to valid values.
+		pub const unsafe fn from_mut(inner: &mut $target) -> &mut Self {
 			unsafe { &mut *(inner as *mut $target as *mut Self) }
 		}
 
 		/// Returns an immutable reference to a value of type
 		#[doc = concat!("[`", stringify!($name), "`]")]
 		/// given a reference to the inner type.
-		pub const fn from_ref(inner: &$target) -> &Self {
+		/// 
+		/// # Safety
+		/// The structure's public fields *must* be set to valid values.
+		pub const unsafe fn from_ref(inner: &$target) -> &Self {
 			unsafe { &*(inner as *const $target as *const Self) }
 		}
 	};
@@ -34,7 +40,7 @@ macro_rules! transparent_from_ptr_impls {
 		#[doc = concat!("[`", stringify!($name), "`]")]
 		/// given a raw pointer.
 		/// 
-		/// See also [`from_mut`](Self::from_mut) for the safe version.
+		/// See also [`from_mut`](Self::from_mut).
 		/// 
 		/// # Safety
 		/// `ptr` must point to a valid, mutable
@@ -47,7 +53,7 @@ macro_rules! transparent_from_ptr_impls {
 		#[doc = concat!("[`", stringify!($name), "`]")]
 		/// given a raw pointer.
 		/// 
-		/// See also [`from_ref`](Self::from_ref) for the safe version.
+		/// See also [`from_ref`](Self::from_ref).
 		/// 
 		/// # Safety
 		/// `ptr` must point to a valid, immutable
@@ -112,18 +118,6 @@ macro_rules! transparent_wrapper {
 
 		impl $name {
 			$crate::transparent_wrapper_impls!($name for $target as $target_name);
-		}
-
-		impl<'a> From<&'a $target> for &'a $name {
-			fn from(value: &'a $target) -> &'a $name {
-				$name::from_ref(value)
-			}
-		}
-
-		impl<'a> From<&'a mut $target> for &'a mut $name {
-			fn from(value: &'a mut $target) -> &'a mut $name {
-				$name::from_mut(value)
-			}
 		}
 	};
 }
