@@ -8,6 +8,11 @@ mod flag_utils;
 mod transparent_wrappers;
 mod vtable_macros;
 
+pub mod ptr_compat;
+
+mod with_vtable;
+pub use with_vtable::*;
+
 /// Type of pointers to immutable C++ objects with v-tables (`const IObject *`).
 pub type VtObjectRef<VTable> = VtObjectPtr<VTable>;
 /// Type of pointers to mutable C++ objects with v-tables (`IObject *`).
