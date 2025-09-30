@@ -2,6 +2,8 @@
 
 pub mod cppdef;
 
+mod cvar;
+pub use cvar::*;
 mod engine_server;
 pub use engine_server::*;
 mod event_listener;
