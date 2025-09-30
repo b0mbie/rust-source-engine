@@ -5,6 +5,7 @@ use ::core::{
 	fmt,
 };
 use ::rse_cpp::{
+	ptr_compat::PointerFrom,
 	RefConst, RefMut, VtObjectPtr, vtable,
 	test_bits, with_bits,
 	WithVTable,
@@ -71,6 +72,7 @@ pub struct ConCommandVt {
 	pub base: ConCommandBaseVt,
 	pub con_command: ConCommandVtBase,
 }
+unsafe impl PointerFrom<ConCommandVt> for ConCommandBaseVt {}
 
 vtable! {
 	pub ConCommandVtBase for VtObjectPtr<ConCommandVt> {
