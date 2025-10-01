@@ -5,23 +5,23 @@ use ::core::{
 	marker::PhantomPinned,
 };
 use ::rse_cpp::{
+	ptr_compat::PointerFrom,
 	vtable,
-	RefMut, VtObjectMut,
+	RefMut, VtObjectMut, VtObjectPtr,
 	WithVTable, VTablePtr,
 	TypeInfo,
 };
 
 use super::{
 	CvarDllIdentifier, ConCommandBaseExt,
+	ConCommandBaseVtBase,
 };
 
 pub type FnChangeCallback = unsafe extern "C" fn(
 	var: VtObjectMut<ConVarIfaceVt>, old_string: *const c_char, old_value: c_float,
 );
 
-// HACK: For whatever reason, the VTable on windows doesn't include some functions from `ConCommandBaseVt`.
-// So we can't use that struct there!
-pub type ConVar = WithVTable<ConVarVtBase, ConVarExt>;
+pub type ConVar = WithVTable<ConVarVt, ConVarExt>;
 
 #[repr(C)]
 pub struct ConVarExt {
@@ -67,22 +67,23 @@ pub struct ConVarExt {
 }
 
 #[repr(C)]
-pub struct ConVarVt {
+pub struct ConVarVtFull {
 	pub offset_to_derived: isize,
 	pub type_info: *const TypeInfo,
 	// This is what will be pointed to by `ConVar`.
-	pub base: ConVarVtBase,
+	pub base: ConVarVt,
+}
+
+// For whatever reason, the VTable on windows doesn't include some functions from `ConCommandBaseVt`.
+// So we can't use that struct there!
+#[repr(C)]
+pub struct ConVarVt {
+	pub base: ConCommandBaseVtBase,
+	pub ext: ConVarVtExt,
 }
 
 vtable! {
-	// Even though `ConVar` implements some `IConVar` methods,
-	// due to them having the same signature as in `ConCommand`
-	pub ConVarVtBase {
-		pub fn destructor();
-		#[cfg(not(windows))]
-		pub fn destructor_2();
-
-		pub fn is_command() -> bool;
+	pub ConVarVtExt for VtObjectPtr<ConVarVt> {
 		#[cfg(not(windows))]
 		pub fn is_flag_set(flag: c_int) -> bool;
 		pub fn add_flags(flags: c_int);
@@ -120,6 +121,7 @@ vtable! {
 		pub fn internal_set_float_value_2(value: c_float, force: bool);
 	}
 }
+unsafe impl PointerFrom<ConVarVt> for ConCommandBaseVtBase {}
 
 vtable! {
 	pub ConVarIfaceVt {

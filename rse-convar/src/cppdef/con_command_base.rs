@@ -2,6 +2,7 @@ use ::core::ffi::{
 	c_char, c_int,
 };
 use ::rse_cpp::{
+	ptr_compat::PointerFrom,
 	VtObjectPtr, WithVTable,
 	vtable,
 };
@@ -22,12 +23,25 @@ pub struct ConCommandBaseExt {
 
 pub type CvarFlags = c_int;
 
+#[repr(C)]
+pub struct ConCommandBaseVt {
+	pub base: ConCommandBaseVtBase,
+	pub ext: ConCommandBaseVtExt,
+}
+unsafe impl PointerFrom<ConCommandBaseVt> for ConCommandBaseVtBase {}
+
 vtable! {
-	pub ConCommandBaseVt for VtObjectPtr<ConCommandBaseVt> {
+	/// Part of the VTable for [`ConCommandBase`] that is compatible with both [`ConVar`] and [`ConCommand`].
+	pub ConCommandBaseVtBase {
 		pub fn destructor();
 		#[cfg(not(windows))]
 		pub fn destructor_2();
 		pub fn is_command() -> bool;
+	}
+}
+
+vtable! {
+	pub ConCommandBaseVtExt for VtObjectPtr<ConCommandBaseVt> {
 		pub fn is_flag_set(flag: c_int) -> bool;
 		pub fn add_flags(flags: c_int);
 		pub fn get_name() -> *const c_char;
