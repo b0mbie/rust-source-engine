@@ -17,7 +17,10 @@ pub use invocation::*;
 
 pub mod prelude {
 	pub use crate::{
-		command::Command,
+		command::{
+			Command, Suggestions,
+		},
+		console_base::CvarDllIdentifier,
 	};
 
 	#[cfg(feature = "macros")]
