@@ -8,12 +8,35 @@ use crate::console_base::CvarDllIdentifier;
 
 pub mod low;
 
+pub use low::ConVarValue;
+
+pub const fn params_for<T>() -> low::ConVarParams<'static>
+where
+	T: Variable,
+{
+	low::ConVarParams {
+		name: T::NAME,
+		default: T::DEFAULT,
+		help: T::HELP,
+		min: T::MIN, max: T::MAX,
+		comp_min: T::MIN, comp_max: T::MAX,
+	}
+}
+
 /// # Safety
 /// `dll_identifier` must return a valid identifier previously returned by
 /// `ICvar::AllocateDLLIdentifier`.
 pub unsafe trait Variable: Sized {
 	const NAME: &CStr;
-	const HELP: Option<&CStr>;
+	const DEFAULT: ConVarValue<'static>;
+
+	const HELP: Option<&CStr> = None;
+
+	const MIN: Option<c_float> = None;
+	const MAX: Option<c_float> = None;
+	const COMP_MIN: Option<c_float> = None;
+	const COMP_MAX: Option<c_float> = None;
+
 	fn on_changed(new: NewValue<'_, Self>, old: OldValue<'_>) {
 		let _ = new;
 		let _ = old;
