@@ -30,6 +30,15 @@ pub struct StdVariable<T> {
 	value_buffer: ValueBuffer,
 }
 
+impl<T> StdVariable<T> {
+	pub const fn new(inner: T) -> Self {
+		Self {
+			inner,
+			value_buffer: ValueBuffer::new(),
+		}
+	}
+}
+
 // TODO: Mimic standard ConVar behavior.
 impl<'a, T> RawVariable<'a> for StdVariable<T>
 where
