@@ -21,5 +21,7 @@ where
 
 pub mod prelude {
 	pub use ::rse_convar::prelude::*;
-	pub use crate::StdVariable;
+	pub use crate::{
+		StdVariable, static_con_var,
+	};
 }
