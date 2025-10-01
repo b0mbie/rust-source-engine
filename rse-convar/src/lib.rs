@@ -21,6 +21,9 @@ pub mod prelude {
 			Command, Suggestions,
 		},
 		console_base::CvarDllIdentifier,
+		variable::{
+			Variable, NewValue, OldValue,
+		},
 	};
 
 	#[cfg(feature = "macros")]
