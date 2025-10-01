@@ -181,7 +181,7 @@ where
 					commands.cast::<UtlVector<UtlString, Tier0Memory<UtlString>>>().as_ptr()
 				)
 			};
-			let suggestions = Suggestions::wrap(suggestions);
+			let suggestions = unsafe { Suggestions::from_mut(suggestions) };
 			T::auto_complete_suggest(this_to_self!(mut this), partial, suggestions).get()
 		}
 		fn can_auto_complete() -> bool {

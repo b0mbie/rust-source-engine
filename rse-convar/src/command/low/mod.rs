@@ -31,6 +31,6 @@ where
 	fn auto_complete_suggest(
 		object: &mut ConCommandObject<'a, Self>,
 		partial: &CStr,
-		suggestions: Suggestions<'_>,
+		suggestions: &mut Suggestions,
 	) -> SuggestionCount;
 }

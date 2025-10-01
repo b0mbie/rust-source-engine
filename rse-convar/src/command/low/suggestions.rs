@@ -9,11 +9,9 @@ use super::SuggestionCount;
 
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct Suggestions<'a>(&'a mut Vector<UtlString>);
-impl<'a> Suggestions<'a> {
-	pub const fn wrap(inner: &'a mut Vector<UtlString>) -> Self {
-		Self(inner)
-	}
+pub struct Suggestions(Vector<UtlString>);
+impl Suggestions {
+	::rse_cpp::transparent_ref_impls!(Suggestions for Vector<UtlString> as "Vector<UtlString>");
 
 	pub const fn has_capacity(&self) -> bool {
 		self.0.len() < COMMAND_COMPLETION_MAX_ITEMS
