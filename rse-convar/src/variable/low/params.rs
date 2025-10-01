@@ -1,11 +1,18 @@
 use ::core::ffi::{
-	CStr, c_float,
+	CStr, c_float, c_int,
 };
+
+#[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
+pub struct ConVarValue<'a> {
+	pub c_str: &'a CStr,
+	pub float: c_float,
+	pub int: c_int,
+}
 
 #[derive(Default, Debug, Clone, Copy)]
 pub struct ConVarParams<'a> {
 	pub name: &'a CStr,
-	pub default: &'a CStr,
+	pub default: ConVarValue<'a>,
 	pub help: Option<&'a CStr>,
 	pub min: Option<c_float>,
 	pub max: Option<c_float>,
@@ -14,7 +21,7 @@ pub struct ConVarParams<'a> {
 }
 
 impl<'a> ConVarParams<'a> {
-	pub const fn simple(name: &'a CStr, default: &'a CStr) -> Self {
+	pub const fn simple(name: &'a CStr, default: ConVarValue<'a>) -> Self {
 		Self {
 			name, default,
 			help: None,
