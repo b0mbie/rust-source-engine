@@ -28,7 +28,8 @@ use crate::{
 	cppdef::{
 		ConCommand, ConCommandVt, ConCommandExt,
 		ConCommandBase as CConCommandBase,
-		ConCommandBaseVt, ConCommandVtBase,
+		ConCommandBaseVt, ConCommandBaseVtBase, ConCommandBaseVtExt,
+		ConCommandVtBase,
 		ConCommandBaseExt as CConCommandBaseExt,
 		ConCommandBits,
 		CompletionArray,
@@ -102,20 +103,24 @@ where
 	}
 
 	const VTABLE: &'static ConCommandVt = &ConCommandVt {
-		base: new_vtable_self!(ConCommandBaseVt {
-			destructor,
-			#[cfg(not(windows))]
-			destructor_2,
-			is_command,
-			is_flag_set,
-			add_flags,
-			get_name,
-			get_help_text,
-			is_registered,
-			get_dll_identifier,
-			create_base,
-			init
-		}),
+		base: ConCommandBaseVt {
+			base: new_vtable_self!(ConCommandBaseVtBase {
+				destructor,
+				#[cfg(not(windows))]
+				destructor_2,
+				is_command
+			}),
+			ext: new_vtable_self!(ConCommandBaseVtExt {
+				is_flag_set,
+				add_flags,
+				get_name,
+				get_help_text,
+				is_registered,
+				get_dll_identifier,
+				create_base,
+				init
+			}),
+		},
 		con_command: new_vtable_self!(ConCommandVtBase {
 			auto_complete_suggest,
 			can_auto_complete,
@@ -124,7 +129,7 @@ where
 	};
 
 	vtable_methods! {
-		this: VtObjectPtr<ConCommandBaseVt>;
+		this: VtObjectPtr<ConCommandBaseVtBase>;
 		fn destructor() {
 			let _ = this;
 			// TODO: Destructor?
@@ -138,6 +143,10 @@ where
 			let _ = this;
 			true
 		}
+	}
+
+	vtable_methods! {
+		this: VtObjectPtr<ConCommandBaseVt>;
 		fn is_flag_set(flag: c_int) -> bool {
 			this_to_self!(ref this).as_base().is_flag_set(flag)
 		}

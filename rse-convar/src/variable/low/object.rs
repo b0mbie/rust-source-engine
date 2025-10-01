@@ -20,10 +20,11 @@ use ::rse_cpp::{
 
 use crate::{
 	cppdef::{
-		ConVar, ConVarVt, ConVarVtBase,
+		ConVar, ConVarVtExt, ConVarVtFull, ConVarVt,
 		ConVarIfaceVt,
 		ConVarExt as CConVarExt,
 		ConCommandBaseExt as CConCommandBaseExt, ConCommandBaseVt,
+		ConCommandBaseVtBase,
 		CvarDllIdentifier,
 		FnChangeCallback,
 	},
@@ -110,6 +111,18 @@ impl<T> ConVarObject<'_, T> {
 		unsafe { ConVarExt::from_mut(&mut self.con_var.data) }
 	}
 
+	pub const fn as_iface(&self) -> &VtObject<ConVarIfaceVt> {
+		unsafe { VtObject::from_ptr_const(
+			VtObjectPtr::new_unchecked(&self.con_var.data.iface as *const _ as *mut _)
+		) }
+	}
+
+	pub const fn as_mut_iface(&mut self) -> &mut VtObject<ConVarIfaceVt> {
+		unsafe { VtObject::from_ptr_mut(
+			VtObjectPtr::new_unchecked(&mut self.con_var.data.iface)
+		) }
+	}
+
 	pub const fn ext_and_mut_inner(&mut self) -> (&ConVarExt, &mut T) {
 		unsafe {
 			(ConVarExt::from_ref(&self.con_var.data), &mut self.inner)
@@ -181,17 +194,17 @@ where
 
 	unsafe fn do_set_value_string(&mut self, value: *const c_char) {
 		let vt_object = self.parent_mut().as_object();
-		unsafe { virtual_call!(vt_object => internal_set_value(value)) }
+		unsafe { virtual_call!(vt_object => ext.internal_set_value(value)) }
 	}
 
 	unsafe fn do_set_value_float(&mut self, value: c_float) {
 		let vt_object = self.parent_mut().as_object();
-		unsafe { virtual_call!(vt_object => internal_set_float_value(value)) }
+		unsafe { virtual_call!(vt_object => ext.internal_set_float_value(value)) }
 	}
 
 	unsafe fn do_set_value_int(&mut self, value: c_int) {
 		let vt_object = self.parent_mut().as_object();
-		unsafe { virtual_call!(vt_object => internal_set_int_value(value)) }
+		unsafe { virtual_call!(vt_object => ext.internal_set_int_value(value)) }
 	}
 
 	vtable_methods! {
@@ -213,42 +226,46 @@ where
 		}
 	}
 
-	const CON_VAR_VT: &'static ConVarVt = &ConVarVt {
+	const CON_VAR_VT: &'static ConVarVtFull = &ConVarVtFull {
 		offset_to_derived: 0,
 		type_info: Self::TYPE_INFO,
-		base: new_vtable_self!(ConVarVtBase {
-			destructor,
-			#[cfg(not(windows))]
-			destructor_2,
-			is_command,
-			#[cfg(not(windows))]
-			is_flag_set,
-			add_flags,
-			#[cfg(not(windows))]
-			get_name,
-			get_help_text,
-			is_registered,
-			get_dll_identifier,
-			create_base,
-			init,
-			#[cfg(not(windows))]
-			set_value_string,
-			#[cfg(not(windows))]
-			set_value_float,
-			#[cfg(not(windows))]
-			set_value_int,
-			internal_set_value,
-			internal_set_float_value,
-			internal_set_int_value,
-			clamp_value,
-			change_string_value,
-			create_vtbl,
-			internal_set_float_value_2
-		}),
+		base: ConVarVt {
+			base: new_vtable_self!(ConCommandBaseVtBase {
+				destructor,
+				#[cfg(not(windows))]
+				destructor_2,
+				is_command,
+			}),
+			ext: new_vtable_self!(ConVarVtExt {
+				#[cfg(not(windows))]
+				is_flag_set,
+				add_flags,
+				#[cfg(not(windows))]
+				get_name,
+				get_help_text,
+				is_registered,
+				get_dll_identifier,
+				create_base,
+				init,
+				#[cfg(not(windows))]
+				set_value_string,
+				#[cfg(not(windows))]
+				set_value_float,
+				#[cfg(not(windows))]
+				set_value_int,
+				internal_set_value,
+				internal_set_float_value,
+				internal_set_int_value,
+				clamp_value,
+				change_string_value,
+				create_vtbl,
+				internal_set_float_value_2,
+			}),
+		},
 	};
 
 	vtable_methods! {
-		this: VtObjectPtr<ConVarVtBase>;
+		this: VtObjectPtr<ConCommandBaseVtBase>;
 		fn destructor() {
 			let _ = this;
 			// TODO: Destructor?
@@ -262,6 +279,10 @@ where
 			let _ = this;
 			false
 		}
+	}
+
+	vtable_methods! {
+		this: VtObjectPtr<ConVarVt>;
 		#[cfg(not(windows))]
 		fn is_flag_set(flag: c_int) -> bool {
 			this_to_self!(ref this).as_base().is_flag_set(flag)
@@ -352,8 +373,8 @@ where
 
 unsafe impl<T> PointerFrom<ConVarObject<'_, T>> for ConVar {}
 
-impl<T> AsObject<ConVarVtBase> for ConVarObject<'_, T> {
-	fn as_object(&self) -> &VtObject<ConVarVtBase> {
+impl<T> AsObject<ConVarVt> for ConVarObject<'_, T> {
+	fn as_object(&self) -> &VtObject<ConVarVt> {
 		convert_ref(&self.con_var)
 	}
 }
