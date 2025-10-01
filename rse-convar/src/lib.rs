@@ -27,5 +27,7 @@ pub mod prelude {
 	};
 
 	#[cfg(feature = "macros")]
-	pub use crate::con_command;
+	pub use crate::{
+		con_command, cvar_value,
+	};
 }
