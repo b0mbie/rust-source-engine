@@ -235,7 +235,7 @@ where
 			// Do nothing here. This method is purely for usage in the `ConCommandBase` constructor.
 		}
 		fn init() {
-			let _ = this;
+			T::init(this_to_self!(mut this))
 		}
 		#[cfg(not(windows))]
 		fn set_value_string(value: *const c_char) {

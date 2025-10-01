@@ -9,6 +9,7 @@ pub use wrapper::*;
 /// `dll_identifier` must return a valid identifier previously returned by
 /// `ICvar::AllocateDLLIdentifier`.
 pub unsafe trait RawConsoleBase<Object: ?Sized> {
+	fn init(object: &mut Object);
 	fn help(object: &mut Object);
 	fn dll_identifier(object: &mut Object) -> CvarDllIdentifier;
 }

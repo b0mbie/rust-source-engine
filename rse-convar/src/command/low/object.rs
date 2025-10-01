@@ -21,7 +21,7 @@ use ::rse_utl::{
 		UtlVector, UtlString,
 	},
 	memory::tier0::Tier0Memory,
-	Vector, CString,
+	Vector,
 };
 
 use crate::{
@@ -40,13 +40,31 @@ use crate::{
 	Invocation,
 };
 
-use super::RawCommand;
+use super::{
+	RawCommand, Suggestions,
+};
 
 #[repr(C)]
 pub struct ConCommandObject<'a, T> {
 	con_command: ConCommand,
-	inner: T,
+	pub inner: T,
 	_strings: PhantomData<&'a CStr>,
+}
+
+impl<'a, T> ConCommandObject<'a, T> {
+	pub const fn as_base(&self) -> &ConCommandBaseExt {
+		unsafe { ConCommandBaseExt::from_ref(&self.con_command.data.base) }
+	}
+
+	pub const fn as_mut_base(&mut self) -> &mut ConCommandBaseExt {
+		unsafe { ConCommandBaseExt::from_mut(&mut self.con_command.data.base) }
+	}
+
+	pub const fn as_base_object(&mut self) -> &mut VtObject<ConCommandBaseVt> {
+		convert_vt_mut(
+			convert_mut::<_, VtObject<ConCommandVt>>(&mut self.con_command)
+		)
+	}
 }
 
 impl<'a, T> ConCommandObject<'a, T>
@@ -81,28 +99,6 @@ where
 			inner,
 			_strings: PhantomData,
 		}
-	}
-
-	pub const fn as_inner(&self) -> &T {
-		&self.inner
-	}
-
-	pub const fn as_mut_inner(&mut self) -> &mut T {
-		&mut self.inner
-	}
-
-	pub const fn as_base(&self) -> &ConCommandBaseExt {
-		unsafe { ConCommandBaseExt::from_ref(&self.con_command.data.base) }
-	}
-
-	pub const fn as_mut_base(&mut self) -> &mut ConCommandBaseExt {
-		unsafe { ConCommandBaseExt::from_mut(&mut self.con_command.data.base) }
-	}
-
-	pub const fn as_base_object(&mut self) -> &mut VtObject<ConCommandBaseVt> {
-		convert_vt_mut(
-			convert_mut::<_, VtObject<ConCommandVt>>(&mut self.con_command)
-		)
 	}
 
 	const VTABLE: &'static ConCommandVt = &ConCommandVt {
@@ -172,30 +168,24 @@ where
 			// Do nothing here. This method is purely for usage in the `ConCommandBase` constructor.
 		}
 		fn init() {
-			let _ = this;
+			T::init(this_to_self!(mut this))
 		}
 	}
 
 	vtable_methods! {
 		this: VtObjectPtr<ConCommandVt>;
 		fn auto_complete_suggest(partial: *const c_char, commands: RefMut<UtlVector<UtlString>>) -> c_int {
-			// TODO: Proper auto-completion.
-			let _ = this;
 			let partial = unsafe { CStr::from_ptr(partial) };
-			let commands = unsafe {
+			let suggestions = unsafe {
 				Vector::<UtlString, Tier0Memory<UtlString>>::from_mut_ptr(
 					commands.cast::<UtlVector<UtlString, Tier0Memory<UtlString>>>().as_ptr()
 				)
 			};
-			commands.push(CString::from(partial).into_inner());
-			commands.push(CString::from(c"commands[1]").into_inner());
-			commands.push(CString::from(c"commands[2]").into_inner());
-			commands.push(CString::from(c"commands[3]").into_inner());
-			4
+			let suggestions = Suggestions::wrap(suggestions);
+			T::auto_complete_suggest(this_to_self!(mut this), partial, suggestions).get()
 		}
 		fn can_auto_complete() -> bool {
-			let _ = this;
-			true
+			T::can_auto_complete(this_to_self!(mut this))
 		}
 		fn dispatch(command: RefConst<CCommand>) {
 			let invocation = unsafe { Invocation::from_ptr(command.as_ptr()) };
