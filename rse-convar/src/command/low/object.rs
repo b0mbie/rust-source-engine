@@ -37,7 +37,9 @@ use crate::{
 		Command as CCommand,
 		CvarDllIdentifier,
 	},
-	console_base::ConCommandBaseExt,
+	console_base::{
+		ConCommandBaseExt, CvarFlags,
+	},
 	Invocation,
 };
 
@@ -75,6 +77,7 @@ where
 	pub const fn new(
 		inner: T,
 		name: &'a CStr, help: Option<&'a CStr>,
+		flags: CvarFlags,
 	) -> Self {
 		Self {
 			con_command: ConCommand::new(
@@ -85,8 +88,7 @@ where
 						registered: false,
 						name: name.as_ptr(),
 						help_string: crate::util::c_str_ptr(help),
-						// TODO: Flags.
-						flags: 0,
+						flags,
 					},
 					command_callback: CommandCallback {
 						v1: invalid_command_callback,
@@ -148,10 +150,10 @@ where
 	vtable_methods! {
 		this: VtObjectPtr<ConCommandBaseVt>;
 		fn is_flag_set(flag: c_int) -> bool {
-			this_to_self!(ref this).as_base().is_flag_set(flag)
+			T::is_flag_set(this_to_self!(mut this), flag)
 		}
 		fn add_flags(flags: c_int) {
-			this_to_self!(mut this).as_mut_base().add_flags(flags)
+			T::add_flags(this_to_self!(mut this), flags)
 		}
 		fn get_name() -> *const c_char {
 			let this = this_to_self!(mut this);
@@ -164,7 +166,7 @@ where
 			this.con_command.data.base.help_string
 		}
 		fn is_registered() -> bool {
-			this_to_self!(ref this).as_base().is_registered()
+			T::is_registered(this_to_self!(mut this))
 		}
 		fn get_dll_identifier() -> CvarDllIdentifier {
 			T::dll_identifier(this_to_self!(mut this))

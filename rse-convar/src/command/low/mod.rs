@@ -1,7 +1,10 @@
 use ::core::ffi::CStr;
 
 use crate::{
-	console_base::RawConsoleBase,
+	console_base::{
+		RawConsoleBase,
+		CvarFlags,
+	},
 	Invocation,
 };
 
@@ -33,4 +36,8 @@ where
 		partial: &CStr,
 		suggestions: &mut Suggestions,
 	) -> SuggestionCount;
+
+	fn is_flag_set(object: &mut ConCommandObject<'a, Self>, flag: CvarFlags) -> bool {
+		object.as_base().is_flag_set(flag)
+	}
 }

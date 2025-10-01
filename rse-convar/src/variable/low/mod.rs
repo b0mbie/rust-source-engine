@@ -27,5 +27,14 @@ where
 		Self::set_float_forced(object, value)
 	}
 
-	fn change_string_value(object: &mut ConVarObject<'a, Self>, new_value: Option<&CStr>, old_value: c_float);
+	fn change_string_value(object: &mut ConVarObject<'a, Self>, new_value: Option<&CStr>, old_value: c_float) {
+		let _ = object;
+		let _ = new_value;
+		let _ = old_value;
+	}
+	fn clamp_value(object: &mut ConVarObject<'a, Self>, value: &mut c_float) -> bool {
+		let _ = object;
+		let _ = value;
+		false
+	}
 }

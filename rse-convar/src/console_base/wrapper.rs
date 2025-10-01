@@ -11,6 +11,10 @@ impl ConCommandBaseExt {
 		self.0.flags
 	}
 
+	pub const fn flags_mut(&mut self) -> &mut CvarFlags {
+		&mut self.0.flags
+	}
+
 	pub const fn is_flag_set(&self, flag: CvarFlags) -> bool {
 		(self.0.flags & flag) != 0
 	}

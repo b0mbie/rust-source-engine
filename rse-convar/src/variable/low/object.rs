@@ -8,9 +8,8 @@ use ::core::{
 	ptr::null_mut,
 };
 use ::rse_cpp::{
-	ptr_compat::{
-		PointerFrom, convert_ref,
-	},
+	ptr_compat::PointerFrom,
+	convert_vt_ref, convert_vt_mut,
 	new_vtable_self, vtable_methods, this_to_self, virtual_call,
 	AsObject, VtObject,
 	VtObjectPtr, RefMut,
@@ -23,7 +22,7 @@ use crate::{
 		ConVar, ConVarVtExt, ConVarVtFull, ConVarVt,
 		ConVarIfaceVt,
 		ConVarExt as CConVarExt,
-		ConCommandBaseExt as CConCommandBaseExt, ConCommandBaseVt,
+		ConCommandBaseExt as CConCommandBaseExt,
 		ConCommandBaseVtBase,
 		CvarDllIdentifier,
 		FnChangeCallback,
@@ -85,14 +84,20 @@ impl<T> ConVarObject<'_, T> {
 		}
 	}
 
-	/// # Safety
-	/// The returned `ConCommandBase`'s functions must only be used
-	/// up until [`is_command`](ConCommandBaseVt::is_command).
-	/// After this field, [`ConVarVt`] loses compatibility with [`ConCommandBaseVt`],
-	/// however console interfaces only distinguish between ConVars and ConCommands with `is_command`.
-	pub const unsafe fn as_base_ptr(&mut self) -> VtObjectPtr<ConCommandBaseVt> {
-		// SAFETY: `ConVarVt` is compatible up until `ConCommandBaseVt::is_command`, which is good enough for most cases.
-		unsafe { VtObjectPtr::new_unchecked(self as *mut _ as *mut _) }
+	pub const fn as_object(&self) -> &VtObject<ConVarVt> {
+		self.con_var.as_object()
+	}
+
+	pub const fn as_mut_object(&mut self) -> &mut VtObject<ConVarVt> {
+		self.con_var.as_mut_object()
+	}
+
+	pub const fn as_base_object(&self) -> &VtObject<ConCommandBaseVtBase> {
+		convert_vt_ref(self.as_object())
+	}
+
+	pub const fn as_mut_base_object(&mut self) -> &mut VtObject<ConCommandBaseVtBase> {
+		convert_vt_mut(self.as_mut_object())
 	}
 
 	pub const fn as_base(&self) -> &ConCommandBaseExt {
@@ -288,7 +293,7 @@ where
 			this_to_self!(ref this).as_base().is_flag_set(flag)
 		}
 		fn add_flags(flags: c_int) {
-			this_to_self!(mut this).as_mut_base().add_flags(flags)
+			T::add_flags(this_to_self!(mut this), flags)
 		}
 		#[cfg(not(windows))]
 		fn get_name() -> *const c_char {
@@ -300,7 +305,7 @@ where
 			this.con_var.data.base.help_string
 		}
 		fn is_registered() -> bool {
-			this_to_self!(ref this).as_base().is_registered()
+			T::is_registered(this_to_self!(mut this))
 		}
 		fn get_dll_identifier() -> CvarDllIdentifier {
 			T::dll_identifier(this_to_self!(mut this))
@@ -340,7 +345,7 @@ where
 		}
 		fn clamp_value(mut value: RefMut<c_float>) -> bool {
 			let value = unsafe { value.as_mut() };
-			this_to_self!(ref this).as_ext().clamp_value(value)
+			T::clamp_value(this_to_self!(mut this), value)
 		}
 
 		fn change_string_value(new_value: *const c_char, old_value: c_float) {
@@ -375,6 +380,6 @@ unsafe impl<T> PointerFrom<ConVarObject<'_, T>> for ConVar {}
 
 impl<T> AsObject<ConVarVt> for ConVarObject<'_, T> {
 	fn as_object(&self) -> &VtObject<ConVarVt> {
-		convert_ref(&self.con_var)
+		self.con_var.as_object()
 	}
 }

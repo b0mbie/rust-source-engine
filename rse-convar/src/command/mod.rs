@@ -3,23 +3,28 @@
 use ::core::ffi::CStr;
 
 use crate::{
-	console_base::CvarDllIdentifier,
+	console_base::{
+		RawConsoleBase, CvarDllIdentifier, CvarFlags,
+	},
 	Invocation,
 };
 
 pub mod low;
+use low::{
+	ConCommandObject, SuggestionCount,
+};
 
 pub use low::Suggestions;
 
 #[cfg(feature = "macros")]
 mod macros;
 
-/// Returns a new [`ConCommandObject`](low::ConCommandObject) that delegates execution to `T`.
-pub const fn con_command<T>(command: T) -> low::ConCommandObject<'static, T>
+/// Returns a new [`ConCommandObject`] that delegates execution to `T`.
+pub const fn con_command<T>(command: T) -> ConCommandObject<'static, T>
 where
 	T: Command,
 {
-	low::ConCommandObject::new(command, T::NAME, T::HELP)
+	ConCommandObject::new(command, T::NAME, T::HELP, T::FLAGS)
 }
 
 /// # Safety
@@ -28,6 +33,7 @@ where
 pub unsafe trait Command {
 	const NAME: &CStr;
 	const HELP: Option<&CStr> = None;
+	const FLAGS: CvarFlags = 0;
 	fn dispatch(&mut self, invocation: &Invocation);
 	fn can_auto_complete(&mut self) -> bool {
 		false
@@ -40,34 +46,37 @@ pub unsafe trait Command {
 }
 
 unsafe impl<'a, T: Command> low::RawCommand<'a> for T {
-	fn name(object: &mut low::ConCommandObject<'a, Self>) {
+	fn name(object: &mut ConCommandObject<'a, Self>) {
 		let _ = object;
 		// unsafe { object.as_mut_base().as_mut_inner().name = T::NAME.as_ptr() }
 	}
-	fn dispatch(object: &mut low::ConCommandObject<'a, Self>, invocation: &Invocation) {
+	fn dispatch(object: &mut ConCommandObject<'a, Self>, invocation: &Invocation) {
 		object.inner.dispatch(invocation)
 	}
-	fn can_auto_complete(object: &mut low::ConCommandObject<'a, Self>) -> bool {
+	fn can_auto_complete(object: &mut ConCommandObject<'a, Self>) -> bool {
 		object.inner.can_auto_complete()
 	}
 	fn auto_complete_suggest(
-		object: &mut low::ConCommandObject<'a, Self>,
+		object: &mut ConCommandObject<'a, Self>,
 		partial: &CStr,
 		suggestions: &mut Suggestions,
-	) -> low::SuggestionCount {
+	) -> SuggestionCount {
 		object.inner.auto_complete(partial, suggestions);
 		suggestions.count()
 	}
 }
-unsafe impl<'a, T: Command> crate::console_base::RawConsoleBase<low::ConCommandObject<'a, T>> for T {
-	fn init(object: &mut low::ConCommandObject<'a, T>) {
-		let _ = object;
-	}
-	fn help(object: &mut low::ConCommandObject<'a, T>) {
+unsafe impl<'a, T: Command> RawConsoleBase<ConCommandObject<'a, T>> for T {
+	fn help(object: &mut ConCommandObject<'a, T>) {
 		let _ = object;
 		// unsafe { object.as_mut_base().as_mut_inner().help_string = crate::util::c_str_ptr(T::HELP) }
 	}
-	fn dll_identifier(object: &mut low::ConCommandObject<'a, T>) -> CvarDllIdentifier {
+	fn add_flags(object: &mut ConCommandObject<'a, T>, flags: CvarFlags) {
+		object.as_mut_base().add_flags(flags)
+	}
+	fn is_registered(object: &mut ConCommandObject<'a, T>) -> bool {
+		object.as_base().is_registered()
+	}
+	fn dll_identifier(object: &mut ConCommandObject<'a, T>) -> CvarDllIdentifier {
 		object.inner.dll_identifier()
 	}
 }
