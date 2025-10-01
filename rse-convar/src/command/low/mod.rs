@@ -8,14 +8,14 @@ use crate::{
 	Invocation,
 };
 
+use super::{
+	Suggestions, SuggestionCount,
+};
+
 pub use ::rse_utl::CString;
 
 mod object;
 pub use object::*;
-mod suggestion_count;
-pub use suggestion_count::*;
-mod suggestions;
-pub use suggestions::*;
 
 /// # Safety
 /// `name` must modify [`ConCommandObject<Self>`] so that the name string is stored inside of it.

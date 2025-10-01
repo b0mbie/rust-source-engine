@@ -1,8 +1,8 @@
-/// Generates a [`ConVarValue`](crate::variable::low::ConVarValue) expression from a literal value.
+/// Generates a [`ConVarValue`](crate::variable::ConVarValue) expression from a literal value.
 /// 
 /// # Examples
 /// ```
-/// # use rse_convar::{variable::low::ConVarValue, cvar_value};
+/// # use rse_convar::{variable::ConVarValue, cvar_value};
 /// assert_eq!(
 ///     cvar_value!(c"how"),
 ///     ConVarValue {

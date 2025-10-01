@@ -31,7 +31,8 @@ use crate::{
 };
 
 use super::{
-	RawVariable, ConVarExt, ConVarParams,
+	super::ConVarParams,
+	RawVariable, ConVarExt,
 };
 
 const fn limit_value(limit: Option<c_float>) -> c_float {
