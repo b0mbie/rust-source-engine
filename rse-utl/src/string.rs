@@ -170,7 +170,23 @@ impl CString {
 	pub fn set(&mut self, value: &CStr) {
 		let bytes = value.to_bytes();
 		if !bytes.is_empty() {
-			unsafe { self.set_non_empty(bytes) }
+			unsafe { self.set_unchecked(bytes) }
+		} else {
+			self.clear()
+		}
+	}
+
+	/// Copies the slice of bytes into the buffer,
+	/// truncating until the first NUL (`0x00`) character.
+	pub fn set_bytes(&mut self, bytes: &[u8]) {
+		if !bytes.is_empty() {
+			if let Some(nul) = bytes.iter().position(move |&b| b == 0) {
+				let until_nul = unsafe { bytes.get_unchecked(..nul) };
+				let inner = self.alloc_bytes(until_nul.len());
+				inner.copy_from_slice(until_nul);
+			} else {
+				unsafe { self.set_unchecked(bytes) }
+			}
 		} else {
 			self.clear()
 		}
@@ -181,7 +197,7 @@ impl CString {
 	/// # Safety
 	/// `bytes` must not be empty,
 	/// and must not contain inner NUL (`0x00`) characters.
-	pub unsafe fn set_non_empty(&mut self, bytes: &[u8]) {
+	pub unsafe fn set_unchecked(&mut self, bytes: &[u8]) {
 		let len = bytes.len();
 		debug_assert_ne!(len, 0, "`set_non_empty` called with empty slice");
 		let inner = self.alloc_bytes(len);
@@ -255,6 +271,22 @@ impl Ord for CString {
 impl PartialOrd for CString {
 	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
 		Some(self.cmp(other))
+	}
+}
+
+impl From<&str> for CString {
+	fn from(value: &str) -> Self {
+		let mut s = Self::new();
+		s.set_bytes(value.as_bytes());
+		s
+	}
+}
+
+impl From<&[u8]> for CString {
+	fn from(value: &[u8]) -> Self {
+		let mut s = Self::new();
+		s.set_bytes(value);
+		s
 	}
 }
 
