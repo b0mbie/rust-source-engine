@@ -147,7 +147,7 @@ where
 		fn get_name() -> *const c_char {
 			let this = this_to_self!(mut this);
 			T::name(this);
-			this.con_command.data.base.help_string
+			this.con_command.data.base.name
 		}
 		fn get_help_text() -> *const c_char {
 			let this = this_to_self!(mut this);
