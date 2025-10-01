@@ -21,7 +21,7 @@ use crate::{
 	cppdef::{
 		ConVar, ConVarVt, ConVarVtBase,
 		ConVarExt as CConVarExt,
-		ConCommandBase, ConCommandBaseExt as CConCommandBaseExt, ConCommandBaseVt,
+		ConCommandBaseExt as CConCommandBaseExt, ConCommandBaseVt,
 		CvarDllIdentifier,
 		FnChangeCallback,
 	},
