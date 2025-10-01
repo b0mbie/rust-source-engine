@@ -4,7 +4,12 @@ version = "0.1.0"
 edition = "2024"
 authors.workspace = true
 
+[features]
+default = ["macros"]
+macros = ["dep:concat-idents"]
+
 [dependencies]
+concat-idents = { version = "1.1.5", optional = true }
 rse-cpp.workspace = true
 rse-interface.workspace = true
 rse-utl.workspace = true
