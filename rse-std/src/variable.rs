@@ -7,7 +7,7 @@ use ::rse_convar::{
 		fcvar, COMMAND_MAX_LENGTH,
 	},
 	console_base::{
-		RawConsoleBase, CvarDllIdentifier,
+		RawConsoleBase, CvarDllIdentifier, CvarFlags,
 	},
 	variable::{
 		low::{
@@ -165,13 +165,16 @@ unsafe impl<'a, T> RawConsoleBase<ConVarObject<'a, Self>> for StdVariable<T>
 where
 	T: Variable,
 {
-	fn init(object: &mut ConVarObject<'a, Self>) {
-		let _ = object;
-	}
 	fn help(object: &mut ConVarObject<'a, Self>) {
 		unsafe {
 			object.as_mut_base().as_mut_inner().help_string = T::HELP.map(move |s| s.as_ptr()).unwrap_or_default()
 		}
+	}
+	fn add_flags(object: &mut ConVarObject<'a, Self>, flags: CvarFlags) {
+		object.as_mut_base().add_flags(flags)
+	}
+	fn is_registered(object: &mut ConVarObject<'a, Self>) -> bool {
+		object.as_base().is_registered()
 	}
 	fn dll_identifier(object: &mut ConVarObject<'a, Self>) -> CvarDllIdentifier {
 		object.inner.inner.dll_identifier()

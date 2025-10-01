@@ -5,13 +5,13 @@ members = [
 	"rse-utl",
 	"rse-interface",
 	"rse-convar",
-	"rse-convar-std",
 	"rse-math",
 	"rse-scratch-pad",
 	"rse-game",
 	"rse-game-interfaces",
 	"rse-tier0",
 	"rse-plugin",
+	"rse-std",
 	"test-plugin",
 ]
 
