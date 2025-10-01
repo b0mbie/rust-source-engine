@@ -4,6 +4,9 @@ use ::core::ffi::{
 
 use crate::console_base::RawConsoleBase;
 
+#[cfg(feature = "macros")]
+mod macros;
+
 mod object;
 pub use object::*;
 mod params;
