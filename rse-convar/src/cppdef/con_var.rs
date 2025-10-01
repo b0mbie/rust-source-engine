@@ -6,9 +6,9 @@ use ::core::{
 };
 use ::rse_cpp::{
 	vtable,
-	RefMut,
-	VtObjectMut, VtObjectPtr,
-	WithVTable,
+	RefMut, VtObjectMut,
+	WithVTable, VTablePtr,
+	TypeInfo,
 };
 
 use super::{
@@ -19,11 +19,14 @@ pub type FnChangeCallback = unsafe extern "C" fn(
 	var: VtObjectMut<ConVarIfaceVt>, old_string: *const c_char, old_value: c_float,
 );
 
-pub type ConVar = WithVTable<ConVarVt, ConVarExt>;
+// HACK: For whatever reason, the VTable on windows doesn't include some functions from `ConCommandBaseVt`.
+// So we can't use that struct there!
+pub type ConVar = WithVTable<ConVarVtBase, ConVarExt>;
 
 #[repr(C)]
 pub struct ConVarExt {
 	pub base: ConCommandBaseExt,
+	pub iface: VTablePtr<ConVarIfaceVt>,
 
 	/// Parent of the `ConVar`,
 	/// or a pointer to this one.
@@ -63,21 +66,18 @@ pub struct ConVarExt {
 	pub using_competitive_restrictions: bool,
 }
 
-// TODO: Add a `typeinfo` field for `ConVar`.
-// This is because of a `dynamic_cast` to `ConVar_ServerBounded` in `ConVar_PrintDescription`.
-// It can just be null,
-// in which case the cast will just always fail due to a simple pointer comparison failure in Itanium.
-// HACK: For whatever reason, the VTable on windows doesn't include some functions from `ConCommandBaseVt`.
-// So we can't use that struct there!
 #[repr(C)]
 pub struct ConVarVt {
-	pub con_var: ConVarVtBase,
+	pub offset_to_derived: isize,
+	pub type_info: *const TypeInfo,
+	// This is what will be pointed to by `ConVar`.
+	pub base: ConVarVtBase,
 }
 
 vtable! {
 	// Even though `ConVar` implements some `IConVar` methods,
 	// due to them having the same signature as in `ConCommand`
-	pub ConVarVtBase for VtObjectPtr<ConVarVt> {
+	pub ConVarVtBase {
 		pub fn destructor();
 		#[cfg(not(windows))]
 		pub fn destructor_2();

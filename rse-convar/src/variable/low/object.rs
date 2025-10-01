@@ -11,15 +11,17 @@ use ::rse_cpp::{
 	ptr_compat::{
 		PointerFrom, convert_ref,
 	},
-	new_vtable_self, vtable_methods, this_to_self,
+	new_vtable_self, vtable_methods, this_to_self, virtual_call,
 	AsObject, VtObject,
 	VtObjectPtr, RefMut,
+	TypeInfo,
 	VTablePtr,
 };
 
 use crate::{
 	cppdef::{
 		ConVar, ConVarVt, ConVarVtBase,
+		ConVarIfaceVt,
 		ConVarExt as CConVarExt,
 		ConCommandBaseExt as CConCommandBaseExt, ConCommandBaseVt,
 		CvarDllIdentifier,
@@ -31,13 +33,6 @@ use crate::{
 use super::{
 	RawVariable, ConVarExt, ConVarParams,
 };
-
-macro_rules! cvar_call {
-	($vt_object:expr => $name:ident($($arg:tt)*)) => {{
-		let vt_object: &::rse_cpp::VtObject<ConVarVt> = $vt_object;
-		(vt_object.vtable().con_var.$name)(vt_object.as_ptr(), $($arg)*)
-	}};
-}
 
 const fn limit_value(limit: Option<c_float>) -> c_float {
 	match limit {
@@ -134,7 +129,7 @@ where
 		let ConVarParams { name, help, default, min, max, comp_min, comp_max } = params;
 		Self {
 			con_var: ConVar::new(
-				unsafe { VTablePtr::new_unchecked(Self::VTABLE as *const _ as *mut _) },
+				unsafe { VTablePtr::new_unchecked(&Self::CON_VAR_VT.base as *const _ as *mut _) },
 				CConVarExt {
 					base: CConCommandBaseExt {
 						next: None,
@@ -144,6 +139,7 @@ where
 						// TODO: Flags.
 						flags: 0,
 					},
+					iface: unsafe { VTablePtr::new_unchecked(Self::IFACE_VT as *const _ as *mut _) },
 
 					parent: null_mut(),
 					parent_pin: PhantomPinned,
@@ -172,8 +168,55 @@ where
 		}
 	}
 
-	const VTABLE: &'static ConVarVt = &ConVarVt {
-		con_var: new_vtable_self!(ConVarVtBase {
+	const TYPE_INFO: &'static TypeInfo = &TypeInfo::new(c"6ConVar");
+
+	// TODO: Test if these implementations are okay.
+	const IFACE_VT: &'static ConVarIfaceVt = &ConVarIfaceVt {
+		set_value_string: Self::iface_set_value_string,
+		set_value_float: Self::iface_set_value_float,
+		set_value_int: Self::iface_set_value_int,
+		get_name: Self::iface_get_name,
+		is_flag_set: Self::iface_is_flag_set,
+	};
+
+	unsafe fn do_set_value_string(&mut self, value: *const c_char) {
+		let vt_object = self.parent_mut().as_object();
+		unsafe { virtual_call!(vt_object => internal_set_value(value)) }
+	}
+
+	unsafe fn do_set_value_float(&mut self, value: c_float) {
+		let vt_object = self.parent_mut().as_object();
+		unsafe { virtual_call!(vt_object => internal_set_float_value(value)) }
+	}
+
+	unsafe fn do_set_value_int(&mut self, value: c_int) {
+		let vt_object = self.parent_mut().as_object();
+		unsafe { virtual_call!(vt_object => internal_set_int_value(value)) }
+	}
+
+	vtable_methods! {
+		this: VtObjectPtr<ConVarIfaceVt>;
+		fn iface_set_value_string(value: *const c_char) {
+			unsafe { this_to_self!(mut this).do_set_value_string(value) }
+		}
+		fn iface_set_value_float(value: c_float) {
+			unsafe { this_to_self!(mut this).do_set_value_float(value) }
+		}
+		fn iface_set_value_int(value: c_int) {
+			unsafe { this_to_self!(mut this).do_set_value_int(value) }
+		}
+		fn iface_get_name() -> *const c_char {
+			this_to_self!(ref this).con_var.data.base.name
+		}
+		fn iface_is_flag_set(flag: c_int) -> bool {
+			this_to_self!(ref this).as_base().is_flag_set(flag)
+		}
+	}
+
+	const CON_VAR_VT: &'static ConVarVt = &ConVarVt {
+		offset_to_derived: 0,
+		type_info: Self::TYPE_INFO,
+		base: new_vtable_self!(ConVarVtBase {
 			destructor,
 			#[cfg(not(windows))]
 			destructor_2,
@@ -205,7 +248,7 @@ where
 	};
 
 	vtable_methods! {
-		this: VtObjectPtr<ConVarVt>;
+		this: VtObjectPtr<ConVarVtBase>;
 		fn destructor() {
 			let _ = this;
 			// TODO: Destructor?
@@ -253,21 +296,15 @@ where
 		}
 		#[cfg(not(windows))]
 		fn set_value_string(value: *const c_char) {
-			let this = this_to_self!(mut this);
-			let vt_object = this.parent_mut().as_object();
-			unsafe { cvar_call!(vt_object => set_value_string(value)) }
+			unsafe { this_to_self!(mut this).do_set_value_string(value) }
 		}
 		#[cfg(not(windows))]
 		fn set_value_float(value: c_float) {
-			let this = this_to_self!(mut this);
-			let vt_object = this.parent_mut().as_object();
-			unsafe { cvar_call!(vt_object => set_value_float(value)) }
+			unsafe { this_to_self!(mut this).do_set_value_float(value) }
 		}
 		#[cfg(not(windows))]
 		fn set_value_int(value: c_int) {
-			let this = this_to_self!(mut this);
-			let vt_object = this.parent_mut().as_object();
-			unsafe { cvar_call!(vt_object => set_value_int(value)) }
+			unsafe { this_to_self!(mut this).do_set_value_int(value) }
 		}
 
 		fn internal_set_value(value: *const c_char) {
@@ -315,8 +352,8 @@ where
 
 unsafe impl<T> PointerFrom<ConVarObject<'_, T>> for ConVar {}
 
-impl<T> AsObject<ConVarVt> for ConVarObject<'_, T> {
-	fn as_object(&self) -> &VtObject<ConVarVt> {
+impl<T> AsObject<ConVarVtBase> for ConVarObject<'_, T> {
+	fn as_object(&self) -> &VtObject<ConVarVtBase> {
 		convert_ref(&self.con_var)
 	}
 }
