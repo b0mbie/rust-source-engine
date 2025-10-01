@@ -3,5 +3,9 @@ name = "rse-cpp"
 edition = "2024"
 publish = false
 
+[features]
+default = ["gcc"]
+gcc = []
+
 [dependencies]
 cppdvt.workspace = true
