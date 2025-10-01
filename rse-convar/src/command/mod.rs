@@ -27,9 +27,8 @@ where
 /// `ICvar::AllocateDLLIdentifier`.
 pub unsafe trait Command {
 	const NAME: &CStr;
-	const HELP: Option<&CStr>;
+	const HELP: Option<&CStr> = None;
 	fn dispatch(&mut self, invocation: &Invocation);
-
 	fn can_auto_complete(&mut self) -> bool {
 		false
 	}
@@ -37,7 +36,6 @@ pub unsafe trait Command {
 		let _ = partial;
 		let _ = suggestions;
 	}
-
 	fn dll_identifier(&mut self) -> CvarDllIdentifier;
 }
 
