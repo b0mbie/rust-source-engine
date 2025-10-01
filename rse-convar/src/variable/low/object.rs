@@ -8,7 +8,11 @@ use ::core::{
 	ptr::null_mut,
 };
 use ::rse_cpp::{
+	ptr_compat::{
+		PointerFrom, convert_ref,
+	},
 	new_vtable_self, vtable_methods, this_to_self,
+	AsObject, VtObject,
 	VtObjectPtr, RefMut,
 	VTablePtr,
 };
@@ -17,7 +21,7 @@ use crate::{
 	cppdef::{
 		ConVar, ConVarVt, ConVarVtBase,
 		ConVarExt as CConVarExt,
-		ConCommandBaseExt as CConCommandBaseExt,
+		ConCommandBase, ConCommandBaseExt as CConCommandBaseExt, ConCommandBaseVt,
 		CvarDllIdentifier,
 		FnChangeCallback,
 	},
@@ -83,6 +87,16 @@ impl<T> ConVarObject<'_, T> {
 		if self.con_var.data.parent.is_null() {
 			self.con_var.data.parent = &mut self.con_var;
 		}
+	}
+
+	/// # Safety
+	/// The returned `ConCommandBase`'s functions must only be used
+	/// up until [`is_command`](ConCommandBaseVt::is_command).
+	/// After this field, [`ConVarVt`] loses compatibility with [`ConCommandBaseVt`],
+	/// however console interfaces only distinguish between ConVars and ConCommands with `is_command`.
+	pub const unsafe fn as_base_ptr(&mut self) -> VtObjectPtr<ConCommandBaseVt> {
+		// SAFETY: `ConVarVt` is compatible up until `ConCommandBaseVt::is_command`, which is good enough for most cases.
+		unsafe { VtObjectPtr::new_unchecked(self as *mut _ as *mut _) }
 	}
 
 	pub const fn as_base(&self) -> &ConCommandBaseExt {
@@ -296,5 +310,13 @@ where
 				T::set_float(this, value)
 			}
 		}
+	}
+}
+
+unsafe impl<T> PointerFrom<ConVarObject<'_, T>> for ConVar {}
+
+impl<T> AsObject<ConVarVt> for ConVarObject<'_, T> {
+	fn as_object(&self) -> &VtObject<ConVarVt> {
+		convert_ref(&self.con_var)
 	}
 }
