@@ -5,6 +5,7 @@ members = [
 	"rse-utl",
 	"rse-interface",
 	"rse-convar",
+	"rse-convar-std",
 	"rse-math",
 	"rse-scratch-pad",
 	"rse-game",

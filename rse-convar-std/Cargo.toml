@@ -1,0 +1,10 @@
+[package]
+name = "rse-convar-std"
+version = "0.1.0"
+edition = "2024"
+authors.workspace = true
+
+[dependencies]
+libc.workspace = true
+rse-convar.workspace = true
+rse-game-interfaces.workspace = true
