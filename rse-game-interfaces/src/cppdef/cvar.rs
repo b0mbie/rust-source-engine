@@ -2,13 +2,12 @@ use ::core::ffi::{
 	CStr, c_char, c_float, c_int,
 };
 use ::rse_convar::cppdef::{
-	ConVar, ConCommandVt,
-	ConCommandBaseVtBase, 
+	ConCommandBase, ConCommand, ConVar,
 	CvarDllIdentifier,
 	FnChangeCallback,
 };
 use ::rse_cpp::{
-	vtable, RefConst, VtObjectMut, VtObjectRef, VtObjectPtr,
+	vtable, RefConst, VtObjectMut, VtObjectPtr,
 };
 use ::rse_interface::cppdef::app_system::AppSystemVt;
 use ::rse_math::Color;
@@ -17,18 +16,18 @@ pub const CVAR_INTERFACE_VERSION: &CStr = c"VEngineCvar004";
 vtable! {
 	pub CvarVtBase for VtObjectPtr<CvarVt> {
 		pub fn allocate_dll_identifier() -> CvarDllIdentifier;
-		pub fn register_con_command(command_base: VtObjectMut<ConCommandBaseVtBase>);
-		pub fn unregister_con_command(command_base: VtObjectMut<ConCommandBaseVtBase>);
+		pub fn register_con_command(command_base: *mut ConCommandBase);
+		pub fn unregister_con_command(command_base: *mut ConCommandBase);
 		pub fn unregister_con_commands(id: CvarDllIdentifier);
 		pub fn get_command_line_value(name: *const c_char) -> *const c_char;
-		pub fn find_command_base(name: *const c_char) -> Option<VtObjectMut<ConCommandBaseVtBase>>;
-		pub fn find_command_base_const(name: *const c_char) -> Option<VtObjectRef<ConCommandBaseVtBase>>;
-		pub fn find_var(name: *const c_char) -> Option<*mut ConVar>;
-		pub fn find_var_const(name: *const c_char) -> Option<*const ConVar>;
-		pub fn find_command(name: *const c_char) -> Option<VtObjectMut<ConCommandVt>>;
-		pub fn find_command_const(name: *const c_char) -> Option<VtObjectRef<ConCommandVt>>;
-		pub fn get_commands() -> VtObjectMut<ConCommandBaseVtBase>;
-		pub fn get_commands_const() -> VtObjectRef<ConCommandBaseVtBase>;
+		pub fn find_command_base(name: *const c_char) -> *mut ConCommandBase;
+		pub fn find_command_base_const(name: *const c_char) -> *const ConCommandBase;
+		pub fn find_var(name: *const c_char) -> *mut ConVar;
+		pub fn find_var_const(name: *const c_char) -> *const ConVar;
+		pub fn find_command(name: *const c_char) -> *mut ConCommand;
+		pub fn find_command_const(name: *const c_char) -> *const ConCommand;
+		pub fn get_commands() -> *mut ConCommandBase;
+		pub fn get_commands_const() -> *const ConCommandBase;
 		pub fn install_global_change_callback(callback: FnChangeCallback);
 		pub fn remove_global_change_callback(callback: FnChangeCallback);
 		pub fn call_global_change_callbacks(var: *mut ConVar, old_string: *const c_char, old_value: c_float);
