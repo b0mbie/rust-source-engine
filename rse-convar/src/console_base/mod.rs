@@ -2,6 +2,8 @@ pub use crate::cppdef::{
 	CvarDllIdentifier, CvarFlags,
 };
 
+mod convert;
+pub use convert::*;
 mod wrapper;
 pub use wrapper::*;
 
