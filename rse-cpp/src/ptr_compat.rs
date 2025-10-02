@@ -74,7 +74,7 @@ where
 ///   `size_of::<Self>() <= size_of::<Dest>()`.
 /// 
 /// Besides these, however, there are other cases where some type may be pointer-from-compatible with `Src`.
-/// Notably, [`WithVTable<VTable, T>`] is pointer-from-compatible with `WithVTable<VTable2, U>`
+/// Notably, [`WithVTable<VTable, T>`](crate::WithVTable) is pointer-from-compatible with `WithVTable<VTable2, U>`
 /// if both `VTable` and `Src` are *pointer-from-compatible* with `VTable2` and `U` respectively.
 /// Translating to C++ semantics,
 /// different C++ types *can* be pointer-from-compatible
