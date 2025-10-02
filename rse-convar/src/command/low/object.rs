@@ -7,7 +7,7 @@ use ::core::{
 use ::rse_cpp::{
 	ptr_compat::{
 		PointerFrom,
-		convert_ref, convert_mut,
+		convert_ref, convert_mut, convert_mut_ptr,
 	},
 	convert_vt_ref, convert_vt_mut,
 	new_vtable_self, vtable_methods, this_to_self,
@@ -39,6 +39,7 @@ use crate::{
 	},
 	console_base::{
 		ConCommandBaseExt, CvarFlags,
+		AsConCommandBase,
 	},
 	Invocation,
 };
@@ -207,6 +208,12 @@ where
 
 unsafe impl<T> PointerFrom<ConCommandObject<'_, T>> for ConCommand {}
 unsafe impl<T> PointerFrom<ConCommandObject<'_, T>> for CConCommandBase {}
+
+unsafe impl<T> AsConCommandBase for ConCommandObject<'_, T> {
+	fn as_con_command_base(&mut self) -> *mut CConCommandBase {
+		convert_mut_ptr(&mut self.con_command)
+	}
+}
 
 impl<T> AsObject<ConCommandVt> for ConCommandObject<'_, T> {
 	fn as_object(&self) -> &VtObject<ConCommandVt> {

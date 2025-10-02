@@ -28,6 +28,7 @@ pub struct ConCommandExt {
 	pub completion_callback: CompletionCallback,
 	pub bits: ConCommandBits,
 }
+unsafe impl PointerFrom<ConCommandExt> for ConCommandBaseExt {}
 
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
