@@ -39,14 +39,14 @@
 #[macro_export]
 macro_rules! cvar_value {
 	($c_str:expr $(,)?) => {
-		$crate::variable::low::ConVarValue {
+		$crate::variable::ConVarValue {
 			c_str: $c_str,
 			float: 0.0,
 			int: 0,
 		}
 	};
 	(s $value:expr $(,)?) => {
-		$crate::variable::low::ConVarValue {
+		$crate::variable::ConVarValue {
 			c_str: $value,
 			float: 0.0,
 			int: 0,
@@ -54,7 +54,7 @@ macro_rules! cvar_value {
 	};
 	(f $value:literal $(,)?) => {{
 		let float = $value;
-		$crate::variable::low::ConVarValue {
+		$crate::variable::ConVarValue {
 			c_str: unsafe { ::core::ffi::CStr::from_bytes_with_nul_unchecked(
 				::core::concat!(::core::stringify!($value), '\0').as_bytes()
 			) },
@@ -64,7 +64,7 @@ macro_rules! cvar_value {
 	}};
 	(i $value:literal $(,)?) => {{
 		let int = $value;
-		$crate::variable::low::ConVarValue {
+		$crate::variable::ConVarValue {
 			c_str: unsafe { ::core::ffi::CStr::from_bytes_with_nul_unchecked(
 				::core::concat!(::core::stringify!($value), '\0').as_bytes()
 			) },
