@@ -45,7 +45,7 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// # Safety
 	/// `dll_identifier` must be a [`CvarDllIdentifier`] that was returned by a call to
 	/// [`allocate_dll_identifier`](CvarImpl::allocate_dll_identifier).
-	unsafe fn unregister_all<C>(&mut self, dll_identifier: CvarDllIdentifier) {
+	unsafe fn unregister_all(&mut self, dll_identifier: CvarDllIdentifier) {
 		unsafe { virtual_call!(self.as_object() => cvar.unregister_con_commands(dll_identifier)) }
 	}
 }
