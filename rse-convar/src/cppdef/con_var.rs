@@ -65,6 +65,7 @@ pub struct ConVarExt {
 	pub comp_max_value: c_float,
 	pub using_competitive_restrictions: bool,
 }
+unsafe impl PointerFrom<ConVarExt> for ConCommandBaseExt {}
 
 #[repr(C)]
 pub struct ConVarVtFull {
@@ -81,6 +82,7 @@ pub struct ConVarVt {
 	pub base: ConCommandBaseVtBase,
 	pub ext: ConVarVtExt,
 }
+unsafe impl PointerFrom<ConVarVt> for ConCommandBaseVtBase {}
 
 vtable! {
 	pub ConVarVtExt for VtObjectPtr<ConVarVt> {
@@ -121,7 +123,6 @@ vtable! {
 		pub fn internal_set_float_value_2(value: c_float, force: bool);
 	}
 }
-unsafe impl PointerFrom<ConVarVt> for ConCommandBaseVtBase {}
 
 vtable! {
 	pub ConVarIfaceVt {
