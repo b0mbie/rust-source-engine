@@ -50,27 +50,6 @@ const unsafe fn c_str_from<'a>(ptr: *const c_char) -> Option<&'a CStr> {
 	}
 }
 
-#[repr(transparent)]
-pub struct StaticConVarObject<T> {
-	maybe_unparented: ConVarObject<'static, T>,
-}
-
-impl<T> StaticConVarObject<T>
-where
-	T: RawVariable<'static>,
-{
-	pub const fn new(inner: T, params: ConVarParams<'static>) -> Self {
-		Self {
-			maybe_unparented: ConVarObject::unparented(inner, params),
-		}
-	}
-
-	pub const fn as_inner(&mut self) -> &mut ConVarObject<'static, T> {
-		self.maybe_unparented.init_parent();
-		&mut self.maybe_unparented
-	}
-}
-
 #[repr(C)]
 pub struct ConVarObject<'a, T> {
 	con_var: ConVar,
@@ -83,6 +62,17 @@ impl<T> ConVarObject<'_, T> {
 		if self.con_var.data.parent.is_null() {
 			self.con_var.data.parent = &mut self.con_var;
 		}
+	}
+
+	pub const fn as_con_var(&self) -> &ConVar {
+		&self.con_var
+	}
+
+	/// # Safety
+	/// The returned [`ConVar`]'s public fields must not be mutated
+	/// such that they could cause Undefined Behavior when used in conjunction with `T`.
+	pub const unsafe fn as_mut_con_var(&mut self) -> &mut ConVar {
+		&mut self.con_var
 	}
 
 	pub const fn as_object(&self) -> &VtObject<ConVarVt> {
