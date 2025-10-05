@@ -2,8 +2,6 @@ use ::core::ffi::{
 	CStr, c_float, c_int,
 };
 
-use crate::console_base::CvarDllIdentifier;
-
 use super::{
 	ConVarParams, ConVarValue,
 };
@@ -21,10 +19,7 @@ where
 	}
 }
 
-/// # Safety
-/// `dll_identifier` must return a valid identifier previously returned by
-/// `ICvar::AllocateDLLIdentifier`.
-pub unsafe trait Variable: Sized {
+pub trait Variable: Sized {
 	const NAME: &CStr;
 	const DEFAULT: ConVarValue<'static>;
 
@@ -39,8 +34,6 @@ pub unsafe trait Variable: Sized {
 		let _ = new;
 		let _ = old;
 	}
-
-	fn dll_identifier(&mut self) -> CvarDllIdentifier;
 }
 
 #[derive(Debug, PartialEq, PartialOrd)]
