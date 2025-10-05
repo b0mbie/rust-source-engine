@@ -16,11 +16,14 @@ use ::rse_convar::{
 		Variable, NewValue, OldValue,
 	},
 };
-use ::rse_game_interfaces::{
-	Cvar, CvarImpl,
+use ::rse_game_interfaces::cvar::{
+	CvarImpl, QueueMaterialThreadValue,
 };
 
-use crate::CBuffer;
+use crate::{
+	c_buffer::CBuffer,
+	cvar::CvarWrite,
+};
 
 type ValueBuffer = CBuffer<{COMMAND_MAX_LENGTH - 2}>;
 
@@ -39,14 +42,28 @@ impl<T> StdVariable<T> {
 	}
 }
 
-// TODO: Mimic standard ConVar behavior.
+fn set_preamble<T, V>(object: &mut ConVarObject<'_, T>, value: V) -> bool
+where
+	V: QueueMaterialThreadValue,
+{
+	// If we're supposed to only be set on the material thread...
+	if object.as_base().is_flag_set(fcvar::MATERIAL_THREAD_MASK)
+		&& let Some(mut cvar) = CvarWrite::acquire()
+		&& !cvar.is_material_thread_set_allowed()
+	{
+		unsafe { cvar.queue_material_thread_set(object.as_mut_con_var(), value) }
+		false
+	} else {
+		object.as_ext().is_root()
+	}
+}
+
 impl<'a, T> RawVariable<'a> for StdVariable<T>
 where
 	T: Variable,
 {
 	fn set_c_str(object: &mut ConVarObject<'a, Self>, value: Option<&CStr>) {
-		// TODO: Material thread check and queue.
-		if !object.as_ext().is_root() {
+		if !set_preamble(object, value) {
 			return
 		}
 
@@ -65,24 +82,29 @@ where
 			value
 		};
 
-		*object.as_mut_ext().float_mut() = new_float_value;
-		*object.as_mut_ext().int_mut() = new_float_value as c_int;
+		unsafe {
+			let con_var = &mut object.as_mut_con_var().data;
+			con_var.value_float = new_float_value;
+			con_var.value_int = new_float_value as c_int;
+		}
 
 		if !object.as_base().is_flag_set(fcvar::NEVER_AS_STRING) {
 			Self::change_string_value(object, value, old_value);
 		}
 	}
 	fn set_float_forced(object: &mut ConVarObject<'a, Self>, mut value: c_float) {
-		// TODO: Material thread check and queue.
-		if !object.as_ext().is_root() {
+		if !set_preamble(object, value) {
 			return
 		}
 
 		object.as_ext().clamp_value(&mut value);
 
 		let old_value = object.as_ext().float();
-		*object.as_mut_ext().float_mut() = value;
-		*object.as_mut_ext().int_mut() = value as _;
+		unsafe {
+			let con_var = &mut object.as_mut_con_var().data;
+			con_var.value_float = value;
+			con_var.value_int = value as _;
+		}
 
 		if !object.as_base().is_flag_set(fcvar::NEVER_AS_STRING) {
 			let old_value_string = old_value_string(object);
@@ -91,8 +113,7 @@ where
 		}
 	}
 	fn set_int(object: &mut ConVarObject<'a, Self>, mut value: c_int) {
-		// TODO: Material thread check and queue.
-		if !object.as_ext().is_root() {
+		if !set_preamble(object, value) {
 			return
 		}
 
@@ -102,8 +123,11 @@ where
 		}
 
 		let old_value = object.as_ext().float();
-		*object.as_mut_ext().float_mut() = float_value;
-		*object.as_mut_ext().int_mut() = value;
+		unsafe {
+			let con_var = &mut object.as_mut_con_var().data;
+			con_var.value_float = float_value;
+			con_var.value_int = value;
+		}
 
 		if !object.as_base().is_flag_set(fcvar::NEVER_AS_STRING) {
 			let old_value_string = old_value_string(object);
@@ -177,6 +201,7 @@ where
 		object.as_base().is_registered()
 	}
 	fn dll_identifier(object: &mut ConVarObject<'a, Self>) -> CvarDllIdentifier {
-		object.inner.inner.dll_identifier()
+		let _ = object;
+		crate::cvar::dll_identifier()
 	}
 }

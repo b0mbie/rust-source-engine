@@ -1,27 +1,17 @@
-#![no_std]
-
-use ::rse_convar::variable::{
-	low::StaticConVarObject,
-	Variable, params_for,
-};
-
 pub use ::rse_convar as convar;
 
-mod c_buffer;
-use c_buffer::*;
-mod variable;
-pub use variable::*;
+pub(crate) mod atomic;
+pub(crate) mod c_buffer;
 
-pub const fn static_con_var<T>(variable: T) -> StaticConVarObject<StdVariable<T>>
-where
-	T: Variable,
-{
-	StaticConVarObject::new(StdVariable::new(variable), params_for::<T>())
-}
+pub mod cvar;
+
+pub mod command;
+pub mod plugin;
+pub mod variable;
 
 pub mod prelude {
 	pub use ::rse_convar::prelude::*;
-	pub use crate::{
-		StdVariable, static_con_var,
+	pub use crate::variable::{
+		ConVar, con_var,
 	};
 }

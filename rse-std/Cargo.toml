@@ -4,7 +4,22 @@ version = "0.1.0"
 edition = "2024"
 authors.workspace = true
 
+[features]
+default = []
+link-srv = ["rse-tier0/link-srv"]
+link-optional = ["rse-tier0/link-optional"]
+doc = ["link-optional"]
+
 [dependencies]
 libc.workspace = true
+thiserror.workspace = true
 rse-convar.workspace = true
+rse-game.workspace = true
 rse-game-interfaces.workspace = true
+rse-interface.workspace = true
+rse-plugin.workspace = true
+
+[dependencies.rse-tier0]
+path = "../rse-tier0"
+default-features = false
+features = ["link-dll"]
