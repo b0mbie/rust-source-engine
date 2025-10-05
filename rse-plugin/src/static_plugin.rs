@@ -46,15 +46,15 @@ use crate::{
 /// See the [crate-level documentation](crate#panicking) for information about panicking in plugin functions.
 pub trait StaticPlugin: Plugin {
 	const NOT_LOADED: Self;
-	/// Returns `true` if the plugin was successfully initialized,
-	/// or `false` if loading failed for whatever reason.
+	/// Loads the plugin,
+	/// returning `false` if loading failed for whatever reason.
 	/// 
 	/// # Safety
 	/// Each call to `load` *must* eventually be followed by a call to [`unload`](StaticPlugin::unload).
 	/// 
 	/// If `load` returns `false`, then it *must not* be called again until `unload` is called.
 	unsafe fn load(&mut self, factories: InterfaceFactories<'_>) -> bool;
-	/// Called when the plugin is unloaded.
+	/// Unloads the plugin.
 	/// 
 	/// # Safety
 	/// Each call to [`load`](StaticPlugin::load) *must* eventually be followed by a call to `unload`.
