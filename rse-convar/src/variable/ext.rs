@@ -7,6 +7,8 @@ use ::core::{
 
 use crate::console_base::ConCommandBaseExt;
 
+use super::GetValue;
+
 ::rse_cpp::transparent_wrapper! {
 	pub struct ConVarExt for crate::cppdef::ConVarExt as "ConVar";
 }
@@ -44,10 +46,12 @@ macro_rules! limit_funcs {
 }
 
 impl ConVarExt {
+	/// Returns an immutable reference to the inner [`ConCommandBaseExt`].
 	pub const fn as_base(&self) -> &ConCommandBaseExt {
 		unsafe { ConCommandBaseExt::from_ref(&self.0.base) }
 	}
 
+	/// Returns a mutable reference to the inner [`ConCommandBaseExt`].
 	pub const fn as_mut_base(&mut self) -> &mut ConCommandBaseExt {
 		unsafe { ConCommandBaseExt::from_mut(&mut self.0.base) }
 	}
@@ -67,58 +71,88 @@ impl ConVarExt {
 		unsafe { Self::from_mut(&mut (&mut *self.0.parent).data) }
 	}
 
+	/// Returns the default string value of this ConVar.
 	pub const fn default(&self) -> &CStr {
 		unsafe { CStr::from_ptr(self.0.default_value) }
 	}
 
+	/// Returns the `T` value of this ConVar.
+	pub fn get<'a, T: GetValue<'a>>(&'a self) -> T {
+		T::get_value(self)
+	}
+
+	/// Returns the [`CStr`] value of this ConVar.
 	pub const fn c_str(&self) -> &CStr {
 		unsafe { CStr::from_ptr(self.0.value_string) }
 	}
 
+	/// Returns the [`c_float`] value of this ConVar.
 	pub const fn float(&self) -> c_float {
 		self.0.value_float
 	}
 
-	pub const fn float_mut(&mut self) -> &mut c_float {
-		&mut self.0.value_float
-	}
-
+	/// Returns the [`c_int`] value of this ConVar.
 	pub const fn int(&self) -> c_int {
 		self.0.value_int
 	}
 
-	pub const fn int_mut(&mut self) -> &mut c_int {
-		&mut self.0.value_int
-	}
-
 	limit_funcs! {
 		lim_value = min_value;
+		/// Returns `true` if this ConVar has a minimum value.
 		has_lim = has_min;
+		/// Returns the minimum value of this ConVar,
+		/// or `0` if it doesn't have one.
 		lim_unwrap = min_unwrap;
+		/// Returns the minimum value of this ConVar,
+		/// or `None` if it doesn't have one.
 		lim = min;
 	}
 
 	limit_funcs! {
 		lim_value = max_value;
+		/// Returns `true` if this ConVar has a maximum value.
 		has_lim = has_max;
+		/// Returns the maximum value of this ConVar,
+		/// or `0` if it doesn't have one.
 		lim_unwrap = max_unwrap;
+		/// Returns the maximum value of this ConVar,
+		/// or `None` if it doesn't have one.
 		lim = max;
 	}
 
 	limit_funcs! {
 		lim_value = comp_min_value;
+		/// Returns `true` if this ConVar has a minimum value
+		/// for competitive play.
 		has_lim = has_comp_min;
+		/// Returns the minimum value of this ConVar for competitive play,
+		/// or `0` if it doesn't have one.
 		lim_unwrap = comp_min_unwrap;
+		/// Returns the minimum value of this ConVar for competitive play,
+		/// or `None` if it doesn't have one.
 		lim = comp_min;
 	}
 
 	limit_funcs! {
 		lim_value = comp_max_value;
+		/// Returns `true` if this ConVar has a maximum value
+		/// for competitive play.
 		has_lim = has_comp_max;
+		/// Returns the maximum value of this ConVar for competitive play,
+		/// or `0` if it doesn't have one.
 		lim_unwrap = comp_max_unwrap;
+		/// Returns the maximum value of this ConVar for competitive play,
+		/// or `None` if it doesn't have one.
 		lim = comp_max;
 	}
 
+	/// Returns `true` if this ConVar is currently using competitive restrictions.
+	pub const fn using_competitive_restrictions(&self) -> bool {
+		self.0.using_competitive_restrictions
+	}
+
+	/// Clamp `value` in place using the limits set in this ConVar,
+	/// returning `true` if it was modified by this function.
 	pub fn clamp_value(&self, value: &mut c_float) -> bool {
 		if self.0.using_competitive_restrictions {
 			if clamp(value, self.comp_min(), self.comp_max()) {

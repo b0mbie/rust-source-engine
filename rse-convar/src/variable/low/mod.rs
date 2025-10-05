@@ -8,8 +8,6 @@ mod object;
 pub use object::*;
 mod object_static;
 pub use object_static::*;
-mod wrapper;
-pub use wrapper::*;
 
 pub trait RawVariable<'a>
 where

@@ -2,10 +2,10 @@ pub use crate::cppdef::{
 	CvarDllIdentifier, CvarFlags,
 };
 
+mod ext;
+pub use ext::*;
 mod convert;
 pub use convert::*;
-mod wrapper;
-pub use wrapper::*;
 
 /// # Safety
 /// The following functions must modify `Object`
