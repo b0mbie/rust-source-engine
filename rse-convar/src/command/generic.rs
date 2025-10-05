@@ -17,15 +17,12 @@ use super::{
 /// Returns a new [`ConCommandObject`] that delegates execution to `T`.
 pub const fn con_command<T>(command: T) -> ConCommandObject<'static, T>
 where
-	T: Command,
+	T: DllCommand,
 {
 	ConCommandObject::new(command, T::NAME, T::HELP, T::FLAGS)
 }
 
-/// # Safety
-/// `dll_identifier` must return a valid identifier previously returned by
-/// `ICvar::AllocateDLLIdentifier`.
-pub unsafe trait Command {
+pub trait Command {
 	const NAME: &CStr;
 	const HELP: Option<&CStr> = None;
 	const FLAGS: CvarFlags = 0;
@@ -37,10 +34,16 @@ pub unsafe trait Command {
 		let _ = partial;
 		let _ = suggestions;
 	}
+}
+
+/// # Safety
+/// `dll_identifier` must return a valid identifier previously returned by
+/// `ICvar::AllocateDLLIdentifier`.
+pub unsafe trait DllCommand: Command {
 	fn dll_identifier(&mut self) -> CvarDllIdentifier;
 }
 
-unsafe impl<'a, T: Command> RawCommand<'a> for T {
+unsafe impl<'a, T: DllCommand> RawCommand<'a> for T {
 	fn name(object: &mut ConCommandObject<'a, Self>) {
 		let _ = object;
 		// unsafe { object.as_mut_base().as_mut_inner().name = T::NAME.as_ptr() }
@@ -61,7 +64,7 @@ unsafe impl<'a, T: Command> RawCommand<'a> for T {
 	}
 }
 
-unsafe impl<'a, T: Command> RawConsoleBase<ConCommandObject<'a, T>> for T {
+unsafe impl<'a, T: DllCommand> RawConsoleBase<ConCommandObject<'a, T>> for T {
 	fn help(object: &mut ConCommandObject<'a, T>) {
 		let _ = object;
 		// unsafe { object.as_mut_base().as_mut_inner().help_string = crate::util::c_str_ptr(T::HELP) }

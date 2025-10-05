@@ -18,7 +18,7 @@ pub use invocation::*;
 pub mod prelude {
 	pub use crate::{
 		command::{
-			Command, Suggestions,
+			DllCommand, Suggestions,
 		},
 		console_base::CvarDllIdentifier,
 		variable::{
