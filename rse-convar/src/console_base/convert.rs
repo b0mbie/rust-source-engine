@@ -1,7 +1,8 @@
 use crate::cppdef::ConCommandBase;
 
 /// # Safety
-/// `as_con_command_base` must return a valid, mutable [`ConCommandBase`].
-pub unsafe trait AsConCommandBase {
-	fn as_con_command_base(&mut self) -> *mut ConCommandBase;
+/// `as_registrable` must return a valid, mutable [`ConCommandBase`]
+/// that can be registered with the `ICvar` interface.
+pub unsafe trait AsRegistrable {
+	fn as_registrable(&mut self) -> *mut ConCommandBase;
 }

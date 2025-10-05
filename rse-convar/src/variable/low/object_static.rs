@@ -1,6 +1,6 @@
 use crate::{
 	cppdef::ConCommandBase,
-	console_base::AsConCommandBase,
+	console_base::AsRegistrable,
 };
 
 use super::{
@@ -31,8 +31,8 @@ where
 	}
 }
 
-unsafe impl<T> AsConCommandBase for StaticConVarObject<T> {
-	fn as_con_command_base(&mut self) -> *mut ConCommandBase {
+unsafe impl<T> AsRegistrable for StaticConVarObject<T> {
+	fn as_registrable(&mut self) -> *mut ConCommandBase {
 		unsafe { self.as_inner().as_mut_con_var() as *mut _ as *mut _ }
 	}
 }
