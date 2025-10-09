@@ -1,5 +1,5 @@
 use ::core::ffi::CStr;
-use ::rse_convar::Invocation;
+use ::rse_convar::command::Invocation;
 use ::rse_game::ServerEdict;
 
 use crate::{

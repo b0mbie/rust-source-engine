@@ -1,15 +1,12 @@
 use ::core::ffi::CStr;
 
-use crate::{
-	console_base::{
-		RawConsoleBase,
-		CvarFlags,
-	},
-	Invocation,
+use crate::console_base::{
+	RawConsoleBase, CvarFlags,
 };
 
 use super::{
 	Suggestions, SuggestionCount,
+	Invocation,
 };
 
 pub use ::rse_utl::CString;

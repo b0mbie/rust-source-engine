@@ -35,7 +35,7 @@ pub use reject_reason::*;
 pub mod prelude {
 	pub use ::core::ffi::CStr;
 	pub use crate::{
-		convar::Invocation,
+		convar::command::Invocation,
 		cppdef::{
 			ClientIndex, PluginResult,
 			QueryCvarCookie, QueryCvarValueStatus,

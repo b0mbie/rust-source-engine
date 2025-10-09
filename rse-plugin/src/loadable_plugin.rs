@@ -4,7 +4,7 @@ use ::core::{
 	hint::unreachable_unchecked,
 	mem::replace,
 };
-use ::rse_convar::Invocation;
+use ::rse_convar::command::Invocation;
 use ::rse_game::ServerEdict;
 use ::rse_game_interfaces::InterfaceFactories;
 

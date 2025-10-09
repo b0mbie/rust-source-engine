@@ -12,7 +12,7 @@ use ::rse_cpp::{
 };
 use ::rse_convar::{
 	cppdef::Command as CCommand,
-	Invocation,
+	command::Invocation,
 };
 use ::rse_game::{
 	cppdef::entities::edict_t,

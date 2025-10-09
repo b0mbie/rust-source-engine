@@ -41,11 +41,10 @@ use crate::{
 		ConCommandBaseExt, CvarFlags,
 		AsRegistrable,
 	},
-	Invocation,
 };
 
 use super::{
-	RawCommand, Suggestions,
+	RawCommand, Suggestions, Invocation,
 };
 
 #[repr(C)]

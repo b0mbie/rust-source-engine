@@ -1,17 +1,14 @@
 use ::core::ffi::CStr;
 
-use crate::{
-	console_base::{
-		RawConsoleBase, CvarDllIdentifier, CvarFlags,
-	},
-	Invocation,
+use crate::console_base::{
+	RawConsoleBase, CvarDllIdentifier, CvarFlags,
 };
 
 use super::{
 	low::{
 		ConCommandObject, RawCommand,
 	},
-	Suggestions, SuggestionCount,
+	Suggestions, SuggestionCount, Invocation,
 };
 
 /// Returns a new [`ConCommandObject`] that delegates execution to `T`.
