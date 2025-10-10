@@ -19,10 +19,13 @@ where
 	ConCommandObject::new(command, T::NAME, T::HELP, T::FLAGS)
 }
 
-pub trait Command {
+pub trait Command: DispatchCommand {
 	const NAME: &CStr;
 	const HELP: Option<&CStr> = None;
 	const FLAGS: CvarFlags = 0;
+}
+
+pub trait DispatchCommand {
 	fn dispatch(&mut self, invocation: &Invocation);
 	fn can_auto_complete(&mut self) -> bool {
 		false
@@ -40,6 +43,7 @@ pub unsafe trait DllCommand: Command {
 	fn dll_identifier(&mut self) -> CvarDllIdentifier;
 }
 
+#[diagnostic::do_not_recommend]
 unsafe impl<'a, T: DllCommand> RawCommand<'a> for T {
 	fn name(object: &mut ConCommandObject<'a, Self>) {
 		let _ = object;
@@ -61,6 +65,7 @@ unsafe impl<'a, T: DllCommand> RawCommand<'a> for T {
 	}
 }
 
+#[diagnostic::do_not_recommend]
 unsafe impl<'a, T: DllCommand> RawConsoleBase<ConCommandObject<'a, T>> for T {
 	fn help(object: &mut ConCommandObject<'a, T>) {
 		let _ = object;

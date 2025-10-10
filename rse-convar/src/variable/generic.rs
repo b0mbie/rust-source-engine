@@ -19,7 +19,7 @@ where
 	}
 }
 
-pub trait Variable: Sized {
+pub trait Variable: ChangeVariable {
 	const NAME: &CStr;
 	const DEFAULT: ConVarValue<'static>;
 
@@ -29,7 +29,9 @@ pub trait Variable: Sized {
 	const MAX: Option<c_float> = None;
 	const COMP_MIN: Option<c_float> = None;
 	const COMP_MAX: Option<c_float> = None;
+}
 
+pub trait ChangeVariable {
 	fn on_changed(new: NewValue<'_, Self>, old: OldValue<'_>) {
 		let _ = new;
 		let _ = old;
@@ -37,7 +39,7 @@ pub trait Variable: Sized {
 }
 
 #[derive(Debug, PartialEq, PartialOrd)]
-pub struct NewValue<'a, T> {
+pub struct NewValue<'a, T: ?Sized> {
 	pub inner: &'a mut T,
 	pub c_str: &'a CStr,
 	pub float: c_float,
