@@ -21,12 +21,23 @@ pub struct ConVarParams<'a> {
 }
 
 impl<'a> ConVarParams<'a> {
-	pub const fn simple(name: &'a CStr, default: ConVarValue<'a>) -> Self {
+	pub const EMPTY: Self = {
+		let empty = c"";
 		Self {
-			name, default,
+			name: empty,
+			default: ConVarValue {
+				c_str: empty, float: 0.0, int: 0,
+			},
 			help: None,
 			min: None, max: None,
 			comp_min: None, comp_max: None,
+		}
+	};
+
+	pub const fn simple(name: &'a CStr, default: ConVarValue<'a>) -> Self {
+		Self {
+			name, default,
+			..Self::EMPTY
 		}
 	}
 }
