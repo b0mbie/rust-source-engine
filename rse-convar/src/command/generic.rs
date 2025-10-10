@@ -14,7 +14,7 @@ use super::{
 /// Returns a new [`ConCommandObject`] that delegates execution to `T`.
 pub const fn con_command<T>(command: T) -> ConCommandObject<'static, T>
 where
-	T: DllCommand,
+	T: Command + DllCommand,
 {
 	ConCommandObject::new(command, T::NAME, T::HELP, T::FLAGS)
 }
@@ -39,7 +39,7 @@ pub trait DispatchCommand {
 /// # Safety
 /// `dll_identifier` must return a valid identifier previously returned by
 /// `ICvar::AllocateDLLIdentifier`.
-pub unsafe trait DllCommand: Command {
+pub unsafe trait DllCommand: DispatchCommand {
 	fn dll_identifier(&mut self) -> CvarDllIdentifier;
 }
 
