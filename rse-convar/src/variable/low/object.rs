@@ -136,47 +136,56 @@ impl<'a, T> ConVarObject<'a, T>
 where
 	T: RawVariable<'a>,
 {
-	pub const fn unparented(inner: T, params: ConVarParams<'a>) -> Self {
-		let ConVarParams { name, help, default, min, max, comp_min, comp_max } = params;
+	/// # Safety
+	/// `ext` must be properly initialized.
+	pub const unsafe fn from_raw(inner: T, ext: CConVarExt) -> Self {
 		Self {
 			con_var: ConVar::new(
 				unsafe { VTablePtr::new_unchecked(&Self::CON_VAR_VT.base as *const _ as *mut _) },
-				CConVarExt {
-					base: CConCommandBaseExt {
-						next: None,
-						registered: false,
-						name: name.as_ptr(),
-						help_string: crate::util::c_str_ptr(help),
-						// TODO: Flags.
-						flags: 0,
-					},
-					iface: unsafe { VTablePtr::new_unchecked(Self::IFACE_VT as *const _ as *mut _) },
-
-					parent: null_mut(),
-					parent_pin: PhantomPinned,
-
-					default_value: default.c_str.as_ptr(),
-					value_string: default.c_str.as_ptr() as _,
-					string_length: 0,
-					value_float: default.float,
-					value_int: default.int,
-					has_min: min.is_some(),
-					min_value: limit_value(min),
-					has_max: max.is_some(),
-					max_value: limit_value(max),
-					// TODO: Change callback?
-					change_callback: None,
-
-					has_comp_min: comp_min.is_some(),
-					comp_min_value: limit_value(comp_min),
-					has_comp_max: comp_max.is_some(),
-					comp_max_value: limit_value(comp_max),
-					using_competitive_restrictions: false,
-				},
+				ext,
 			),
 			inner,
 			_strings: PhantomData,
 		}
+	}
+
+	pub const fn unparented(inner: T, params: ConVarParams<'a>) -> Self {
+		let ConVarParams { name, help, default, min, max, comp_min, comp_max } = params;
+		unsafe { Self::from_raw(
+			inner,
+			CConVarExt {
+				base: CConCommandBaseExt {
+					next: None,
+					registered: false,
+					name: name.as_ptr(),
+					help_string: crate::util::c_str_ptr(help),
+					// TODO: Flags.
+					flags: 0,
+				},
+				iface: VTablePtr::new_unchecked(Self::IFACE_VT as *const _ as *mut _),
+
+				parent: null_mut(),
+				parent_pin: PhantomPinned,
+
+				default_value: default.c_str.as_ptr(),
+				value_string: default.c_str.as_ptr() as _,
+				string_length: 0,
+				value_float: default.float,
+				value_int: default.int,
+				has_min: min.is_some(),
+				min_value: limit_value(min),
+				has_max: max.is_some(),
+				max_value: limit_value(max),
+				// TODO: Change callback?
+				change_callback: None,
+
+				has_comp_min: comp_min.is_some(),
+				comp_min_value: limit_value(comp_min),
+				has_comp_max: comp_max.is_some(),
+				comp_max_value: limit_value(comp_max),
+				using_competitive_restrictions: false,
+			},
+		) }
 	}
 
 	const TYPE_INFO: &'static TypeInfo = &TypeInfo::new(c"6ConVar");

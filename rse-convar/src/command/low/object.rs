@@ -74,34 +74,43 @@ impl<'a, T> ConCommandObject<'a, T>
 where
 	T: RawCommand<'a>,
 {
+	/// # Safety
+	/// `ext` must be properly initialized.
+	pub const unsafe fn from_raw(inner: T, ext: ConCommandExt) -> Self {
+		Self {
+			con_command: ConCommand::new(
+				unsafe { VTablePtr::new_unchecked(Self::VTABLE as *const _ as *mut _) },
+				ext,
+			),
+			inner,
+			_strings: PhantomData,
+		}
+	}
+
 	pub const fn new(
 		inner: T,
 		name: &'a CStr, help: Option<&'a CStr>,
 		flags: CvarFlags,
 	) -> Self {
-		Self {
-			con_command: ConCommand::new(
-				unsafe { VTablePtr::new_unchecked(Self::VTABLE as *const _ as *mut _) },
-				ConCommandExt {
-					base: CConCommandBaseExt {
-						next: None,
-						registered: false,
-						name: name.as_ptr(),
-						help_string: crate::util::c_str_ptr(help),
-						flags,
-					},
-					command_callback: CommandCallback {
-						v1: invalid_command_callback,
-					},
-					completion_callback: CompletionCallback {
-						function: invalid_complete_callback,
-					},
-					bits: ConCommandBits::new(),
-				},
-			),
+		unsafe { Self::from_raw(
 			inner,
-			_strings: PhantomData,
-		}
+			ConCommandExt {
+				base: CConCommandBaseExt {
+					next: None,
+					registered: false,
+					name: name.as_ptr(),
+					help_string: crate::util::c_str_ptr(help),
+					flags,
+				},
+				command_callback: CommandCallback {
+					v1: invalid_command_callback,
+				},
+				completion_callback: CompletionCallback {
+					function: invalid_complete_callback,
+				},
+				bits: ConCommandBits::new(),
+			},
+		) }
 	}
 
 	const VTABLE: &'static ConCommandVt = &ConCommandVt {
