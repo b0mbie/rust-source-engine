@@ -38,7 +38,7 @@ use crate::{
 	},
 	console_base::{
 		ConCommandBaseExt, CvarFlags,
-		AsRegistrable,
+		AsRegistrable, Registrable,
 	},
 };
 
@@ -223,7 +223,7 @@ unsafe impl<T> PointerFrom<ConCommandObject<'_, T>> for ConCommand {}
 unsafe impl<T> PointerFrom<ConCommandObject<'_, T>> for CConCommandBase {}
 
 unsafe impl<T> AsRegistrable for ConCommandObject<'_, T> {
-	fn as_registrable(&mut self) -> *mut CConCommandBase {
+	fn as_registrable(&mut self) -> Registrable {
 		convert_mut_ptr(&mut self.con_command)
 	}
 }

@@ -2,11 +2,10 @@ use ::core::ffi::{
 	CStr, c_float, c_int,
 };
 use ::rse_convar::{
-	cppdef::{
-		ConVar, ConCommandBase,
-	},
+	cppdef::ConVar,
 	console_base::{
-		CvarDllIdentifier, AsRegistrable,
+		CvarDllIdentifier,
+		AsRegistrable, Registrable,
 	},
 };
 use ::rse_cpp::{
@@ -65,7 +64,7 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// 
 	/// Registered console commands and variables *must* eventually be unregistered with
 	/// [`unregister_raw`](CvarImpl::unregister_raw) or [`unregister_all`](CvarImpl::unregister_all).
-	unsafe fn register_raw(&mut self, registrable: *mut ConCommandBase) {
+	unsafe fn register_raw(&mut self, registrable: Registrable) {
 		unsafe { virtual_call!(self.as_object() => cvar.register_con_command(registrable)) }
 	}
 
@@ -74,7 +73,7 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// 
 	/// # Safety
 	/// `registrable` must have been registered with this interface.
-	unsafe fn unregister_raw(&mut self, registrable: *mut ConCommandBase) {
+	unsafe fn unregister_raw(&mut self, registrable: Registrable) {
 		unsafe { virtual_call!(self.as_object() => cvar.unregister_con_command(registrable)) }
 	}
 

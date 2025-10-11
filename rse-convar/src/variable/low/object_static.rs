@@ -1,10 +1,15 @@
-use crate::{
-	cppdef::ConCommandBase,
-	console_base::AsRegistrable,
+use ::core::ffi::{
+	CStr, c_float, c_int,
+};
+
+use crate::console_base::{
+	AsRegistrable, Registrable,
 };
 
 use super::{
-	super::ConVarParams,
+	super::{
+		ConVarParams, GetValue,
+	},
 	RawVariable, ConVarObject,
 };
 
@@ -14,9 +19,29 @@ pub struct StaticConVarObject<T> {
 }
 
 impl<T> StaticConVarObject<T> {
-	pub const fn as_inner(&mut self) -> &mut ConVarObject<'static, T> {
+	pub const unsafe fn as_inner(&self) -> &ConVarObject<'static, T> {
+		&self.maybe_unparented
+	}
+
+	pub const fn as_mut_inner(&mut self) -> &mut ConVarObject<'static, T> {
 		self.maybe_unparented.init_parent();
 		&mut self.maybe_unparented
+	}
+
+	pub const fn c_str(&self) -> &CStr {
+		unsafe { self.as_inner().as_ext().c_str() }
+	}
+
+	pub const fn float(&self) -> c_float {
+		unsafe { self.as_inner().as_ext().float() }
+	}
+
+	pub const fn int(&self) -> c_int {
+		unsafe { self.as_inner().as_ext().int() }
+	}
+
+	pub fn get<'a, V: GetValue<'a>>(&'a self) -> V {
+		unsafe { self.as_inner().as_ext().get() }
 	}
 }
 
@@ -32,7 +57,7 @@ where
 }
 
 unsafe impl<T> AsRegistrable for StaticConVarObject<T> {
-	fn as_registrable(&mut self) -> *mut ConCommandBase {
-		unsafe { self.as_inner().as_mut_con_var() as *mut _ as *mut _ }
+	fn as_registrable(&mut self) -> Registrable {
+		unsafe { self.as_mut_inner().as_mut_con_var() as *mut _ as *mut _ }
 	}
 }
