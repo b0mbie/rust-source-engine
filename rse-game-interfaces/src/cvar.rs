@@ -59,8 +59,7 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// linking it into the global linked list.
 	/// 
 	/// # Safety
-	/// `registrable` *must* point to a [`ConCommandBase`]
-	/// that can be registered with the `ICvar` interface.
+	/// `registrable` *must* be registrable with the `ICvar` interface.
 	/// 
 	/// Registered console commands and variables *must* eventually be unregistered with
 	/// [`unregister_raw`](CvarImpl::unregister_raw) or [`unregister_all`](CvarImpl::unregister_all).
