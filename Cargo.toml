@@ -11,18 +11,15 @@ members = [
 	"rse-game-interfaces",
 	"rse-tier0",
 	"rse-plugin",
-	"rse-std",
 	"test-plugin",
 	"test-static-plugin",
+	"rse-std",
 ]
 
 [workspace.package]
 authors = ["b0mbie"]
 
 [workspace.dependencies]
-libc = { version = "0.2.175", default-features = false }
-thiserror = { version = "2.0.16", default-features = false }
-
 cppdvt = { git = "https://github.com/b0mbie/cppdvt.git" }
 printf = { git = "https://github.com/b0mbie/printf-rs.git" }
 
@@ -37,3 +34,16 @@ rse-scratch-pad = { path = "./rse-scratch-pad" }
 rse-std = { path = "./rse-std" }
 rse-tier0 = { path = "./rse-tier0" }
 rse-utl = { path = "./rse-utl" }
+
+[workspace.dependencies.libc]
+version = "0.2.177"
+default-features = false
+
+[workspace.dependencies.thiserror]
+version = "2.0.16"
+default-features = false
+
+[workspace.dependencies.atomic]
+version = "0.6.1"
+default-features = false
+
