@@ -12,7 +12,7 @@ name = "test"
 crate-type = ["cdylib"]
 
 [dependencies]
-anyhow = "1.0.99"
+anyhow = "1.0.100"
 printf.workspace = true
 rse-plugin.workspace = true
 rse-tier0 = { path = "../rse-tier0", default-features = false }
