@@ -18,10 +18,13 @@ use crate::{
 
 /// Helper for a [`LoadablePlugin`] that implements [`StaticPlugin`],
 /// which allows for exporting the plugin.
+#[derive(Debug, Clone, Copy)]
+#[repr(transparent)]
 pub struct PluginLoader<P> {
 	inner: PluginLoaderInner<P>,
 }
 
+#[derive(Debug, Clone, Copy)]
 enum PluginLoaderInner<P> {
 	NotLoaded,
 	Loaded(P),
