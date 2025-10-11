@@ -16,6 +16,7 @@ pub mod prelude {
 	pub use crate::{
 		command::{
 			DllCommand, Suggestions,
+			Command, DispatchCommand,
 		},
 		console_base::CvarDllIdentifier,
 		variable::{
