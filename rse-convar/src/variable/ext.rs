@@ -7,7 +7,9 @@ use ::core::{
 
 use crate::console_base::ConCommandBaseExt;
 
-use super::GetValue;
+use super::{
+	GetValue, ValueView,
+};
 
 ::rse_cpp::transparent_wrapper! {
 	pub struct ConVarExt for crate::cppdef::ConVarExt as "ConVar";
@@ -78,7 +80,7 @@ impl ConVarExt {
 
 	/// Returns the `T` value of this ConVar.
 	pub fn get<'a, T: GetValue<'a>>(&'a self) -> T {
-		T::get_value(self)
+		T::get_value(ValueView::new(self))
 	}
 
 	/// Returns the [`CStr`] value of this ConVar.
