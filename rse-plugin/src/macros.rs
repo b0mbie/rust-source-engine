@@ -12,13 +12,16 @@ macro_rules! plugin_description {
 }
 
 /// Exports a [`StaticPlugin`](crate::StaticPlugin),
-/// given the input `<visibility> <name> = <plugin type>`,
+/// given the input `<visibility> <name>: <plugin type> = <initializer>;`,
 /// putting the plugin instance into a `static mut` item.
 #[macro_export]
 macro_rules! export_static_plugin_as {
-	($vis:vis $name:ident = $ty:ty) => {
-		$vis static mut $name: $crate::PluginObject<$ty> =
-			$crate::PluginObject::new(<$ty as $crate::StaticPlugin>::NOT_LOADED);
+	{
+		$(#[$attr:meta])*
+		$vis:vis $name:ident: $ty:ty = $init:expr;
+	} => {
+		$(#[$attr])*
+		$vis static mut $name: $crate::PluginObject<$ty> = $crate::PluginObject::new($init);
 
 		const _: () = {
 			struct ExportedPlugin;
@@ -52,23 +55,31 @@ macro_rules! export_static_plugin_as {
 	};
 }
 
-/// Exports a [`StaticPlugin`](crate::StaticPlugin) given the plugin type.
+/// Exports a [`StaticPlugin`](crate::StaticPlugin)
+/// given the input `<plugin type> = <initializer>`.
 #[macro_export]
 macro_rules! export_static_plugin {
-	($ty:ty) => {
+	($ty:ty = $init:expr) => {
 		const _: () = {
-			$crate::export_static_plugin_as!(PLUGIN = $ty);
+			$crate::export_static_plugin_as! {
+				PLUGIN: $ty = $init;
+			}
 		};
 	};
 }
 
 /// Exports a [`LoadablePlugin`](crate::LoadablePlugin),
-/// given the input `<visibility> <name> = <plugin type>`,
+/// given the input `<visibility> <name>: <plugin type>;`,
 /// putting the plugin instance into a `static mut` item.
 #[macro_export]
 macro_rules! export_loadable_plugin_as {
-	($vis:vis $name:ident = $ty:ty) => {
-		$crate::export_static_plugin_as!($vis $name = $crate::PluginLoader<$ty>);
+	{
+		$(#[$attr:meta])*
+		$vis:vis $name:ident: $ty:ty;
+	} => {
+		$crate::export_static_plugin_as! {
+			$vis $name: $crate::PluginLoader<$ty> = $crate::PluginLoader::new();
+		}
 	};
 }
 
@@ -76,6 +87,6 @@ macro_rules! export_loadable_plugin_as {
 #[macro_export]
 macro_rules! export_loadable_plugin {
 	($ty:ty) => {
-		$crate::export_static_plugin!($crate::PluginLoader<$ty>);
+		$crate::export_static_plugin!($crate::PluginLoader<$ty> = $crate::PluginLoader::new());
 	};
 }

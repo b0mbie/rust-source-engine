@@ -85,7 +85,6 @@ pub trait LoadablePlugin: Sized + Plugin {
 }
 
 impl<P: LoadablePlugin> StaticPlugin for PluginLoader<P> {
-	const NOT_LOADED: Self = Self::new();
 	unsafe fn load(&mut self, factories: InterfaceFactories<'_>) -> bool {
 		match replace(&mut self.inner, PluginLoaderInner::NotLoaded) {
 			PluginLoaderInner::NotLoaded => {

@@ -45,7 +45,6 @@ use crate::{
 /// # Panicking
 /// See the [crate-level documentation](crate#panicking) for information about panicking in plugin functions.
 pub trait StaticPlugin: Plugin {
-	const NOT_LOADED: Self;
 	/// Loads the plugin,
 	/// returning `false` if loading failed for whatever reason.
 	/// 
