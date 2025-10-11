@@ -32,7 +32,6 @@ use crate::{
 		ConCommandVtBase,
 		ConCommandBaseExt as CConCommandBaseExt,
 		ConCommandBits,
-		CompletionArray,
 		CommandCallback, CompletionCallback,
 		Command as CCommand,
 		CvarDllIdentifier,
@@ -55,6 +54,14 @@ pub struct ConCommandObject<'a, T> {
 }
 
 impl<'a, T> ConCommandObject<'a, T> {
+	pub const fn as_inner(&self) -> &ConCommand {
+		&self.con_command
+	}
+
+	pub const unsafe fn as_mut_inner(&mut self) -> &mut ConCommand {
+		&mut self.con_command
+	}
+
 	pub const fn as_base(&self) -> &ConCommandBaseExt {
 		unsafe { ConCommandBaseExt::from_ref(&self.con_command.data.base) }
 	}
@@ -103,11 +110,9 @@ where
 					flags,
 				},
 				command_callback: CommandCallback {
-					v1: invalid_command_callback,
+					v1: empty_command_callback_v1,
 				},
-				completion_callback: CompletionCallback {
-					function: invalid_complete_callback,
-				},
+				completion_callback: CompletionCallback { not_used: () },
 				bits: ConCommandBits::new(),
 			},
 		) }
@@ -237,12 +242,4 @@ impl<T> AsObject<ConCommandBaseVt> for ConCommandObject<'_, T> {
 	}
 }
 
-unsafe extern "C" fn invalid_command_callback() {}
-unsafe extern "C" fn invalid_complete_callback(
-	partial: *const c_char,
-	out_commands: *mut CompletionArray,
-) -> c_int {
-	let _ = partial;
-	let _ = out_commands;
-	0
-}
+unsafe extern "C" fn empty_command_callback_v1() {}
