@@ -3,12 +3,11 @@ use ::core::{
 		CStr, c_char, c_int,
 	},
 	mem::size_of,
-	ptr::NonNull,
 	slice::from_raw_parts_mut as slice_from_raw_parts_mut,
 };
 use ::rse_cpp::{
 	RefConst, VtObjectPtr, new_vtable_self, this_to_self,
-	WithVTable,
+	WithVTable, VTablePtr,
 };
 use ::rse_convar::{
 	cppdef::Command as CCommand,
@@ -93,7 +92,7 @@ where
 	pub const fn new(inner: T) -> Self {
 		Self {
 			object: WithVTable::new(
-				unsafe { NonNull::new_unchecked(Self::VTABLE as *const _ as *mut _) },
+				VTablePtr::from_ref(Self::VTABLE),
 				inner,
 			),
 		}
