@@ -161,23 +161,20 @@ impl CString {
 
 	/// Converts this C string to its ASCII lower case equivalent in-place.
 	pub fn make_ascii_lowercase(&mut self) {
-		if let Some(bytes) = unsafe { self.as_mut_bytes() } {
+		if let Some(bytes) = self.as_mut_bytes() {
 			bytes.make_ascii_lowercase();
 		}
 	}
 
 	/// Converts this C string to its ASCII upper case equivalent in-place.
 	pub fn make_ascii_uppercase(&mut self) {
-		if let Some(bytes) = unsafe { self.as_mut_bytes() } {
+		if let Some(bytes) = self.as_mut_bytes() {
 			bytes.make_ascii_uppercase();
 		}
 	}
 
 	/// Returns a mutable slice of bytes stored inside of this value for mutation.
-	/// 
-	/// # Safety
-	/// The returned slice should not have any NUL (`0x00`) bytes inserted into it.
-	pub const unsafe fn as_mut_bytes(&mut self) -> Option<&mut [u8]> {
+	pub const fn as_mut_bytes(&mut self) -> Option<&mut [u8]> {
 		let ptr = self.0.string;
 		if ptr.is_null() {
 			return None
@@ -204,7 +201,7 @@ impl CString {
 		if !bytes.is_empty() {
 			if let Some(nul) = bytes.iter().position(move |&b| b == 0) {
 				let until_nul = unsafe { bytes.get_unchecked(..nul) };
-				let inner = self.alloc_bytes(until_nul.len());
+				let inner = unsafe { self.alloc_to(until_nul.len()) };
 				inner.copy_from_slice(until_nul);
 			} else {
 				unsafe { self.set_unchecked(bytes) }
@@ -222,11 +219,17 @@ impl CString {
 	pub unsafe fn set_unchecked(&mut self, bytes: &[u8]) {
 		let len = bytes.len();
 		debug_assert_ne!(len, 0, "`set_non_empty` called with empty slice");
-		let inner = self.alloc_bytes(len);
+		let inner = unsafe { self.alloc_to(len) };
 		inner.copy_from_slice(bytes);
 	}
 
-	fn alloc_bytes(&mut self, length: usize) -> &mut [u8] {
+	/// Reallocates the internal buffer to accomodate for a byte slice of `length`,
+	/// returning a mutable view of the buffer's string contents.
+	/// 
+	/// # Safety
+	/// The returned slice of bytes may or may not be initialized.
+	/// It must be initialized by the caller.
+	pub unsafe fn alloc_to(&mut self, length: usize) -> &mut [u8] {
 		let alloc_length = length + 1;
 		let block = if !self.0.string.is_null() {
 			unsafe { LinkedTier0Allocator.realloc(self.0.string as _, alloc_length) }
