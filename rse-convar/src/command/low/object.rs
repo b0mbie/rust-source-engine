@@ -86,7 +86,7 @@ where
 	pub const unsafe fn from_raw(inner: T, ext: ConCommandExt) -> Self {
 		Self {
 			con_command: ConCommand::new(
-				unsafe { VTablePtr::new_unchecked(Self::VTABLE as *const _ as *mut _) },
+				VTablePtr::from_ref(Self::VTABLE),
 				ext,
 			),
 			inner,
