@@ -36,6 +36,16 @@ impl CString {
 		})
 	}
 
+	/// Returns a [`CString`].
+	/// 
+	/// # Safety
+	/// [`inner.string`](UtlString::string) must point to
+	/// a valid, mutable C string
+	/// allocated with the [`LinkedTier0Allocator`].
+	pub const unsafe fn from_inner(inner: UtlString) -> Self {
+		Self(inner)
+	}
+
 	/// Consumes a [`CString`], returning the inner [`UtlString`].
 	pub const fn into_inner(self) -> UtlString {
 		let inner = UtlString {
@@ -48,7 +58,8 @@ impl CString {
 	/// Returns a mutable reference to a [`CString`] given a reference to the inner type.
 	/// 
 	/// # Safety
-	/// [`inner.string`](UtlString::string) must point to a valid, mutable C string
+	/// [`inner.string`](UtlString::string) must point to
+	/// a valid, mutable C string
 	/// allocated with the [`LinkedTier0Allocator`].
 	pub const unsafe fn from_mut(inner: &mut UtlString) -> &mut Self {
 		unsafe { &mut *(inner as *mut UtlString as *mut Self) }
@@ -57,7 +68,8 @@ impl CString {
 	/// Returns an immutable reference to a [`CString`] given a reference to the inner type.
 	/// 
 	/// # Safety
-	/// [`inner.string`](UtlString::string) must point to a valid, immutable C string
+	/// [`inner.string`](UtlString::string) must point to
+	/// a valid, immutable C string
 	/// allocated with the [`LinkedTier0Allocator`].
 	pub const unsafe fn from_ref(inner: &UtlString) -> &Self {
 		unsafe { &*(inner as *const UtlString as *const Self) }
@@ -70,7 +82,8 @@ impl CString {
 	/// # Safety
 	/// `ptr` must point to a valid, mutable [`UtlString`].
 	/// Moreover,
-	/// [`(*ptr).string`](UtlString::string) must point to a valid, immutable C string
+	/// [`(*ptr).string`](UtlString::string) must point to
+	/// a valid, mutable C string
 	/// allocated with the [`LinkedTier0Allocator`].
 	pub const unsafe fn from_mut_ptr<'a>(ptr: *mut UtlString) -> &'a mut Self {
 		unsafe { &mut *(ptr as *mut Self) }
@@ -83,7 +96,8 @@ impl CString {
 	/// # Safety
 	/// `ptr` must point to a valid, immutable [`UtlString`].
 	/// Moreover,
-	/// [`(*ptr).string`](UtlString::string) must point to a valid, immutable C string
+	/// [`(*ptr).string`](UtlString::string) must point to
+	/// a valid, immutable C string
 	/// allocated with the [`LinkedTier0Allocator`].
 	pub const unsafe fn from_ptr<'a>(ptr: *const UtlString) -> &'a Self {
 		unsafe { &*(ptr as *const Self) }
@@ -103,9 +117,9 @@ impl CString {
 		}
 	}
 
-	/// Returns the non-empty [`CStr`] stored inside of this value,
-	/// or `None` if the string is empty.
-	pub const fn as_non_empty_c_str(&self) -> Option<&CStr> {
+	/// Returns the [`CStr`] allocated inside of this value,
+	/// or `None` if no string has been allocated.
+	pub const fn as_alloc_c_str(&self) -> Option<&CStr> {
 		let ptr = self.0.string;
 		if !ptr.is_null() {
 			unsafe { Some(CStr::from_ptr(ptr)) }
@@ -126,7 +140,7 @@ impl CString {
 
 	/// Returns the length of the C string in *bytes*.
 	pub const fn len(&self) -> usize {
-		match self.as_non_empty_c_str() {
+		match self.as_alloc_c_str() {
 			Some(s) => s.count_bytes(),
 			None => 0,
 		}
@@ -134,7 +148,11 @@ impl CString {
 
 	/// Returns `true` if the C string is empty.
 	pub const fn is_empty(&self) -> bool {
-		self.0.string.is_null()
+		if let Some(first) = unsafe { self.0.string.as_ref() } {
+			*first == 0
+		} else {
+			true
+		}
 	}
 
 	/// Converts this C string to its ASCII lower case equivalent in-place.
@@ -258,7 +276,7 @@ impl fmt::Display for CString {
 
 impl PartialEq for CString {
 	fn eq(&self, other: &Self) -> bool {
-		self.as_non_empty_c_str() == other.as_non_empty_c_str()
+		self.as_alloc_c_str() == other.as_alloc_c_str()
 	}
 }
 impl Eq for CString {}
