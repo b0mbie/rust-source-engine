@@ -101,11 +101,19 @@ impl<T> ConVarObject<'_, T> {
 		unsafe { ConCommandBaseExt::from_mut(&mut self.con_var.data.base) }
 	}
 
-	pub const fn as_ext(&self) -> &ConVarExt {
+	/// # Safety
+	/// The object's parent must've been initialized with [`init_parent`](Self::init_parent) beforehand
+	/// to be able to safely call functions related to the ConVar's parent,
+	/// like [`parent`](ConVarExt::parent) and [`is_root`](ConVarExt::is_root).
+	pub const unsafe fn as_ext(&self) -> &ConVarExt {
 		unsafe { ConVarExt::from_ref(&self.con_var.data) }
 	}
 
-	pub const fn as_mut_ext(&mut self) -> &mut ConVarExt {
+	/// # Safety
+	/// The object's parent must've been initialized with [`init_parent`](Self::init_parent) beforehand
+	/// to be able to safely call functions related to the ConVar's parent,
+	/// like [`parent_mut`](ConVarExt::parent_mut) and [`is_root`](ConVarExt::is_root).
+	pub const unsafe fn as_mut_ext(&mut self) -> &mut ConVarExt {
 		unsafe { ConVarExt::from_mut(&mut self.con_var.data) }
 	}
 
@@ -141,7 +149,7 @@ where
 	pub const unsafe fn from_raw(inner: T, ext: CConVarExt) -> Self {
 		Self {
 			con_var: ConVar::new(
-				unsafe { VTablePtr::new_unchecked(&Self::CON_VAR_VT.base as *const _ as *mut _) },
+				VTablePtr::from_ref(&Self::CON_VAR_VT.base),
 				ext,
 			),
 			inner,
@@ -162,7 +170,7 @@ where
 					// TODO: Flags.
 					flags: 0,
 				},
-				iface: VTablePtr::new_unchecked(Self::IFACE_VT as *const _ as *mut _),
+				iface: VTablePtr::from_ref(Self::IFACE_VT),
 
 				parent: null_mut(),
 				parent_pin: PhantomPinned,

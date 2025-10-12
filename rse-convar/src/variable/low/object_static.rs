@@ -49,7 +49,9 @@ impl<T> StaticConVarObject<T>
 where
 	T: RawVariable<'static>,
 {
-	pub const fn new(inner: T, params: ConVarParams<'static>) -> Self {
+	/// # Safety
+	/// The [`StaticConVarObject`] must be *pinned* into an area of memory (with e.g. a `static` item).
+	pub const unsafe fn new(inner: T, params: ConVarParams<'static>) -> Self {
 		Self {
 			maybe_unparented: ConVarObject::unparented(inner, params),
 		}
