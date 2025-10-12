@@ -8,7 +8,7 @@ use crate::{
 
 /// Wrapper type for C++ classes with VTables,
 /// enabling better compile-time formal verification.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(C)]
 pub struct WithVTable<VTable, T> {
 	pub vtable: VTablePtr<VTable>,
