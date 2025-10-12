@@ -28,6 +28,10 @@ use crate::cppdef::UtlString;
 #[repr(transparent)]
 pub struct CString(UtlString);
 
+// SAFETY: `CString` always contains a *unique* pointer to a C string.
+unsafe impl Send for CString {}
+unsafe impl Sync for CString {}
+
 impl CString {
 	/// Returns an empty [`CString`].
 	pub const fn new() -> Self {
