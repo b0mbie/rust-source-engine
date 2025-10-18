@@ -40,8 +40,8 @@ impl<T> StaticConVarObject<T> {
 		unsafe { self.as_inner().as_ext().int() }
 	}
 
-	pub fn get<'a, V: GetValue<'a>>(&'a self) -> V {
-		unsafe { self.as_inner().as_ext().get() }
+	pub fn value<'a, V: GetValue<'a>>(&'a self) -> V {
+		unsafe { self.as_inner().as_ext().value() }
 	}
 }
 

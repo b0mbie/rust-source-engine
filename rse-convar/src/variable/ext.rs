@@ -79,7 +79,7 @@ impl ConVarExt {
 	}
 
 	/// Returns the `T` value of this ConVar.
-	pub fn get<'a, T: GetValue<'a>>(&'a self) -> T {
+	pub fn value<'a, T: GetValue<'a>>(&'a self) -> T {
 		T::get_value(ValueView::new(self))
 	}
 
