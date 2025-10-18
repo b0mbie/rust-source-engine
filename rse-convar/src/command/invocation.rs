@@ -96,6 +96,11 @@ pub struct Arg {
 }
 
 impl Arg {
+	/// Returns a pointer to the C string that contains this argument.
+	pub const fn as_ptr(&self) -> *const c_char {
+		self.ptr
+	}
+
 	/// Returns the [`CStr`] that is stored in this argument.
 	pub const fn as_c_str(&self) -> &CStr {
 		// SAFETY: The inner pointer is always a valid C string.
