@@ -299,6 +299,14 @@ impl PartialOrd for CString {
 	}
 }
 
+impl From<::alloc::string::String> for CString {
+	fn from(value: ::alloc::string::String) -> Self {
+		let mut s = Self::new();
+		s.set_bytes(value.as_bytes());
+		s
+	}
+}
+
 impl From<&str> for CString {
 	fn from(value: &str) -> Self {
 		let mut s = Self::new();
