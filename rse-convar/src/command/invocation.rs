@@ -36,16 +36,36 @@ impl Invocation {
 	pub fn iter(&self) -> ArgIter<'_> {
 		Arg::iter(self.args())
 	}
-
-	/// Returns an immutable slice of all the [`Arg`]s.
+	
+	/// Returns an immutable slice of all the arguments.
 	pub const fn args(&self) -> &[Arg] {
+		if let [_, args @ ..] = self.pieces() {
+			args
+		} else {
+			&[]
+		}
+	}
+	
+	/// Returns a mutable slice of all the arguments.
+	pub const fn args_mut(&mut self) -> &mut [Arg] {
+		if let [_, args @ ..] = self.pieces_mut() {
+			args
+		} else {
+			&mut []
+		}
+	}
+
+	/// Returns an immutable slice of all the arguments,
+	/// with the first argument, if any, being the command name.
+	pub const fn pieces(&self) -> &[Arg] {
 		unsafe {
 			from_raw_parts(self.0.argv.as_ptr() as *const Arg, self.n_args())
 		}
 	}
 
-	/// Returns a mutable slice of all the [`Arg`]s.
-	pub const fn args_mut(&mut self) -> &mut [Arg] {
+	/// Returns a mutable slice of all the arguments,
+	/// with the first argument, if any, being the command name.
+	pub const fn pieces_mut(&mut self) -> &mut [Arg] {
 		unsafe {
 			from_raw_parts_mut(self.0.argv.as_mut_ptr() as *mut Arg, self.n_args())
 		}
