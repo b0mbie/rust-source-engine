@@ -59,6 +59,7 @@ pub struct ConVarObject<'a, T> {
 	_strings: PhantomData<&'a CStr>,
 }
 
+// TODO: Safe `ConVarExt` functions in `RawVariable` contexts?
 impl<T> ConVarObject<'_, T> {
 	pub const fn init_parent(&mut self) {
 		if self.con_var.data.parent.is_null() {
@@ -129,7 +130,11 @@ impl<T> ConVarObject<'_, T> {
 		) }
 	}
 
-	pub const fn ext_and_mut_inner(&mut self) -> (&ConVarExt, &mut T) {
+	/// # Safety
+	/// The object's parent must've been initialized with [`init_parent`](Self::init_parent) beforehand
+	/// to be able to safely call functions related to the ConVar's parent,
+	/// like [`parent`](ConVarExt::parent) and [`is_root`](ConVarExt::is_root).
+	pub const unsafe fn ext_and_mut_inner(&mut self) -> (&ConVarExt, &mut T) {
 		unsafe {
 			(ConVarExt::from_ref(&self.con_var.data), &mut self.inner)
 		}
