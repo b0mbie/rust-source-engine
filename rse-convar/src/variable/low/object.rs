@@ -163,7 +163,7 @@ where
 	}
 
 	pub const fn unparented(inner: T, params: ConVarParams<'a>) -> Self {
-		let ConVarParams { name, help, default, min, max, comp_min, comp_max } = params;
+		let ConVarParams { name, help, default, min, max, comp_min, comp_max, flags } = params;
 		unsafe { Self::from_raw(
 			inner,
 			CConVarExt {
@@ -172,8 +172,7 @@ where
 					registered: false,
 					name: name.as_ptr(),
 					help_string: crate::util::c_str_ptr(help),
-					// TODO: Flags.
-					flags: 0,
+					flags,
 				},
 				iface: VTablePtr::from_ref(Self::IFACE_VT),
 

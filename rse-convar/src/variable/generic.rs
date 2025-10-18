@@ -2,6 +2,8 @@ use ::core::ffi::{
 	CStr, c_float, c_int,
 };
 
+use crate::console_base::CvarFlags;
+
 use super::{
 	ConVarParams, ConVarValue,
 };
@@ -16,14 +18,16 @@ where
 		help: T::HELP,
 		min: T::MIN, max: T::MAX,
 		comp_min: T::MIN, comp_max: T::MAX,
+		flags: T::FLAGS,
 	}
 }
 
 pub trait Variable: ChangeVariable {
 	const NAME: &CStr;
-	const DEFAULT: ConVarValue<'static>;
-
 	const HELP: Option<&CStr> = None;
+	const FLAGS: CvarFlags = 0;
+
+	const DEFAULT: ConVarValue<'static>;
 
 	const MIN: Option<c_float> = None;
 	const MAX: Option<c_float> = None;

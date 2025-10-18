@@ -2,6 +2,8 @@ use ::core::ffi::{
 	CStr, c_float, c_int,
 };
 
+use crate::console_base::CvarFlags;
+
 #[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct ConVarValue<'a> {
 	pub c_str: &'a CStr,
@@ -18,6 +20,7 @@ pub struct ConVarParams<'a> {
 	pub max: Option<c_float>,
 	pub comp_min: Option<c_float>,
 	pub comp_max: Option<c_float>,
+	pub flags: CvarFlags,
 }
 
 impl<'a> ConVarParams<'a> {
@@ -31,6 +34,7 @@ impl<'a> ConVarParams<'a> {
 			help: None,
 			min: None, max: None,
 			comp_min: None, comp_max: None,
+			flags: 0,
 		}
 	};
 
