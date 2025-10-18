@@ -5,12 +5,15 @@ edition = "2024"
 authors.workspace = true
 
 [features]
-default = []
+default = ["macros"]
 link-srv = ["rse-tier0/link-srv"]
 link-optional = ["rse-tier0/link-optional"]
 doc = ["link-optional"]
+macros = ["dep:rse-std-macros"]
 
 [dependencies]
+atomic-wait.workspace = true
+atomic.workspace = true
 libc.workspace = true
 thiserror.workspace = true
 rse-convar.workspace = true
@@ -18,6 +21,11 @@ rse-game.workspace = true
 rse-game-interfaces.workspace = true
 rse-interface.workspace = true
 rse-plugin.workspace = true
+rse-utl.workspace = true
+
+[dependencies.rse-std-macros]
+path = "../rse-std-macros"
+optional = true
 
 [dependencies.rse-tier0]
 path = "../rse-tier0"

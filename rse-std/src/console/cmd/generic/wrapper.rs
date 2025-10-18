@@ -1,13 +1,11 @@
 use ::core::ffi::CStr;
 use ::rse_convar::{
-	console_base::{
-		CvarDllIdentifier, CvarFlags,
-	},
-	command::{
-		Suggestions,
-		DllCommand, Command,
-	},
-	Invocation,
+	console_base::CvarDllIdentifier,
+	command::DllCommand,
+};
+
+use super::super::{
+	Suggestions, Invocation, DispatchCommand,
 };
 
 #[repr(transparent)]
@@ -25,20 +23,17 @@ impl<T> StdCommand<T> {
 
 unsafe impl<T> DllCommand for StdCommand<T>
 where
-	T: Command,
+	T: DispatchCommand,
 {
 	fn dll_identifier(&mut self) -> CvarDllIdentifier {
-		crate::cvar::dll_identifier()
+		crate::console::cvar::dll_identifier()
 	}
 }
 
-impl<T> Command for StdCommand<T>
+impl<T> DispatchCommand for StdCommand<T>
 where
-	T: Command,
+	T: DispatchCommand,
 {
-	const NAME: &CStr = T::NAME;
-	const HELP: Option<&CStr> = T::HELP;
-	const FLAGS: CvarFlags = T::FLAGS;
 	fn dispatch(&mut self, invocation: &Invocation) {
 		self.inner.dispatch(invocation)
 	}

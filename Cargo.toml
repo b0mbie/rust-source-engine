@@ -13,7 +13,9 @@ members = [
 	"rse-plugin",
 	"test-plugin",
 	"test-static-plugin",
+	"rse-std-macros",
 	"rse-std",
+	"test-std-plugin",
 ]
 
 [workspace.package]
@@ -35,6 +37,8 @@ rse-std = { path = "./rse-std" }
 rse-tier0 = { path = "./rse-tier0" }
 rse-utl = { path = "./rse-utl" }
 
+atomic-wait = "1.1.0"
+
 [workspace.dependencies.libc]
 version = "0.2.177"
 default-features = false
@@ -46,4 +50,3 @@ default-features = false
 [workspace.dependencies.atomic]
 version = "0.6.1"
 default-features = false
-

@@ -1,6 +1,6 @@
 use ::core::{
 	ffi::{
-		CStr, c_char, c_float, c_int, c_double,
+		CStr, c_char, c_float, c_double,
 	},
 	fmt,
 };
@@ -11,6 +11,7 @@ use ::libc::snprintf;
 pub struct CBuffer<const N: usize> {
 	bytes: [u8; N],
 }
+
 impl<const N: usize> CBuffer<N> {
 	pub const fn new() -> Self {
 		Self {
@@ -18,7 +19,7 @@ impl<const N: usize> CBuffer<N> {
 		}
 	}
 
-	pub const fn len(&self) -> usize {
+	pub const fn capacity(&self) -> usize {
 		self.bytes.len()
 	}
 
@@ -34,31 +35,9 @@ impl<const N: usize> CBuffer<N> {
 		unsafe { CStr::from_ptr(self.as_ptr()) }
 	}
 
-	pub const fn set(&mut self, value: &CStr) {
-		let bytes = value.to_bytes();
-
-		let mut i = 0;
-		let i_max = if bytes.len() <= (N - 1) {
-			bytes.len()
-		} else {
-			N - 1
-		};
-		while i < i_max {
-			self.bytes[i] = bytes[i];
-			i += 1;
-		}
-		self.bytes[i] = 0;
-	}
-	
 	pub fn print_float(&mut self, value: c_float) {
 		unsafe {
-			snprintf(self.as_mut_ptr(), self.len(), c"%f".as_ptr(), value as c_double);
-		}
-	}
-
-	pub fn print_int(&mut self, value: c_int) {
-		unsafe {
-			snprintf(self.as_mut_ptr(), self.len(), c"%d".as_ptr(), value);
+			snprintf(self.as_mut_ptr(), self.capacity(), c"%f".as_ptr(), value as c_double);
 		}
 	}
 }
