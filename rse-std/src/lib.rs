@@ -13,7 +13,7 @@ pub use ::rse_std_macros::cvar_value_detail;
 #[macro_export]
 macro_rules! cvar_value {
 	($value:literal $(,)?) => {{
-		use $crate::console::var::ConVarValue;
+		use $crate::var::ConVarValue;
 		let _ = $value;
 		$crate::cvar_value_detail!($value)
 	}};
@@ -25,7 +25,9 @@ pub(crate) mod c_strings;
 
 mod macros;
 
-pub mod console;
+mod console;
+pub use console::*;
+
 pub mod interfaces;
 pub mod plugin;
 
@@ -44,15 +46,13 @@ pub mod prelude {
 		msg, msgln, warn, warnln,
 	};
 	pub use crate::{
-		console::{
-			cmd::{
-				Suggestions, Invocation,
-				Command, ConCommand,
-			},
-			var::{
-				Variable, OldValue, NewValue,
-				ConVar, cvar_value,
-			},
+		cmd::{
+			Suggestions, Invocation,
+			Command, ConCommand,
+		},
+		var::{
+			Variable, OldValue, NewValue,
+			ConVar, cvar_value,
 		},
 		/*
 		cvar::{

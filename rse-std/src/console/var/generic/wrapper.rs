@@ -30,7 +30,7 @@ use ::rse_utl::{
 use crate::{
 	c_buffer::CBuffer,
 	c_strings,
-	console::cvar::cvar_write,
+	cvar::cvar_write,
 	futex::Futex,
 };
 
@@ -236,7 +236,7 @@ unsafe impl<'a, T> RawConsoleBase<ConVarObject<'a, Self>> for StdVariable<T> {
 	}
 	fn dll_identifier(object: &mut ConVarObject<'a, Self>) -> CvarDllIdentifier {
 		let _ = object;
-		crate::console::cvar::dll_identifier()
+		crate::cvar::dll_identifier()
 	}
 }
 

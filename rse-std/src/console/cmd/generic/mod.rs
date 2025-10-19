@@ -4,14 +4,14 @@ use ::core::{
 };
 use ::rse_convar::{
 	console_base::{
-		AsRegistrable, Registrable,
+		RegistrableMut,
 		CvarFlags,
 	},
 	command::low::ConCommandObject,
 };
 use ::rse_game_interfaces::cvar::CvarImpl;
 
-use crate::console::cvar::cvar_write;
+use crate::cvar::cvar_write;
 
 use super::DispatchCommand;
 
@@ -47,7 +47,7 @@ where
 		}
 	}
 
-	fn as_registrable(&self) -> Registrable {
+	fn as_registrable(&self) -> RegistrableMut {
 		unsafe { (*self.con_command.get()).as_registrable() }
 	}
 }

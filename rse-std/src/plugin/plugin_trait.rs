@@ -4,7 +4,7 @@ use ::core::{
 };
 
 use crate::{
-	console::cmd::Invocation,
+	cmd::Invocation,
 	interfaces::InterfaceFactories,
 };
 

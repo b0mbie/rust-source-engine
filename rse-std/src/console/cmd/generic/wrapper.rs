@@ -26,7 +26,7 @@ where
 	T: DispatchCommand,
 {
 	fn dll_identifier(&mut self) -> CvarDllIdentifier {
-		crate::console::cvar::dll_identifier()
+		crate::cvar::dll_identifier()
 	}
 }
 

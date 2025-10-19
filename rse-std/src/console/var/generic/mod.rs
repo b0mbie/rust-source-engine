@@ -5,14 +5,12 @@ use ::core::{
 	},
 };
 use ::rse_convar::{
-	console_base::{
-		AsRegistrable, Registrable,
-	},
+	console_base::RegistrableMut,
 	variable::low::StaticConVarObject,
 };
 use ::rse_game_interfaces::cvar::CvarImpl;
 
-use crate::console::cvar::cvar_write;
+use crate::cvar::cvar_write;
 
 use super::{
 	ChangeVariable,
@@ -56,7 +54,7 @@ impl<T> GenericConVar<T> {
 		}
 	}
 
-	fn as_registrable(&self) -> Registrable {
+	fn as_registrable(&self) -> RegistrableMut {
 		unsafe { (*self.con_var.get()).as_registrable() }
 	}
 }

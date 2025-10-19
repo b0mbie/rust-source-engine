@@ -1,6 +1,4 @@
-pub use ::rse_convar::console_base::{
-	AsRegistrable, Registrable,
-};
+pub use ::rse_convar::console_base::RegistrableMut;
 
 pub(crate) mod cvar;
 

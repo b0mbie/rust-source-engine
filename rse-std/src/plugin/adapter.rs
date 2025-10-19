@@ -12,13 +12,14 @@ use ::rse_plugin::{
 	StaticPlugin, Plugin as CPlugin,
 };
 
-use crate::console::cvar::{
-	FIRST_INIT_DLL_ID,
-	set_dll_identifier, reset_dll_identifier, dll_identifier,
-	cvar_read, cvar_write,
+use crate::{
+	cvar::{
+		FIRST_INIT_DLL_ID,
+		set_dll_identifier, reset_dll_identifier, dll_identifier,
+		cvar_read, cvar_write,
+	},
+	cmd::Invocation,
 };
-
-use crate::console::cmd::Invocation;
 
 use super::{
 	ClientIndex, PluginResult, QueryCvarCookie, QueryCvarValueStatus,
