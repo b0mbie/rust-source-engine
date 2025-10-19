@@ -54,13 +54,6 @@ impl Futex {
 		wake_one(&self.state)
 	}
 
-	pub fn try_lock(&self) -> bool {
-        self.state.compare_exchange(
-			UNLOCKED, LOCKED,
-			Ordering::Acquire, Ordering::Relaxed,
-		).is_ok()
-	}
-
 	pub fn lock(&self) {
 		if self.state.compare_exchange(
 			UNLOCKED, LOCKED,

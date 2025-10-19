@@ -46,13 +46,6 @@ impl<P> Adapter<P> {
 		}
 	}
 
-	const unsafe fn plugin_unchecked(&self) -> &P {
-		match self.inner {
-			Inner::NotLoaded => unsafe { unreachable_unchecked() },
-			Inner::Loaded(ref p) | Inner::LoadedAgain(ref p) => p,
-		}
-	}
-
 	const unsafe fn plugin_mut_unchecked(&mut self) -> &mut P {
 		match self.inner {
 			Inner::NotLoaded => unsafe { unreachable_unchecked() },

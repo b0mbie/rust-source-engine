@@ -9,9 +9,8 @@ use ::syn::{
 	Result,
 	Lit,
 	ItemStatic,
-	ItemFn, FnArg, PatType, Pat, PatWild,
+	ItemFn,
 	Type, Expr,
-	Token,
 };
 use ::quote::{
 	quote, ToTokens,
