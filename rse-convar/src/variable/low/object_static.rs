@@ -2,9 +2,7 @@ use ::core::ffi::{
 	CStr, c_float, c_int,
 };
 
-use crate::console_base::{
-	AsRegistrable, Registrable,
-};
+use crate::console_base::RegistrableMut;
 
 use super::{
 	super::{
@@ -19,6 +17,10 @@ pub struct StaticConVarObject<T> {
 }
 
 impl<T> StaticConVarObject<T> {
+	pub const fn as_registrable(&mut self) -> RegistrableMut {
+		unsafe { self.as_mut_inner().as_mut_con_var() as *mut _ as *mut _ }
+	}
+
 	pub const unsafe fn as_inner(&self) -> &ConVarObject<'static, T> {
 		&self.maybe_unparented
 	}
@@ -55,11 +57,5 @@ where
 		Self {
 			maybe_unparented: ConVarObject::unparented(inner, params),
 		}
-	}
-}
-
-unsafe impl<T> AsRegistrable for StaticConVarObject<T> {
-	fn as_registrable(&mut self) -> Registrable {
-		unsafe { self.as_mut_inner().as_mut_con_var() as *mut _ as *mut _ }
 	}
 }

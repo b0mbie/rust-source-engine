@@ -168,7 +168,7 @@ where
 			inner,
 			CConVarExt {
 				base: CConCommandBaseExt {
-					next: None,
+					next: null_mut(),
 					registered: false,
 					name: name.as_ptr(),
 					help_string: crate::util::c_str_ptr(help),

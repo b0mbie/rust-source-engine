@@ -4,8 +4,8 @@ pub use crate::cppdef::{
 
 mod ext;
 pub use ext::*;
-mod convert;
-pub use convert::*;
+mod registrable;
+pub use registrable::*;
 
 /// # Safety
 /// The following functions must modify `Object`

@@ -14,7 +14,7 @@ pub type ConCommandBase = WithVTable<ConCommandBaseVt, ConCommandBaseExt>;
 #[derive(Debug)]
 #[repr(C)]
 pub struct ConCommandBaseExt {
-	pub next: Option<VtObjectPtr<ConCommandBaseVt>>,
+	pub next: *mut ConCommandBase,
 	pub registered: bool,
 	pub name: *const c_char,
 	pub help_string: *const c_char,

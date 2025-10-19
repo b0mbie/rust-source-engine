@@ -3,7 +3,7 @@ use ::core::ffi::CStr;
 use crate::cppdef::CvarFlags;
 
 ::rse_cpp::transparent_wrapper! {
-	pub struct ConCommandBaseExt for crate::cppdef::ConCommandBaseExt as "ConCommandBase";
+	pub struct ConCommandBaseExt for crate::cppdef::ConCommandBaseExt as "ConCommandBaseExt";
 }
 
 impl ConCommandBaseExt {

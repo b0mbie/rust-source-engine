@@ -3,6 +3,7 @@ use ::core::{
 		CStr, c_char, c_int,
 	},
 	marker::PhantomData,
+	ptr::null_mut,
 };
 use ::rse_cpp::{
 	ptr_compat::{
@@ -38,7 +39,7 @@ use crate::{
 	},
 	console_base::{
 		ConCommandBaseExt, CvarFlags,
-		AsRegistrable, Registrable,
+		RegistrableMut,
 	},
 };
 
@@ -103,7 +104,7 @@ where
 			inner,
 			ConCommandExt {
 				base: CConCommandBaseExt {
-					next: None,
+					next: null_mut(),
 					registered: false,
 					name: name.as_ptr(),
 					help_string: crate::util::c_str_ptr(help),
@@ -116,6 +117,10 @@ where
 				bits: ConCommandBits::new(),
 			},
 		) }
+	}
+
+	pub const fn as_registrable(&mut self) -> RegistrableMut {
+		convert_mut_ptr(&mut self.con_command)
 	}
 
 	const VTABLE: &'static ConCommandVt = &ConCommandVt {
@@ -221,12 +226,6 @@ where
 
 unsafe impl<T> PointerFrom<ConCommandObject<'_, T>> for ConCommand {}
 unsafe impl<T> PointerFrom<ConCommandObject<'_, T>> for CConCommandBase {}
-
-unsafe impl<T> AsRegistrable for ConCommandObject<'_, T> {
-	fn as_registrable(&mut self) -> Registrable {
-		convert_mut_ptr(&mut self.con_command)
-	}
-}
 
 impl<T> AsObject<ConCommandVt> for ConCommandObject<'_, T> {
 	fn as_object(&self) -> &VtObject<ConCommandVt> {

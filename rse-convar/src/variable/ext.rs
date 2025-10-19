@@ -2,6 +2,9 @@ use ::core::{
 	ffi::{
 		CStr, c_float, c_int,
 	},
+	ops::{
+		Deref, DerefMut,
+	},
 	ptr::addr_eq,
 };
 
@@ -12,7 +15,7 @@ use super::{
 };
 
 ::rse_cpp::transparent_wrapper! {
-	pub struct ConVarExt for crate::cppdef::ConVarExt as "ConVar";
+	pub struct ConVarExt for crate::cppdef::ConVarExt as "ConVarExt";
 }
 
 macro_rules! limit_funcs {
@@ -49,12 +52,12 @@ macro_rules! limit_funcs {
 
 impl ConVarExt {
 	/// Returns an immutable reference to the inner [`ConCommandBaseExt`].
-	pub const fn as_base(&self) -> &ConCommandBaseExt {
+	pub const fn base(&self) -> &ConCommandBaseExt {
 		unsafe { ConCommandBaseExt::from_ref(&self.0.base) }
 	}
 
 	/// Returns a mutable reference to the inner [`ConCommandBaseExt`].
-	pub const fn as_mut_base(&mut self) -> &mut ConCommandBaseExt {
+	pub const fn base_mut(&mut self) -> &mut ConCommandBaseExt {
 		unsafe { ConCommandBaseExt::from_mut(&mut self.0.base) }
 	}
 
@@ -172,6 +175,18 @@ impl ConVarExt {
 		} else {
 			clamp(value, self.min(), self.max())
 		}
+	}
+}
+
+impl Deref for ConVarExt {
+	type Target = ConCommandBaseExt;
+	fn deref(&self) -> &Self::Target {
+		self.base()
+	}
+}
+impl DerefMut for ConVarExt {
+	fn deref_mut(&mut self) -> &mut Self::Target {
+		self.base_mut()
 	}
 }
 
