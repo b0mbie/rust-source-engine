@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2024"
 authors.workspace = true
 
+[features]
+xbox360 = ["rse-utl/xbox360"]
+
 [dependencies]
 libc.workspace = true
 rse-convar.workspace = true
@@ -12,4 +15,6 @@ rse-game.workspace = true
 rse-interface.workspace = true
 rse-math.workspace = true
 rse-scratch-pad.workspace = true
-rse-utl.workspace = true
+
+[dependencies.rse-utl]
+workspace = true

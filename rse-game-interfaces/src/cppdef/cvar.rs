@@ -38,6 +38,8 @@ vtable! {
 		pub fn console_dprintf(format: *const c_char, ...);
 		pub fn revert_flagged_convars(flag: c_int);
 		pub fn install_cvar_query(query: VtObjectMut<CvarQueryVt>);
+		#[cfg(feature = "xbox360")]
+		pub fn publish_to_vx_console();
 		pub fn is_material_thread_set_allowed() -> bool;
 		pub fn queue_material_thread_set_value_string(convar: *mut ConVar, value: *const c_char);
 		pub fn queue_material_thread_set_value_int(convar: *mut ConVar, value: c_int);
