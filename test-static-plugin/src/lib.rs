@@ -69,7 +69,7 @@ impl StaticPlugin for TestStatic {
 		if let Some(cvar) = cvar_write().as_mut() {
 			unsafe {
 				set_dll_identifier(cvar.allocate_dll_identifier());
-				cvar.register(&mut self.rse_test_cmd);
+				cvar.register_raw(self.rse_test_cmd.as_registrable());
 			}
 		}
 		true
