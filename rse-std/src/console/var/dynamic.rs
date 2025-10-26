@@ -46,7 +46,7 @@ impl ConVar {
 		self.inner.c_str()
 	}
 
-	pub fn register(&self) {
+	pub fn register(&self) -> bool {
 		self.inner.register()
 	}
 }

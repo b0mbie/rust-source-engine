@@ -11,8 +11,6 @@ use ::rse_convar::{
 };
 use ::rse_game_interfaces::cvar::CvarImpl;
 
-use crate::cvar::cvar_write;
-
 use super::DispatchCommand;
 
 mod wrapper;
@@ -41,10 +39,8 @@ where
 		}
 	}
 
-	pub fn register(&self) {
-		if let Some(cvar) = cvar_write().as_mut() {
-			unsafe { cvar.register_raw(self.as_registrable()) }
-		}
+	pub fn register(&self) -> bool {
+		unsafe { crate::cvar::register_raw(self.as_registrable()) }
 	}
 
 	fn as_registrable(&self) -> RegistrableMut {

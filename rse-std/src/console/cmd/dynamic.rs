@@ -36,7 +36,7 @@ impl ConCommand {
 		}
 	}
 
-	pub fn register(&self) {
+	pub fn register(&self) -> bool {
 		self.inner.register()
 	}
 }

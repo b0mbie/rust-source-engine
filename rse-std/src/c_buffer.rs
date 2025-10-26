@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use ::core::{
 	ffi::{
 		CStr, c_char, c_float, c_double,
@@ -31,6 +33,14 @@ impl<const N: usize> CBuffer<N> {
 		self.bytes.as_mut_ptr() as _
 	}
 
+	pub const fn bytes(&self) -> &[u8; N] {
+		&self.bytes
+	}
+
+	pub const unsafe fn bytes_mut(&mut self) -> &mut [u8; N] {
+		&mut self.bytes
+	}
+
 	pub const fn as_c_str(&self) -> &CStr {
 		unsafe { CStr::from_ptr(self.as_ptr()) }
 	}
@@ -39,6 +49,12 @@ impl<const N: usize> CBuffer<N> {
 		unsafe {
 			snprintf(self.as_mut_ptr(), self.capacity(), c"%f".as_ptr(), value as c_double);
 		}
+	}
+}
+
+impl<const N: usize> Default for CBuffer<N> {
+	fn default() -> Self {
+		Self::new()
 	}
 }
 

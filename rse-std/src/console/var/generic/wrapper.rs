@@ -19,9 +19,7 @@ use ::rse_convar::{
 		ConVarExt,
 	},
 };
-use ::rse_game_interfaces::cvar::{
-	CvarImpl, QueueMaterialThreadValue,
-};
+use ::rse_game_interfaces::cvar::QueueMaterialThreadValue;
 use ::rse_utl::{
 	cppdef::UtlString,
 	CString,
@@ -30,7 +28,11 @@ use ::rse_utl::{
 use crate::{
 	c_buffer::CBuffer,
 	c_strings,
-	cvar::cvar_write,
+	cvar::{
+		is_material_thread_set_allowed,
+		queue_material_thread_set,
+		call_global_change_callbacks,
+	},
 	futex::Futex,
 };
 
@@ -87,7 +89,7 @@ impl<T> StdVariable<T> {
 		unsafe { Self::locked(
 			object,
 			move |object| {
-				let data = &mut object.as_mut_con_var().data;
+				let data = &mut object.as_mut_raw().data;
 				data.value_float = float;
 				data.value_int = int;
 			}
@@ -272,12 +274,15 @@ impl<'a, 's, T> StdCtx<'a, 's, T> {
 		V: QueueMaterialThreadValue,
 	{
 		// If we're supposed to only be set on the material thread...
-		if self.object.as_base().is_flag_set(fcvar::MATERIAL_THREAD_MASK)
-			&& let Some(cvar) = cvar_write().as_mut()
-			&& !cvar.is_material_thread_set_allowed()
-		{
-			unsafe { cvar.queue_material_thread_set(self.object.as_mut_con_var(), value) }
-			false
+		if self.object.as_base().is_flag_set(fcvar::MATERIAL_THREAD_MASK) {
+			unsafe {
+				if !is_material_thread_set_allowed() {
+					queue_material_thread_set(self.object.as_mut_raw(), value);
+					false
+				} else {
+					true
+				}
+			}
 		} else {
 			unsafe { self.ext().is_root() }
 		}
@@ -312,7 +317,7 @@ impl<'a, 's, T> StdCtx<'a, 's, T> {
 		// The string may have changed, so we need to fix it.
 		unsafe {
 			let ptr = inner.string;
-			self.object.as_mut_con_var().data.value_string = if !ptr.is_null() {
+			self.object.as_mut_raw().data.value_string = if !ptr.is_null() {
 				ptr
 			} else {
 				EMPTY.as_ptr() as _
@@ -360,9 +365,8 @@ impl<'a, 's, T> StdCtx<'a, 's, T> {
 				);
 			}
 
-			if let Some(cvar) = cvar_write().as_mut() {
-				let _ = cvar;
-				// TODO: g_pCVar->CallGlobalChangeCallbacks(this, old_value_string.as_c_str(), old_value);			
+			unsafe {
+				call_global_change_callbacks(self.object.as_mut_raw(), old_c_str, old_value);
 			}
 		}
 		unsafe { self.object.inner.unlock_value() }

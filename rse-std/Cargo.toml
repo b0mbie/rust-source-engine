@@ -5,11 +5,16 @@ edition = "2024"
 authors.workspace = true
 
 [features]
-default = ["macros"]
+default = [
+	"macros",
+	"server",
+]
 link-srv = ["rse-tier0/link-srv"]
 link-optional = ["rse-tier0/link-optional"]
 doc = ["link-optional"]
 macros = ["dep:rse-std-macros"]
+
+server = []
 
 [dependencies]
 atomic-wait.workspace = true

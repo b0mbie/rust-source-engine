@@ -23,6 +23,8 @@ pub(crate) mod futex;
 pub(crate) mod c_buffer;
 pub(crate) mod c_strings;
 
+pub(crate) mod threads;
+
 mod macros;
 
 mod console;
@@ -30,6 +32,9 @@ pub use console::*;
 
 pub mod interfaces;
 pub mod plugin;
+
+#[cfg(feature = "server")]
+pub mod server;
 
 pub mod prelude {
 	pub use ::core::ffi::CStr;
@@ -52,13 +57,12 @@ pub mod prelude {
 		},
 		var::{
 			Variable, OldValue, NewValue,
-			ConVar, cvar_value,
+			ConVar,
 		},
 		/*
 		cvar::{
 			fcvar,
 			CvarImpl,
-			init as cvar_init,
 		},
 		*/
 		interfaces::InterfaceFactories,
@@ -71,6 +75,7 @@ pub mod prelude {
 	};
 	#[cfg(feature = "macros")]
 	pub use crate::{
+		cvar_value,
 		con_var, con_command,
 	};
 }

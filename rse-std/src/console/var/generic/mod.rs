@@ -8,9 +8,6 @@ use ::rse_convar::{
 	console_base::RegistrableMut,
 	variable::low::StaticConVarObject,
 };
-use ::rse_game_interfaces::cvar::CvarImpl;
-
-use crate::cvar::cvar_write;
 
 use super::{
 	ChangeVariable,
@@ -48,10 +45,8 @@ impl<T> GenericConVar<T> {
 		unsafe { StdVariable::c_str((*self.con_var.get()).as_mut_inner()) }
 	}
 
-	pub fn register(&self) {
-		if let Some(cvar) = cvar_write().as_mut() {
-			unsafe { cvar.register_raw(self.as_registrable()) }
-		}
+	pub fn register(&self) -> bool {
+		unsafe { crate::cvar::register_raw(self.as_registrable()) }
 	}
 
 	fn as_registrable(&self) -> RegistrableMut {

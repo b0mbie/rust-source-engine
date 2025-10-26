@@ -31,7 +31,7 @@ where
 		self.inner.value()
 	}
 
-	pub fn register(&self) {
+	pub fn register(&self) -> bool {
 		self.inner.register()
 	}
 }
