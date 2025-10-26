@@ -67,14 +67,14 @@ impl<T> ConVarObject<'_, T> {
 		}
 	}
 
-	pub const fn as_con_var(&self) -> &ConVar {
+	pub const fn as_raw(&self) -> &ConVar {
 		&self.con_var
 	}
 
 	/// # Safety
 	/// The returned [`ConVar`]'s public fields must not be mutated
 	/// such that they could cause Undefined Behavior when used in conjunction with `T`.
-	pub const unsafe fn as_mut_con_var(&mut self) -> &mut ConVar {
+	pub const unsafe fn as_mut_raw(&mut self) -> &mut ConVar {
 		&mut self.con_var
 	}
 

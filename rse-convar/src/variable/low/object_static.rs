@@ -18,7 +18,7 @@ pub struct StaticConVarObject<T> {
 
 impl<T> StaticConVarObject<T> {
 	pub const fn as_registrable(&mut self) -> RegistrableMut {
-		unsafe { self.as_mut_inner().as_mut_con_var() as *mut _ as *mut _ }
+		unsafe { self.as_mut_inner().as_mut_raw() as *mut _ as *mut _ }
 	}
 
 	pub const unsafe fn as_inner(&self) -> &ConVarObject<'static, T> {
