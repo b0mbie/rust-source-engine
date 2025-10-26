@@ -201,6 +201,20 @@ pub trait CvarImpl: AsObject<CvarVt> {
 			RegisteredIterMut::from_ptr(ptr)
 		}
 	}
+
+	/// Call global change callbacks for the given registered console variable.
+	/// 
+	/// # Safety
+	/// `registered` must have been registered with this interface.
+	unsafe fn call_global_change_callbacks(&self, registered: *mut CConVar, old_string: &CStr, old_float: c_float) {
+		unsafe {
+			virtual_call!(
+				self.as_object() => cvar.call_global_change_callbacks(
+					registered,
+					old_string.as_ptr(), old_float,
+				))
+		}
+	}
 }
 impl<T: AsObject<CvarVt>> CvarImpl for T {}
 
