@@ -45,7 +45,7 @@ pub unsafe fn queue_material_thread_set<V: QueueMaterialThreadValue>(con_var: *m
 }
 
 pub unsafe fn register_raw(registrable: RegistrableMut) -> bool {
-	if crate::threads::MAIN_THREAD.is_current() {
+	crate::threads::MAIN_THREAD.try_run(move || {
 		#[allow(static_mut_refs)]
 		unsafe {
 			if let Some(cvar) = CVAR.as_mut() {
@@ -55,9 +55,7 @@ pub unsafe fn register_raw(registrable: RegistrableMut) -> bool {
 				false
 			}
 		}
-	} else {
-		false
-	}
+	}).unwrap_or(false)
 }
 
 /// # Safety

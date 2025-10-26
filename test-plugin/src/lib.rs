@@ -34,7 +34,7 @@ impl Test {
 			(&Color::rgb(0, 255, 0), "GRN"),
 		);
 		
-		let mut engine_server = factories.create_interface::<VEngineServer>()?;
+		let engine_server = factories.create_interface::<VEngineServer>()?;
 		engine_server.push_command_back(c"alias test_reload \"plugin_unload 0;plugin_load addons/test\"\n");
 
 		let dll = factories.create_interface::<ServerGameDll>()?;

@@ -9,7 +9,6 @@ use ::rse_convar::{
 	},
 	command::low::ConCommandObject,
 };
-use ::rse_game_interfaces::cvar::CvarImpl;
 
 use super::DispatchCommand;
 

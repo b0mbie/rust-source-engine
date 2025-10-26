@@ -40,8 +40,6 @@ thread_binding! {
 	pub(crate) static MAIN_THREAD;
 }
 
-pub(crate) static MATERIAL_THREAD: ThreadBinding = ThreadBinding::new();
-
 pub struct ThreadBound<T, Thread> {
 	binding: Thread,
 	value: RefCell<T>,
@@ -137,6 +135,7 @@ impl ThreadBinding {
 		}
 	}
 
+	#[allow(dead_code)]
 	pub fn init_is_current(&self) -> bool {
 		let current = current_id();
 		*self.id.get_or_init(move || current) == current
