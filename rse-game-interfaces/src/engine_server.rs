@@ -1,6 +1,6 @@
 use ::core::{
 	ffi::{
-		CStr, c_char, c_int, c_float,
+		CStr, c_int, c_float,
 	},
 	num::NonZero,
 	ptr::NonNull,
@@ -21,12 +21,20 @@ use crate::{
 	InterfaceOfFactory, AppSystemFactory,
 };
 
+/// Safe interface to `IVEngineServer`.
+/// 
+/// # Thread safety
+/// Unless otherwise specified,
+/// all functions are *not* thread-safe.
 pub trait VEngineServerImpl: AsObject<VEngineServerVt> {
 	/// Returns `true` if the given `map_name` is a valid map.
 	fn is_map_valid(&self, map_name: &CStr) -> bool {
 		(unsafe { virtual_call!(self.as_object() => is_map_valid(map_name.as_ptr())) }) != 0
 	}
 	/// Returns `true` if the running server is a dedicated server.
+	/// 
+	/// # Thread safety
+	/// This function is **thread-safe**.
 	fn is_dedicated_server(&self) -> bool {
 		unsafe { virtual_call!(self.as_object() => is_dedicated_server()) }
 	}
@@ -44,6 +52,9 @@ pub trait VEngineServerImpl: AsObject<VEngineServerVt> {
 	}
 
 	/// Returns the current system time.
+	/// 
+	/// # Thread safety
+	/// This function is **thread-safe**.
 	fn system_time(&self) -> c_float {
 		unsafe { virtual_call!(self.as_object() => time()) }
 	}
@@ -60,10 +71,13 @@ pub trait VEngineServerImpl: AsObject<VEngineServerVt> {
 		unsafe { virtual_call!(self.as_object() => get_server_version()) }
 	}
 	/// Writes the game directory into `buffer`.
-	fn game_dir(&mut self, buffer: &mut [c_char]) {
+	/// 
+	/// # Thread safety
+	/// This function is **thread-safe**.
+	fn game_dir(&self, buffer: &mut [u8]) {
 		unsafe { virtual_call!(
 			self.as_object() => get_game_dir(
-				buffer.as_mut_ptr(), buffer.len() as _,
+				buffer.as_mut_ptr() as _, buffer.len() as _,
 			)
 		) }
 	}
@@ -82,11 +96,17 @@ pub trait VEngineServerImpl: AsObject<VEngineServerVt> {
 		unsafe { virtual_call!(self.as_object() => is_low_violence()) }
 	}
 	/// Inserts `command` at the end of the command buffer.
-	fn push_command_back(&mut self, command: &CStr) {
+	/// 
+	/// # Thread safety
+	/// This function is **thread-safe**.
+	fn push_command_back(&self, command: &CStr) {
 		unsafe { virtual_call!(self.as_object() => server_command(command.as_ptr())) }
 	}
 	/// Inserts `command` at the beginning of the command buffer.
-	fn push_command_front(&mut self, command: &CStr) {
+	/// 
+	/// # Thread safety
+	/// This function is **thread-safe**.
+	fn push_command_front(&self, command: &CStr) {
 		unsafe { virtual_call!(self.as_object() => insert_server_command(command.as_ptr())) }
 	}
 
