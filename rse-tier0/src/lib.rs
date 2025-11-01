@@ -1,6 +1,4 @@
-// #![no_std]
-
-extern crate alloc;
+#![no_std]
 
 pub use ::rse_math::Color;
 

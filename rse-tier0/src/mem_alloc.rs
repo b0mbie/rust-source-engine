@@ -1,7 +1,7 @@
-use ::alloc::alloc::{
-	GlobalAlloc, Layout,
-};
 use ::core::{
+	alloc::{
+		GlobalAlloc, Layout,
+	},
 	num::NonZeroUsize,
 	ptr::null_mut,
 };
