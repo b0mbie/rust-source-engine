@@ -30,6 +30,9 @@ mod macros;
 mod console;
 pub use console::*;
 
+pub mod alloc;
+pub mod env;
+pub mod io;
 pub mod interfaces;
 pub mod plugin;
 
@@ -38,18 +41,6 @@ pub mod server;
 
 pub mod prelude {
 	pub use ::core::ffi::CStr;
-	pub use ::rse_tier0::{
-		linked::{
-			cmd::command_line,
-			spew::{
-				con, dev,
-			},
-		},
-		Tier0CommandLine,
-		Logger, ColorLogger,
-		dev_msg, dev_warn, con_msg, con_warn,
-		msg, msgln, warn, warnln,
-	};
 	pub use crate::{
 		cmd::{
 			Suggestions, Invocation,
@@ -59,12 +50,10 @@ pub mod prelude {
 			Variable, OldValue, NewValue,
 			ConVar,
 		},
-		/*
-		cvar::{
-			fcvar,
-			CvarImpl,
+		io::{
+			con, dev,
+			dev_msg, dev_warn, con_msg, con_warn,
 		},
-		*/
 		interfaces::InterfaceFactories,
 		plugin::{
 			ClientIndex, PluginResult, QueryCvarCookie, QueryCvarValueStatus,
