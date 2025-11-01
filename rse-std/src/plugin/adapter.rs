@@ -76,6 +76,8 @@ where
 	unsafe fn load(&mut self, factories: InterfaceFactories<'_>) -> bool {
 		crate::threads::MAIN_THREAD.bind_to_current();
 
+		crate::panicking::install_panic_hook();
+
 		macro_rules! init {
 			($result:expr $(,)?) => {
 				if !$result {

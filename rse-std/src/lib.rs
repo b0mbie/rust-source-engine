@@ -23,6 +23,7 @@ pub(crate) mod futex;
 pub(crate) mod c_buffer;
 pub(crate) mod c_strings;
 
+pub(crate) mod panicking;
 pub(crate) mod threads;
 
 mod macros;
