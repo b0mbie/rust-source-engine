@@ -40,6 +40,20 @@ impl<P> Adapter<P> {
 		}
 	}
 
+	pub const fn plugin(&self) -> Option<&P> {
+		match self.inner {
+			Inner::NotLoaded => None,
+			Inner::Loaded(ref p) | Inner::LoadedAgain(ref p) => Some(p),
+		}
+	}
+
+	pub const fn plugin_mut(&mut self) -> Option<&mut P> {
+		match self.inner {
+			Inner::NotLoaded => None,
+			Inner::Loaded(ref mut p) | Inner::LoadedAgain(ref mut p) => Some(p),
+		}
+	}
+
 	const unsafe fn plugin_mut_unchecked(&mut self) -> &mut P {
 		match self.inner {
 			Inner::NotLoaded => unsafe { unreachable_unchecked() },
