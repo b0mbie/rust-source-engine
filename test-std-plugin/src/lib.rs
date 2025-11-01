@@ -13,8 +13,8 @@ static GREETING: Cow<'static, CStr> = "Hello!";
 	help = "Print a greeting."
 )]
 fn greet(_: &Invocation) {
-	con().msg(GREETING.get().as_ref());
-	con().msg('\n');
+	con().msg_raw(GREETING.get().as_ref());
+	con().msg_raw('\n');
 }
 
 struct TestStd;
