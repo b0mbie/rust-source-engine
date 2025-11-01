@@ -2,6 +2,7 @@ use ::core::{
 	ffi::{
 		CStr, c_char, c_int, c_float,
 	},
+	num::NonZero,
 	ptr::null,
 };
 use ::rse_cpp::{
@@ -57,7 +58,7 @@ impl<T: AsObject<CommandLineVt>> Tier0CommandLine for T {
 	fn parm_str<'a>(&'a self, key: &CStr) -> Option<&'a CStr> {
 		unsafe { c_str_opt(virtual_call!(self.as_object() => parm_value_str(key.as_ptr(), null()))) }
 	}
-	fn parm_str_or<'a>(&'a self, key: &CStr, default: &'a CStr) -> &'a CStr {
+	fn parm_str_or<'a, 'def: 'a>(&'a self, key: &CStr, default: &'def CStr) -> &'def CStr {
 		unsafe { CStr::from_ptr(virtual_call!(self.as_object() => parm_value_str(key.as_ptr(), default.as_ptr()))) }
 	}
 	fn parm_int_or(&self, key: &CStr, default: c_int) -> c_int {
@@ -65,6 +66,19 @@ impl<T: AsObject<CommandLineVt>> Tier0CommandLine for T {
 	}
 	fn parm_float_or(&self, key: &CStr, default: c_float) -> c_float {
 		unsafe { virtual_call!(self.as_object() => parm_value_float(key.as_ptr(), default)) }
+	}
+
+	fn parm_count(&self) -> c_int {
+		unsafe { virtual_call!(self.as_object() => parm_count()) }
+	}
+	fn find_parm(&self, s: &CStr) -> Option<NonZero<c_int>> {
+		NonZero::new(unsafe { virtual_call!(self.as_object() => find_parm(s.as_ptr())) })
+	}
+	fn get_parm(&self, index: c_int) -> &CStr {
+		unsafe { CStr::from_ptr(virtual_call!(self.as_object() => get_parm(index))) }
+	}
+	fn has_parm(&self, s: &CStr) -> bool {
+		unsafe { virtual_call!(self.as_object() => has_parm(s.as_ptr())) }
 	}
 }
 
