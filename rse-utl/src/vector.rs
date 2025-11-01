@@ -1,5 +1,5 @@
-use ::alloc::alloc::Layout;
 use ::core::{
+	alloc::Layout,
 	fmt,
 	ptr::null_mut,
 	slice::{
