@@ -8,11 +8,13 @@ authors.workspace = true
 default = [
 	"macros",
 	"server",
+	"global-allocator",
 ]
 link-srv = ["rse-tier0/link-srv"]
 link-optional = ["rse-tier0/link-optional"]
 doc = ["link-optional"]
 macros = ["dep:rse-std-macros"]
+global-allocator = []
 
 server = []
 
