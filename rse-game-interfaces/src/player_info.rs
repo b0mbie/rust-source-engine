@@ -46,7 +46,7 @@ pub trait PlayerInfoManagerImpl: AsObject<PlayerInfoManagerVt> {
 		unsafe { &*virtual_call!(self.as_object() => get_global_vars()) }
 	}
 }
-impl<T: AsObject<PlayerInfoManagerVt>> PlayerInfoManagerImpl for T {}
+impl<T: ?Sized + AsObject<PlayerInfoManagerVt>> PlayerInfoManagerImpl for T {}
 
 pub trait PlayerInfoImpl: AsObject<PlayerInfoVt> {
 	/// Returns the UTF-8 encoded name of the player.
@@ -92,7 +92,7 @@ pub trait PlayerInfoImpl: AsObject<PlayerInfoVt> {
 		unsafe { virtual_call!(self.as_object() => get_armor_value()) }
 	}
 }
-impl<T: AsObject<PlayerInfoVt>> PlayerInfoImpl for T {}
+impl<T: ?Sized + AsObject<PlayerInfoVt>> PlayerInfoImpl for T {}
 
 macro_rules! v2_call {
 	($object:expr => $field:ident($($arg:tt)*)) => {{
@@ -174,7 +174,7 @@ pub trait PlayerInfo2Impl: AsObject<PlayerInfo2Vt> {
 		unsafe { v2_call!(self.as_object() => get_last_user_command()) }
 	}
 }
-impl<T: AsObject<PlayerInfo2Vt>> PlayerInfo2Impl for T {}
+impl<T: ?Sized + AsObject<PlayerInfo2Vt>> PlayerInfo2Impl for T {}
 
 pub type UserId = c_int;
 
@@ -201,12 +201,12 @@ pub trait BotManagerImpl: AsObject<BotManagerVt> {
 		self.bot_controller_for(edict)
 	}
 }
-impl<T: AsObject<BotManagerVt>> BotManagerImpl for T {}
+impl<T: ?Sized + AsObject<BotManagerVt>> BotManagerImpl for T {}
 
 pub trait BotControllerImpl: AsObject<BotControllerVt> {
 	// TODO: `IBotController` methods.
 }
-impl<T: AsObject<BotControllerVt>> BotControllerImpl for T {}
+impl<T: ?Sized + AsObject<BotControllerVt>> BotControllerImpl for T {}
 
 owned_vt_object_wrapper! {
 	pub struct PlayerInfoManager for PlayerInfoManagerVt;

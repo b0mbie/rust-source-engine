@@ -32,7 +32,7 @@ pub trait ServerGameDllImpl: AsObject<ServerGameDllVt> {
 
 	// TODO: More functions from `ServerGameDllVt`.
 }
-impl<T: AsObject<ServerGameDllVt>> ServerGameDllImpl for T {}
+impl<T: ?Sized + AsObject<ServerGameDllVt>> ServerGameDllImpl for T {}
 
 owned_vt_object_wrapper! {
 	pub struct ServerGameDll for ServerGameDllVt;

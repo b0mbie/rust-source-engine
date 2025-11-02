@@ -216,7 +216,7 @@ pub trait CvarImpl: AsObject<CvarVt> {
 		}
 	}
 }
-impl<T: AsObject<CvarVt>> CvarImpl for T {}
+impl<T: ?Sized + AsObject<CvarVt>> CvarImpl for T {}
 
 pub trait QueueMaterialThreadValue {
 	/// # Safety

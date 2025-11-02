@@ -60,7 +60,7 @@ pub trait GameEventImpl: AsObject<GameEventVt> {
 	}
 	// TODO: `IGameEvent::Set*`.
 }
-impl<T: AsObject<GameEventVt>> GameEventImpl for T {}
+impl<T: ?Sized + AsObject<GameEventVt>> GameEventImpl for T {}
 
 vt_object_wrapper! {
 	pub struct GameEvent for GameEventVt;

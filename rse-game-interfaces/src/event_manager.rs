@@ -11,7 +11,7 @@ use crate::{
 };
 
 pub trait GameEventManager2Impl: AsObject<GameEventManager2Vt> {}
-impl<T: AsObject<GameEventManager2Vt>> GameEventManager2Impl for T {}
+impl<T: ?Sized + AsObject<GameEventManager2Vt>> GameEventManager2Impl for T {}
 
 owned_vt_object_wrapper! {
 	pub struct GameEventManager2 for GameEventManager2Vt;

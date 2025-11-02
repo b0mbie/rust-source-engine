@@ -186,7 +186,7 @@ pub trait VEngineServerImpl: AsObject<VEngineServerVt> {
 		unsafe { virtual_call!(self.as_object() => is_generic_precached(path.as_ptr())) }
 	}
 }
-impl<T: AsObject<VEngineServerVt>> VEngineServerImpl for T {}
+impl<T: ?Sized + AsObject<VEngineServerVt>> VEngineServerImpl for T {}
 
 pub type Model = NonZero<c_int>;
 pub type Decal = c_int;
