@@ -46,7 +46,7 @@ impl Tier0GetCommandLine for LinkedTier0 {
 	}
 }
 
-impl<T: AsObject<CommandLineVt>> Tier0CommandLine for T {
+impl Tier0CommandLine for LinkedTier0CommandLine {
 	fn check_parm<'a>(&'a self, key: &CStr) -> Option<&'a CStr> {
 		let mut value = null();
 		unsafe {
