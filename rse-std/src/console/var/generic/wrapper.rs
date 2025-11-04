@@ -7,7 +7,6 @@ use ::core::{
 };
 use ::libc::atof;
 use ::rse_convar::{
-	cppdef::fcvar,
 	console_base::{
 		RawConsoleBase,
 		CvarDllIdentifier, CvarFlags,
@@ -162,7 +161,7 @@ where
 
 		ctx.set_number(new_float_value, new_float_value as _);
 
-		if !object.as_base().is_flag_set(fcvar::NEVER_AS_STRING) {
+		if !object.as_base().are_flags_set(CvarFlags::NEVER_AS_STRING) {
 			Self::change_string_value(object, value, old_value);
 		}
 	}
@@ -177,7 +176,7 @@ where
 		let old_value = ctx.float();
 		ctx.set_number(value, value as _);
 
-		if !ctx.object.as_base().is_flag_set(fcvar::NEVER_AS_STRING) {
+		if !ctx.object.as_base().are_flags_set(CvarFlags::NEVER_AS_STRING) {
 			let old_value_string = ctx.old_value_string();
 			ctx.with_value_string_mut(move |s| c_strings::print_float(s, value));
 			ctx.change_string_value_impl(old_value_string.as_c_str(), old_value);
@@ -198,7 +197,7 @@ where
 		let old_value = ctx.float();
 		ctx.set_number(float_value, value);
 
-		if !ctx.object.as_base().is_flag_set(fcvar::NEVER_AS_STRING) {
+		if !ctx.object.as_base().are_flags_set(CvarFlags::NEVER_AS_STRING) {
 			let old_value_string = ctx.old_value_string();
 			ctx.with_value_string_mut(move |s| c_strings::print_int(s, value));
 			ctx.change_string_value_impl(old_value_string.as_c_str(), old_value);
@@ -274,7 +273,7 @@ impl<'a, 's, T> StdCtx<'a, 's, T> {
 		V: QueueMaterialThreadValue,
 	{
 		// If we're supposed to only be set on the material thread...
-		if self.object.as_base().is_flag_set(fcvar::MATERIAL_THREAD_MASK) {
+		if self.object.as_base().flags().is_for_material_thread() {
 			unsafe {
 				if !is_material_thread_set_allowed() {
 					queue_material_thread_set(self.object.as_mut_raw(), value);

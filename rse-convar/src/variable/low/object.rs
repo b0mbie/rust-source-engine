@@ -27,7 +27,9 @@ use crate::{
 		CvarDllIdentifier,
 		FnChangeCallback,
 	},
-	console_base::ConCommandBaseExt,
+	console_base::{
+		ConCommandBaseExt, CvarFlags,
+	},
 };
 
 use super::{
@@ -172,7 +174,7 @@ where
 					registered: false,
 					name: name.as_ptr(),
 					help_string: crate::util::c_str_ptr(help),
-					flags,
+					flags: flags.bits(),
 				},
 				iface: VTablePtr::from_ref(Self::IFACE_VT),
 
@@ -241,7 +243,7 @@ where
 			this_to_self!(ref this).con_var.data.base.name
 		}
 		fn iface_is_flag_set(flag: c_int) -> bool {
-			this_to_self!(ref this).as_base().is_flag_set(flag)
+			this_to_self!(ref this).as_base().are_flags_set(CvarFlags::from_bits_retain(flag))
 		}
 	}
 
@@ -304,10 +306,10 @@ where
 		this: VtObjectPtr<ConVarVt>;
 		#[cfg(not(windows))]
 		fn is_flag_set(flag: c_int) -> bool {
-			this_to_self!(ref this).as_base().is_flag_set(flag)
+			this_to_self!(ref this).as_base().are_flags_set(CvarFlags::from_bits_retain(flag))
 		}
 		fn add_flags(flags: c_int) {
-			T::add_flags(this_to_self!(mut this), flags)
+			T::add_flags(this_to_self!(mut this), CvarFlags::from_bits_retain(flags))
 		}
 		#[cfg(not(windows))]
 		fn get_name() -> *const c_char {

@@ -38,7 +38,8 @@ use crate::{
 		CvarDllIdentifier,
 	},
 	console_base::{
-		ConCommandBaseExt, CvarFlags,
+		CvarFlags,
+		ConCommandBaseExt,
 		RegistrableMut,
 	},
 };
@@ -108,7 +109,7 @@ where
 					registered: false,
 					name: name.as_ptr(),
 					help_string: crate::util::c_str_ptr(help),
-					flags,
+					flags: flags.bits(),
 				},
 				command_callback: CommandCallback {
 					v1: empty_command_callback_v1,
@@ -169,10 +170,10 @@ where
 	vtable_methods! {
 		this: VtObjectPtr<ConCommandBaseVt>;
 		fn is_flag_set(flag: c_int) -> bool {
-			T::is_flag_set(this_to_self!(mut this), flag)
+			T::are_flags_set(this_to_self!(mut this), CvarFlags::from_bits_retain(flag))
 		}
 		fn add_flags(flags: c_int) {
-			T::add_flags(this_to_self!(mut this), flags)
+			T::add_flags(this_to_self!(mut this), CvarFlags::from_bits_retain(flags))
 		}
 		fn get_name() -> *const c_char {
 			let this = this_to_self!(mut this);

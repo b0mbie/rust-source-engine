@@ -2,6 +2,7 @@
 
 use ::core::ptr::NonNull;
 
+pub use ::bitflags::bitflags;
 pub use ::cppdvt::*;
 
 mod flag_utils;

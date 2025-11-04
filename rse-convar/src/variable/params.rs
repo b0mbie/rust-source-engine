@@ -34,7 +34,7 @@ impl<'a> ConVarParams<'a> {
 			help: None,
 			min: None, max: None,
 			comp_min: None, comp_max: None,
-			flags: 0,
+			flags: CvarFlags::empty(),
 		}
 	};
 

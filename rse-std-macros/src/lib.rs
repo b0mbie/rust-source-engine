@@ -55,11 +55,7 @@ fn con_command_impl(args: TokenStream, item: TokenStream) -> Result<TokenStream>
 		c_string_from_string(name)
 	};
 	let help = opt_to_stream(args.help);
-	let flags = if let Some(flags) = args.flags {
-		flags
-	} else {
-		Expr::Verbatim(quote! { 0 })
-	};
+	let flags = args.flags.unwrap_or_else(default_flags);
 	let complete = opt_to_stream(args.complete);
 
 	let vis = item.vis.clone();
@@ -122,11 +118,7 @@ fn con_var_impl(args: TokenStream, item: TokenStream) -> Result<TokenStream> {
 		c_string_from_string(name)
 	};
 	let help = opt_to_stream(args.help);
-	let flags = if let Some(flags) = args.flags {
-		flags
-	} else {
-		Expr::Verbatim(quote! { 0 })
-	};
+	let flags = args.flags.unwrap_or_else(default_flags);
 	let min = opt_to_stream(args.min);
 	let max = opt_to_stream(args.max);
 	let comp_min = opt_to_stream(args.comp_min);
@@ -149,6 +141,10 @@ fn con_var_impl(args: TokenStream, item: TokenStream) -> Result<TokenStream> {
 	});
 
 	Ok(item.into_token_stream().into())
+}
+
+fn default_flags() -> Expr {
+	Expr::Verbatim(quote! { ::rse_std::CvarFlags::empty() })
 }
 
 fn opt_to_stream<T: ToTokens>(opt: Option<T>) -> TokenStream2 {

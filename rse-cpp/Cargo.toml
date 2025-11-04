@@ -8,4 +8,5 @@ default = ["gcc"]
 gcc = []
 
 [dependencies]
+bitflags.workspace = true
 cppdvt.workspace = true

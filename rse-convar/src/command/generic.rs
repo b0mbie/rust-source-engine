@@ -22,7 +22,7 @@ where
 pub trait Command: DispatchCommand {
 	const NAME: &CStr;
 	const HELP: Option<&CStr> = None;
-	const FLAGS: CvarFlags = 0;
+	const FLAGS: CvarFlags = CvarFlags::empty();
 }
 
 pub trait DispatchCommand {

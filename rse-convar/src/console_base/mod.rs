@@ -1,9 +1,9 @@
-pub use crate::cppdef::{
-	CvarDllIdentifier, CvarFlags,
-};
+pub use crate::cppdef::CvarDllIdentifier;
 
 mod ext;
 pub use ext::*;
+mod flags;
+pub use flags::*;
 mod registrable;
 pub use registrable::*;
 

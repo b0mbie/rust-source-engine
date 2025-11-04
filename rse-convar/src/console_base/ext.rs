@@ -1,6 +1,6 @@
 use ::core::ffi::CStr;
 
-use crate::cppdef::CvarFlags;
+use super::CvarFlags;
 
 ::rse_cpp::transparent_wrapper! {
 	pub struct ConCommandBaseExt for crate::cppdef::ConCommandBaseExt as "ConCommandBaseExt";
@@ -8,19 +8,23 @@ use crate::cppdef::CvarFlags;
 
 impl ConCommandBaseExt {
 	pub const fn flags(&self) -> CvarFlags {
-		self.0.flags
+		CvarFlags::from_bits_retain(self.0.flags)
+	}
+
+	pub const fn flags_ref(&self) -> &CvarFlags {
+		CvarFlags::from_ref(&self.0.flags)
 	}
 
 	pub const fn flags_mut(&mut self) -> &mut CvarFlags {
-		&mut self.0.flags
+		CvarFlags::from_mut(&mut self.0.flags)
 	}
 
-	pub const fn is_flag_set(&self, flag: CvarFlags) -> bool {
-		(self.0.flags & flag) != 0
+	pub const fn are_flags_set(&self, flags: CvarFlags) -> bool {
+		(self.0.flags & flags.bits()) != 0
 	}
 
 	pub const fn add_flags(&mut self, flags: CvarFlags) {
-		self.0.flags |= flags
+		self.0.flags |= flags.bits()
 	}
 
 	pub const fn name(&self) -> &CStr {

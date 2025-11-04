@@ -1,6 +1,4 @@
-use super::CvarFlags;
-
-// TODO: Make this more usable?
+use super::RawCvarFlags;
 
 macro_rules! flags {
 	{
@@ -15,7 +13,7 @@ macro_rules! flags {
 }
 
 flags! {
-	for CvarFlags:
+	for RawCvarFlags:
 	pub UNREGISTERED = 0;
 	pub DEVELOPMENT_ONLY = 1;
 	pub GAMEDLL = 2;
@@ -55,4 +53,4 @@ flags! {
 	pub ALLOWED_IN_COMPETITIVE = 18;
 }
 
-pub const MATERIAL_THREAD_MASK: CvarFlags = RELOAD_MATERIALS | RELOAD_TEXTURES | MATERIAL_SYSTEM_THREAD;
+pub const MATERIAL_THREAD_MASK: RawCvarFlags = RELOAD_MATERIALS | RELOAD_TEXTURES | MATERIAL_SYSTEM_THREAD;

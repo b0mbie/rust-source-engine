@@ -34,7 +34,7 @@ where
 		suggestions: &mut Suggestions,
 	) -> SuggestionCount;
 
-	fn is_flag_set(object: &mut ConCommandObject<'a, Self>, flag: CvarFlags) -> bool {
-		object.as_base().is_flag_set(flag)
+	fn are_flags_set(object: &mut ConCommandObject<'a, Self>, flag: CvarFlags) -> bool {
+		object.as_base().are_flags_set(flag)
 	}
 }

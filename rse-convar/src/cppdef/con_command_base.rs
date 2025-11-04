@@ -18,10 +18,10 @@ pub struct ConCommandBaseExt {
 	pub registered: bool,
 	pub name: *const c_char,
 	pub help_string: *const c_char,
-	pub flags: CvarFlags,
+	pub flags: RawCvarFlags,
 }
 
-pub type CvarFlags = c_int;
+pub type RawCvarFlags = c_int;
 
 #[repr(C)]
 pub struct ConCommandBaseVt {

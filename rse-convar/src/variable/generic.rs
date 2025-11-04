@@ -25,7 +25,7 @@ where
 pub trait Variable: ChangeVariable {
 	const NAME: &CStr;
 	const HELP: Option<&CStr> = None;
-	const FLAGS: CvarFlags = 0;
+	const FLAGS: CvarFlags = CvarFlags::empty();
 
 	const DEFAULT: ConVarValue<'static>;
 
