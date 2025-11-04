@@ -12,6 +12,8 @@ mod event_manager;
 pub use event_manager::*;
 mod event;
 pub use event::*;
+mod file_system;
+pub use file_system::*;
 mod game_event;
 pub use game_event::*;
 mod interface_factories;
