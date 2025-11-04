@@ -22,7 +22,7 @@ impl CvarFlags {
 }
 
 ::rse_cpp::bitflags! {
-	#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+	#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 	#[repr(transparent)]
 	pub struct CvarFlags: RawCvarFlags {
 		const UNREGISTERED = UNREGISTERED;
