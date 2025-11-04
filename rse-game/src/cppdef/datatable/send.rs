@@ -6,7 +6,7 @@ use ::rse_cpp::{
 };
 
 use super::{
-	Variant, SendPropType, SendPropFlags,
+	Variant, SendPropType,
 };
 
 // TODO: `RecvProp`.
@@ -65,12 +65,14 @@ pub struct SendPropExt {
 	pub parrent_array_prop_name: *const c_char,
 	pub var_name: *const c_char,
 	pub high_low_mul: c_float,
-	pub flags: SendPropFlags,
+	pub flags: RawSendPropFlags,
 	pub proxy_fn: Option<SendVarProxyFn>,
 	pub dt_proxy_fn: Option<SendTableProxyFn>,
 	pub data_table: *mut SendTable,
 	pub offset: c_int,
 	pub extra_data: *const c_void,
 }
+
+pub type RawSendPropFlags = c_int;
 
 pub type ValueLimit = c_float;

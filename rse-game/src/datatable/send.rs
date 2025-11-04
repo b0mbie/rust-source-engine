@@ -22,6 +22,8 @@ pub use crate::cppdef::datatable::{
 	SendPropType, ValueLimit,
 };
 
+use super::SendPropFlags;
+
 transparent_wrapper! {
 	/// # Layout
 	/// This type has the exact same layout as a C++ [`SendProp`](CSendProp).
@@ -81,6 +83,18 @@ impl SendProp {
 
 	pub const fn n_bits(&self) -> usize {
 		self.0.data.bits as _
+	}
+
+	pub const fn flags(&self) -> SendPropFlags {
+		SendPropFlags::from_bits_retain(self.0.data.flags)
+	}
+
+	pub const fn flags_ref(&self) -> &SendPropFlags {
+		SendPropFlags::from_ref(&self.0.data.flags)
+	}
+
+	pub const fn flags_mut(&mut self) -> &mut SendPropFlags {
+		SendPropFlags::from_mut(&mut self.0.data.flags)
 	}
 }
 
