@@ -1,18 +1,6 @@
 use super::RawCvarFlags;
 
-macro_rules! flags {
-	{
-		for $ty:ty:
-		$(
-			$(#[$attr:meta])*
-			$vis:vis $name:ident = $offset:expr;
-		)*
-	} => {
-		$($vis const $name: $ty = 1 << $offset;)*
-	};
-}
-
-flags! {
+::rse_cpp::bit_flag_consts! {
 	for RawCvarFlags:
 	pub UNREGISTERED = 0;
 	pub DEVELOPMENT_ONLY = 1;

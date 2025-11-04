@@ -15,6 +15,19 @@ macro_rules! flag_consts {
 }
 
 #[macro_export]
+macro_rules! bit_flag_consts {
+	{
+		for $ty:ty:
+		$(
+			$(#[$attr:meta])*
+			$vis:vis $name:ident = $offset:expr;
+		)*
+	} => {
+		$($vis const $name: $ty = 1 << $offset;)*
+	};
+}
+
+#[macro_export]
 macro_rules! test_bits {
 	($self:expr, $bits:expr) => {
 		($self.0 & $bits) != 0
