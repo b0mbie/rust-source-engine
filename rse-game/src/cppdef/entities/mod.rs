@@ -9,7 +9,7 @@ use ::rse_math::{
 };
 
 use super::{
-	Model, SolidType,
+	model_t, SolidType,
 	Ray, Trace,
 	string_t,
 };
@@ -137,7 +137,7 @@ vtable! {
 		pub fn test_collision(ray: RefConst<Ray>, contents_mask: c_uint, out_trace: RefMut<Trace>) -> bool;
 		pub fn test_hitboxes(ray: RefConst<Ray>, contents_mask: c_uint, out_trace: RefMut<Trace>) -> bool;
 		pub fn get_collision_model_index() -> c_int;
-		pub fn get_collision_model() -> *const Model;
+		pub fn get_collision_model() -> *const model_t;
 		pub fn get_collision_origin() -> RefConst<Vector>;
 		pub fn get_collision_angles() -> RefConst<QAngle>;
 		pub fn collision_to_world_transform() -> RefConst<Matrix3x4>;

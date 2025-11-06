@@ -5,7 +5,8 @@ use ::rse_math::VectorAligned;
 
 // `struct model_t` is never implemented, only used behind a pointer.
 #[repr(transparent)]
-pub struct Model(c_void);
+#[allow(non_camel_case_types)]
+pub struct model_t(c_void);
 
 // TODO: This is called `csurface_t` in code. Figure out why, and maybe rename.
 #[derive(Debug)]
