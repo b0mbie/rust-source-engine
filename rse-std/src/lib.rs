@@ -31,6 +31,7 @@ mod macros;
 pub mod alloc;
 pub mod con;
 pub mod env;
+pub mod fs;
 pub mod io;
 pub mod interfaces;
 pub mod plugin;
