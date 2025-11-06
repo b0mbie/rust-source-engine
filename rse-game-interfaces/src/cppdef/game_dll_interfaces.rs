@@ -16,7 +16,9 @@ use ::rse_shared::cppdef::{
 	BfWrite,
 	SoundLevel,
 };
-use ::rse_math::Vector;
+use ::rse_math::{
+	Vector, VPlane,
+};
 use ::rse_scratch_pad::cppdef::ScratchPad3DVt;
 
 // TODO: `INetChannelInfo`.
@@ -34,9 +36,6 @@ vtable! {
 
 // TODO: `struct con_nprint_s`.
 pub type ConNPrint = c_void;
-
-// TODO: `VPlane`.
-pub type VPlane = c_void;
 
 // TODO: `client_textmessage_t`.
 pub type ClientTextMessage = c_void;
