@@ -39,7 +39,7 @@ where
 	}
 
 	pub fn register(&self) -> bool {
-		unsafe { crate::cvar::register_raw(self.as_registrable()) }
+		unsafe { crate::con::cvar::register_raw(self.as_registrable()) }
 	}
 
 	fn as_registrable(&self) -> RegistrableMut {

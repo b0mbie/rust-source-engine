@@ -12,7 +12,7 @@ use ::rse_plugin::{
 };
 use ::rse_tier0::con_warn;
 
-use crate::cmd::Invocation;
+use crate::con::cmd::Invocation;
 
 use super::{
 	ClientIndex, PluginResult, QueryCvarCookie, QueryCvarValueStatus,
@@ -87,7 +87,7 @@ where
 		}
 
 		// SAFETY: `Self::load` is called on the main thread; `detach` is called in `Self::unload`.
-		unsafe { crate::cvar::attach(factories) }
+		unsafe { crate::con::cvar::attach(factories) }
 
 		#[cfg(feature = "server")]
 		unsafe { init!(crate::server::attach(factories)) }
@@ -126,7 +126,7 @@ where
 			Inner::NotLoaded => { /* nothing to do */ }
 			Inner::Loaded(p) => {
 				// SAFETY: `Self::unload` is called on the main thread.
-				unsafe { crate::cvar::detach() };
+				unsafe { crate::con::cvar::detach() };
 				drop(p);
 				self.inner = Inner::NotLoaded;
 			}

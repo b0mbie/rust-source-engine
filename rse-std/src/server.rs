@@ -7,6 +7,7 @@ use ::rse_game_interfaces::{
 	VEngineServer, VEngineServerImpl,
 };
 use ::std::{
+	cell::RefCell,
 	ffi::CStr,
 	mem::MaybeUninit,
 };
@@ -16,7 +17,8 @@ use crate::{
 	threads::MainThreadBound,
 };
 
-static SERVER: MainThreadBound<MaybeUninit<VEngineServer>> = MainThreadBound::new(MaybeUninit::uninit());
+static SERVER: MainThreadBound<RefCell<MaybeUninit<VEngineServer>>> =
+	MainThreadBound::new(RefCell::new(MaybeUninit::uninit()));
 
 /// Tries to initialize the `IVEngineServer` functions in this module.
 /// 
@@ -27,7 +29,7 @@ static SERVER: MainThreadBound<MaybeUninit<VEngineServer>> = MainThreadBound::ne
 pub(crate) unsafe fn attach(factories: InterfaceFactories<'_>) -> bool {
 	match factories.create_interface() {
 		Ok(iface) => {
-			unsafe { SERVER.write_unchecked().write(iface); }
+			unsafe { SERVER.get_unchecked().try_borrow_mut().unwrap_unchecked().write(iface); }
 			true
 		}
 		Err(error) => {
@@ -38,7 +40,7 @@ pub(crate) unsafe fn attach(factories: InterfaceFactories<'_>) -> bool {
 }
 
 fn read<F: FnOnce(Option<&VEngineServer>) -> R, R>(f: F) -> R {
-	if let Some(guard) = SERVER.read() {
+	if let Some(guard) = SERVER.get().and_then(move |cell| cell.try_borrow().ok()) {
 		unsafe { f(Some(guard.assume_init_ref())) }
 	} else {
 		f(None)
@@ -46,7 +48,7 @@ fn read<F: FnOnce(Option<&VEngineServer>) -> R, R>(f: F) -> R {
 }
 
 fn write<F: FnOnce(Option<&mut VEngineServer>) -> R, R>(f: F) -> R {
-	if let Some(mut guard) = SERVER.write() {
+	if let Some(mut guard) = SERVER.get().and_then(move |cell| cell.try_borrow_mut().ok()) {
 		unsafe { f(Some(guard.assume_init_mut())) }
 	} else {
 		f(None)
@@ -56,7 +58,7 @@ fn write<F: FnOnce(Option<&mut VEngineServer>) -> R, R>(f: F) -> R {
 /// # Safety
 /// The operations performed on the interface *must* support multi-threading.
 unsafe fn read_mt<F: FnOnce(&VEngineServer) -> R, R>(f: F) -> R {
-	unsafe { f(SERVER.read_unchecked().assume_init_ref()) }
+	unsafe { f(SERVER.get_unchecked().try_borrow().unwrap_unchecked().assume_init_ref()) }
 }
 
 pub fn is_main_thread() -> bool {
@@ -160,12 +162,10 @@ pub fn game_dir_into(dir: &mut GameDir) {
 	unsafe { read_mt(move |srv| srv.game_dir(dir.buffer.bytes_mut())) }
 }
 
-const MAX_OSPATH: usize = 260;
-
 #[derive(Default, Debug, Clone, Copy)]
 #[repr(transparent)]
 pub struct GameDir {
-	buffer: CBuffer<MAX_OSPATH>,
+	buffer: CBuffer<{crate::fs::MAX_OSPATH}>,
 }
 
 impl GameDir {

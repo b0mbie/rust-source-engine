@@ -15,6 +15,13 @@ use ::rse_game_interfaces::{
 
 static mut CVAR: Option<Cvar> = None;
 
+pub fn with_cvar_mut<F: FnOnce(&mut Cvar) -> R, R>(f: F) -> Option<R> {
+	crate::threads::MAIN_THREAD.try_run(move || {
+		#[allow(static_mut_refs)]
+		unsafe { CVAR.as_mut().map(f) }
+	}).flatten()
+}
+
 pub unsafe fn call_global_change_callbacks(registered: *mut ConVar, old_string: &CStr, old_float: c_float) {
 	#[allow(static_mut_refs)]
 	unsafe {
@@ -45,16 +52,9 @@ pub unsafe fn queue_material_thread_set<V: QueueMaterialThreadValue>(con_var: *m
 }
 
 pub unsafe fn register_raw(registrable: RegistrableMut) -> bool {
-	crate::threads::MAIN_THREAD.try_run(move || {
-		#[allow(static_mut_refs)]
-		unsafe {
-			if let Some(cvar) = CVAR.as_mut() {
-				cvar.register_raw(registrable);
-				true
-			} else {
-				false
-			}
-		}
+	with_cvar_mut(move |cvar| unsafe {
+		cvar.register_raw(registrable);
+		true
 	}).unwrap_or(false)
 }
 

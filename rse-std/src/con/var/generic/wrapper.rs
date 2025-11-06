@@ -27,7 +27,7 @@ use ::rse_utl::{
 use crate::{
 	c_buffer::CBuffer,
 	c_strings,
-	cvar::{
+	con::cvar::{
 		is_material_thread_set_allowed,
 		queue_material_thread_set,
 		call_global_change_callbacks,
@@ -237,7 +237,7 @@ unsafe impl<'a, T> RawConsoleBase<ConVarObject<'a, Self>> for StdVariable<T> {
 	}
 	fn dll_identifier(object: &mut ConVarObject<'a, Self>) -> CvarDllIdentifier {
 		let _ = object;
-		crate::cvar::dll_identifier()
+		crate::con::cvar::dll_identifier()
 	}
 }
 

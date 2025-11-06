@@ -66,7 +66,7 @@ fn con_command_impl(args: TokenStream, item: TokenStream) -> Result<TokenStream>
 
 	Ok(quote! {
 		#[allow(non_upper_case_globals)]
-		#vis static #item_name: ::rse_std::cmd::ConCommand = ::rse_std::cmd::ConCommand::new(
+		#vis static #item_name: ::rse_std::con::cmd::ConCommand = ::rse_std::con::cmd::ConCommand::new(
 			#name, #help,
 			#flags,
 			{
@@ -104,7 +104,7 @@ fn con_var_impl(args: TokenStream, item: TokenStream) -> Result<TokenStream> {
 	let mut item: ItemStatic = parse(item)?;
 	item.ty = Box::new({
 		let ty = item.ty;
-		Type::Verbatim(quote! { ::rse_std::var::TypedConVar<#ty> })
+		Type::Verbatim(quote! { ::rse_std::con::var::TypedConVar<#ty> })
 	});
 
 	let args: ConVar = parse(args)?;
@@ -127,8 +127,8 @@ fn con_var_impl(args: TokenStream, item: TokenStream) -> Result<TokenStream> {
 	item.expr = Box::new({
 		let default = item.expr;
 		Expr::Verbatim(quote! {
-			unsafe { ::rse_std::var::TypedConVar::new(
-				::rse_std::var::ConVarParams {
+			unsafe { ::rse_std::con::var::TypedConVar::new(
+				::rse_std::con::var::ConVarParams {
 					name: #name,
 					default: ::rse_std::cvar_value!(#default),
 					help: #help,
@@ -144,7 +144,7 @@ fn con_var_impl(args: TokenStream, item: TokenStream) -> Result<TokenStream> {
 }
 
 fn default_flags() -> Expr {
-	Expr::Verbatim(quote! { ::rse_std::CvarFlags::empty() })
+	Expr::Verbatim(quote! { ::rse_std::con::CvarFlags::empty() })
 }
 
 fn opt_to_stream<T: ToTokens>(opt: Option<T>) -> TokenStream2 {

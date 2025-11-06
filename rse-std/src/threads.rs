@@ -1,12 +1,6 @@
 //! Source Engine game thread management.
 
 use ::std::{
-	cell::{
-		RefCell, Ref, RefMut,
-	},
-	ops::{
-		Deref, DerefMut,
-	},
 	sync::OnceLock,
 	thread::{
 		current, ThreadId,
@@ -42,7 +36,7 @@ thread_binding! {
 
 pub struct ThreadBound<T, Thread> {
 	binding: Thread,
-	value: RefCell<T>,
+	value: T,
 }
 
 unsafe impl<T, Thread: Sync> Sync for ThreadBound<T, Thread> {}
@@ -54,7 +48,7 @@ where
 	pub const fn new(value: T) -> Self {
 		Self {
 			binding: Thread::INIT,
-			value: RefCell::new(value),
+			value,
 		}
 	}
 
@@ -62,59 +56,16 @@ where
 		self.binding.is_current()
 	}
 
-	pub unsafe fn read_unchecked(&self) -> ThreadBoundRead<'_, T> {
-		unsafe {
-			let inner = self.value.try_borrow().unwrap_unchecked();
-			ThreadBoundRead { inner, }
-		}
+	pub const unsafe fn get_unchecked(&self) -> &T {
+		&self.value
 	}
 
-	pub unsafe fn write_unchecked(&self) -> ThreadBoundWrite<'_, T> {
-		unsafe {
-			let inner = self.value.try_borrow_mut().unwrap_unchecked();
-			ThreadBoundWrite { inner, }
-		}
-	}
-
-	pub fn read(&self) -> Option<ThreadBoundRead<'_, T>> {
+	pub fn get(&self) -> Option<&T> {
 		if self.can_be_accessed() {
-			self.value.try_borrow().ok().map(move |inner| ThreadBoundRead { inner, })
+			unsafe { Some(self.get_unchecked()) }
 		} else {
 			None
 		}
-	}
-
-	pub fn write(&self) -> Option<ThreadBoundWrite<'_, T>> {
-		if self.can_be_accessed() {
-			self.value.try_borrow_mut().ok().map(move |inner| ThreadBoundWrite { inner, })
-		} else {
-			None
-		}
-	}
-}#[repr(transparent)]
-pub struct ThreadBoundRead<'a, T: ?Sized> {
-	inner: Ref<'a, T>,
-}
-impl<T: ?Sized> Deref for ThreadBoundRead<'_, T> {
-	type Target = T;
-	fn deref(&self) -> &Self::Target {
-		self.inner.deref()
-	}
-}
-
-#[repr(transparent)]
-pub struct ThreadBoundWrite<'a, T: ?Sized> {
-	inner: RefMut<'a, T>,
-}
-impl<T: ?Sized> Deref for ThreadBoundWrite<'_, T> {
-	type Target = T;
-	fn deref(&self) -> &Self::Target {
-		self.inner.deref()
-	}
-}
-impl<T: ?Sized> DerefMut for ThreadBoundWrite<'_, T> {
-	fn deref_mut(&mut self) -> &mut Self::Target {
-		self.inner.deref_mut()
 	}
 }
 
