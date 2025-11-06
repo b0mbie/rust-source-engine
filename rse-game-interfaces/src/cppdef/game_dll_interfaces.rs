@@ -10,6 +10,7 @@ use ::rse_shared::cppdef::{
 		edict_t, ServerClass, PvsInfo,
 		CollideableVt,
 	},
+	player_info_t,
 	KeyValues,
 	SteamId,
 	BfWrite,
@@ -60,11 +61,6 @@ vtable! {
 vtable! {
 	pub AchievementMgrVt {}
 }
-
-// TODO: `player_info_t`.
-#[derive(Debug)]
-#[repr(C)]
-pub struct PlayerInfo {}
 
 // TODO: `GamestatsData`.
 #[derive(Debug)]
@@ -246,7 +242,7 @@ vtable! {
 		pub fn is_low_violence() -> bool;
 		pub fn start_query_cvar_value(player_entity: *mut edict_t, name: *const c_char);
 		pub fn insert_server_command(str: *const c_char);
-		pub fn get_player_info(ent_num: c_int, out_pinfo: *mut PlayerInfo) -> bool;
+		pub fn get_player_info(ent_num: c_int, out_pinfo: *mut player_info_t) -> bool;
 		pub fn is_client_fully_authenticated(edict: *mut edict_t) -> bool;
 		pub fn set_dedicated_server_benchmark_mode(benchmark_mode: bool);
 		pub fn set_gamestats_data(gamestats_data: *mut GamestatsData);

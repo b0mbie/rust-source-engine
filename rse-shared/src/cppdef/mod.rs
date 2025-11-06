@@ -4,12 +4,16 @@ pub type wchar_t = u16;
 
 mod buffer;
 pub use buffer::*;
+mod crc32;
+pub use crc32::*;
 mod global_vars;
 pub use global_vars::*;
 mod keyvalues;
 pub use keyvalues::*;
 mod model;
 pub use model::*;
+mod player_info;
+pub use player_info::*;
 mod sound_level;
 pub use sound_level::*;
 mod steam_id;
