@@ -6,7 +6,7 @@ use ::rse_cpp::{
 };
 use ::rse_interface::CreateInterfaceFn;
 use ::rse_convar::cppdef::Command;
-use ::rse_game::cppdef::{
+use ::rse_shared::cppdef::{
 	entities::edict_t,
 	KeyValues,
 };

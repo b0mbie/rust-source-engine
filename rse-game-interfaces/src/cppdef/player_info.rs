@@ -6,7 +6,7 @@ use ::rse_cpp::{
 	RefConst, RefMut,
 	WithVTable,
 };
-use ::rse_game::cppdef::{
+use ::rse_shared::cppdef::{
 	entities::edict_t,
 	GlobalVars,
 };

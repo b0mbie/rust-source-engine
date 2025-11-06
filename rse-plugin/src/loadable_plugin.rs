@@ -5,7 +5,7 @@ use ::core::{
 	mem::replace,
 };
 use ::rse_convar::command::Invocation;
-use ::rse_game::ServerEdict;
+use ::rse_shared::ServerEdict;
 use ::rse_game_interfaces::InterfaceFactories;
 
 use crate::{

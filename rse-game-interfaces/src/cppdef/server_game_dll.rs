@@ -1,7 +1,7 @@
 use ::core::ffi::{
 	CStr, c_char, c_float, c_int,
 };
-use ::rse_game::cppdef::{
+use ::rse_shared::cppdef::{
 	entities::{
 		edict_t, ServerClass,
 	},

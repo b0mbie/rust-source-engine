@@ -15,7 +15,7 @@
 #![no_std]
 
 pub use ::rse_convar as convar;
-pub use ::rse_game as game;
+pub use ::rse_shared as game;
 pub use ::rse_game_interfaces as game_interfaces;
 pub use ::rse_interface as interface;
 

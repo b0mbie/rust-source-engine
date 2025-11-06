@@ -2,7 +2,7 @@ use ::core::ffi::CStr;
 use ::rse_cpp::{
 	AsObject, virtual_call, owned_vt_object_wrapper,
 };
-use ::rse_game::{
+use ::rse_shared::{
 	ServerClasses, ServerClassesMut, ServerClass,
 };
 

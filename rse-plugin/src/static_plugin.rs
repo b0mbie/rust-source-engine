@@ -13,7 +13,7 @@ use ::rse_convar::{
 	cppdef::Command as CCommand,
 	command::Invocation,
 };
-use ::rse_game::{
+use ::rse_shared::{
 	cppdef::entities::edict_t,
 	ServerEdict,
 };

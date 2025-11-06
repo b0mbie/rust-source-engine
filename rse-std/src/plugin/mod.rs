@@ -1,4 +1,4 @@
-pub use ::rse_game::ServerEdict;
+pub use ::rse_shared::ServerEdict;
 pub use ::rse_plugin::{
 	cppdef::{
 		ClientIndex, PluginResult, QueryCvarCookie, QueryCvarValueStatus,

@@ -4,7 +4,7 @@ use ::core::ffi::{
 use ::rse_cpp::{
 	RefConst, RefMut, VtObjectMut, vtable,
 };
-use ::rse_game::cppdef::{
+use ::rse_shared::cppdef::{
 	datatable::SendTable,
 	entities::{
 		edict_t, ServerClass, PvsInfo,

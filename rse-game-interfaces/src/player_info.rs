@@ -5,7 +5,7 @@ use ::rse_cpp::{
 	AsObject, virtual_call, vt_object_wrapper, owned_vt_object_wrapper,
 	VtObject, VtObjectWrapper,
 };
-use ::rse_game::{
+use ::rse_shared::{
 	cppdef::GlobalVars,
 	ServerEdict,
 };

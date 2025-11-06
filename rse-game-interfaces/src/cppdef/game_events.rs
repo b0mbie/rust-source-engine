@@ -5,7 +5,7 @@ use ::rse_cpp::{
 	VtObjectPtr, vtable,
 	VtObjectMut,
 };
-use ::rse_game::cppdef::{
+use ::rse_shared::cppdef::{
 	KeyValues,
 	BfRead, BfWrite,
 	wchar_t,

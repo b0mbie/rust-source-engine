@@ -1,6 +1,6 @@
 use ::core::ffi::CStr;
 use ::rse_convar::command::Invocation;
-use ::rse_game::ServerEdict;
+use ::rse_shared::ServerEdict;
 
 use crate::{
 	cppdef::{

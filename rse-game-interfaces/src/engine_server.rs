@@ -8,7 +8,7 @@ use ::core::{
 use ::rse_cpp::{
 	AsObject, virtual_call, owned_vt_object_wrapper,
 };
-use ::rse_game::cppdef::{
+use ::rse_shared::cppdef::{
 	SteamId,
 	SoundLevel,
 };
