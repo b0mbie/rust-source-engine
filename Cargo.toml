@@ -2,12 +2,13 @@
 resolver = "3"
 members = [
 	"rse-cpp",
+	"rse-shared", "rse-client",
+	"rse-sound",
 	"rse-utl",
 	"rse-interface",
 	"rse-convar",
 	"rse-math",
 	"rse-scratch-pad",
-	"rse-game",
 	"rse-game-interfaces",
 	"rse-tier0",
 	"rse-plugin",
@@ -28,11 +29,12 @@ printf = { git = "https://github.com/b0mbie/printf-rs.git" }
 rse-convar = { path = "./rse-convar" }
 rse-cpp = { path = "./rse-cpp" }
 rse-interface = { path = "./rse-interface" }
-rse-game = { path = "./rse-game" }
+rse-shared = { path = "./rse-shared" }
 rse-game-interfaces = { path = "./rse-game-interfaces" }
 rse-math = { path = "./rse-math" }
 rse-plugin = { path = "./rse-plugin" }
 rse-scratch-pad = { path = "./rse-scratch-pad" }
+rse-sound = { path = "./rse-sound" }
 rse-std = { path = "./rse-std" }
 rse-tier0 = { path = "./rse-tier0" }
 rse-utl = { path = "./rse-utl" }

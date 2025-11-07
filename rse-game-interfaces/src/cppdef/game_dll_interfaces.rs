@@ -10,22 +10,18 @@ use ::rse_shared::cppdef::{
 		edict_t, ServerClass, PvsInfo,
 		CollideableVt,
 	},
-	client_textmessage_t, con_nprint_t,
-	player_info_t,
+	client_textmessage_t, con_nprint_t, player_info_t,
+	NetChannelInfoVt,
 	KeyValues,
 	SteamId,
 	BfWrite,
 	SoundLevel,
+	AchievementMgrVt, GamestatsData,
 };
 use ::rse_math::{
 	Vector, VPlane,
 };
 use ::rse_scratch_pad::cppdef::ScratchPad3DVt;
-
-// TODO: `INetChannelInfo`.
-vtable! {
-	pub NetChannelInfoVt {}
-}
 
 // TODO: `CBitVec`.
 pub type BitVec = c_void;
@@ -50,16 +46,6 @@ pub type SharedEdictChangeInfo = c_void;
 vtable! {
 	pub ChangeInfoAccessorVt {}
 }
-
-// TODO: `IAchievementMgr`.
-vtable! {
-	pub AchievementMgrVt {}
-}
-
-// TODO: `GamestatsData`.
-#[derive(Debug)]
-#[repr(C)]
-pub struct GamestatsData {}
 
 #[derive(Debug)]
 #[repr(C)]
@@ -230,8 +216,10 @@ vtable! {
 		pub fn multiplayer_end_game();
 		pub fn change_team(team_name: *const c_char);
 		pub fn clean_up_entity_cluster_list(pvs_info: *mut PvsInfo);
+		// TODO: Nullable?
 		pub fn set_achievement_mgr(achievement_mgr: VtObjectMut<AchievementMgrVt>);
-		pub fn get_achievement_mgr() -> VtObjectMut<AchievementMgrVt>;
+		// TODO: Nullable?
+		pub fn get_achievement_mgr() -> Option<VtObjectMut<AchievementMgrVt>>;
 		pub fn get_app_id() -> c_int;
 		pub fn is_low_violence() -> bool;
 		pub fn start_query_cvar_value(player_entity: *mut edict_t, name: *const c_char);

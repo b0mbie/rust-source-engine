@@ -1,0 +1,20 @@
+[package]
+name = "rse-client"
+version = "0.1.0"
+edition = "2024"
+authors.workspace = true
+
+[features]
+default = ["voice"]
+# Equivalent to the absence of the `NO_VOICE` define.
+voice = []
+# Equivalent to the `USE_SDL` define.
+sdl = []
+xbox360 = []
+
+[dependencies]
+rse-cpp.workspace = true
+rse-shared.workspace = true
+rse-math.workspace = true
+rse-sound.workspace = true
+rse-utl.workspace = true
