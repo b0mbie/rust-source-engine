@@ -2,7 +2,7 @@ use ::rse_game_interfaces::cvar::{
 	registered::{
 		RegisteredIter, RegisteredIterMut,
 	},
-	Cvar as ICvar, CvarImpl,
+	Cvar, CvarImpl,
 };
 use ::std::ffi::CStr;
 
@@ -18,12 +18,12 @@ pub(crate) mod cvar;
 pub mod cmd;
 pub mod var;
 
-pub fn with_cvar<F: FnOnce(Cvar<'_>) -> R, R>(f: F) -> Option<R> {
-	cvar::with_cvar_mut(move |cvar| f(Cvar(cvar)))
+pub fn with_cvars<F: FnOnce(Cvars<'_>) -> R, R>(f: F) -> Option<R> {
+	cvar::with_cvar_mut(move |cvar| f(Cvars(cvar)))
 }
 
 #[repr(transparent)]
-pub struct Cvar<'a>(&'a mut ICvar);
+pub struct Cvars<'a>(&'a mut Cvar);
 
 macro_rules! cvar_find_fns {
 	{
@@ -44,7 +44,7 @@ macro_rules! cvar_find_fns {
 	};
 }
 
-impl<'a> Cvar<'a> {
+impl<'a> Cvars<'a> {
 	cvar_find_fns! {
 		result = Registered;
 		find = find;
