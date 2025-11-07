@@ -2,7 +2,7 @@ use ::core::ffi::{
 	c_char, c_int, c_uchar,
 };
 
-use super::CRC32_t;
+use super::Crc32;
 
 pub const MAX_PLAYER_NAME_LENGTH: usize = 32;
 pub const SIGNED_GUID_LEN: usize = 32;
@@ -22,6 +22,6 @@ pub struct player_info_t {
 	pub is_hltv: bool,
 	#[cfg(feature = "replay")]
 	pub is_replay: bool,
-	pub custom_files: [CRC32_t; MAX_CUSTOM_FILES],
+	pub custom_files: [Crc32; MAX_CUSTOM_FILES],
 	pub files_downloaded: c_uchar,
 }
