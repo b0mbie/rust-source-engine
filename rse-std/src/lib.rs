@@ -31,6 +31,7 @@ mod macros;
 pub mod alloc;
 pub mod con;
 pub mod env;
+pub mod ffi;
 pub mod fs;
 pub mod io;
 pub mod interfaces;
@@ -40,7 +41,6 @@ pub mod plugin;
 pub mod server;
 
 pub mod prelude {
-	pub use ::core::ffi::CStr;
 	pub use crate::{
 		con::{
 			cmd::{
@@ -51,6 +51,9 @@ pub mod prelude {
 				Variable, OldValue, NewValue,
 				ConVar,
 			},
+		},
+		ffi::{
+			CStr, CString,
 		},
 		io::{
 			con, dev,
