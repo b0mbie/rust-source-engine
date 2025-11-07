@@ -14,5 +14,7 @@ mod surf_info;
 pub use surf_info::*;
 mod vector;
 pub use vector::*;
+mod vmatrix;
+pub use vmatrix::*;
 mod vplane;
 pub use vplane::*;
