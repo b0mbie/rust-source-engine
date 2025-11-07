@@ -10,6 +10,7 @@ use ::rse_shared::cppdef::{
 		edict_t, ServerClass, PvsInfo,
 		CollideableVt,
 	},
+	client_textmessage_t, con_nprint_t,
 	player_info_t,
 	KeyValues,
 	SteamId,
@@ -33,12 +34,6 @@ pub type BitVec = c_void;
 vtable! {
 	pub RecipientFilterVt {}
 }
-
-// TODO: `struct con_nprint_s`.
-pub type ConNPrint = c_void;
-
-// TODO: `client_textmessage_t`.
-pub type ClientTextMessage = c_void;
 
 // TODO: `ISpatialPartition`.
 vtable! {
@@ -174,7 +169,7 @@ vtable! {
 		pub fn message_end();
 		pub fn client_printf(edict: *mut edict_t, msg: *const c_char);
 		pub fn con_n_printf(pos: c_int, fmt: *const c_char, ...);
-		pub fn con_nx_printf(info: *const ConNPrint, fmt: *const c_char, ...);
+		pub fn con_nx_printf(info: *const con_nprint_t, fmt: *const c_char, ...);
 		pub fn set_view(client: *const edict_t, view_ent: *const edict_t);
 		pub fn time() -> c_float;
 		pub fn crosshair_angle(client: *const edict_t, pitch: c_float, yaw: c_float);
@@ -201,7 +196,7 @@ vtable! {
 		pub fn load_adjacent_ents(old_level: *const c_char, landmark_name: *const c_char);
 		pub fn clear_save_dir();
 		pub fn get_map_entities_string() -> *const c_char;
-		pub fn text_message_get(name: *const c_char) -> *mut ClientTextMessage;
+		pub fn text_message_get(name: *const c_char) -> *mut client_textmessage_t;
 		pub fn log_print(msg: *const c_char);
 		pub fn build_entity_cluster_list(edict: *mut edict_t, out_pvs_info: *mut PvsInfo);
 		pub fn solid_moved(

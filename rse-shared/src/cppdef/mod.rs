@@ -4,6 +4,10 @@ pub type wchar_t = u16;
 
 mod buffer;
 pub use buffer::*;
+mod client_textmessage;
+pub use client_textmessage::*;
+mod con_notify;
+pub use con_notify::*;
 mod crc32;
 pub use crc32::*;
 mod global_vars;
