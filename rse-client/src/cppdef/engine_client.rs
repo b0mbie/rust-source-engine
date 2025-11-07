@@ -31,7 +31,7 @@ pub const VENGINE_CLIENT_INTERFACE_VERSION_13: &CStr = c"VEngineClient013";
 
 vtable! {
 	pub VEngineClientVtBase for VtObjectPtr<VEngineClientVt> {
-		pub fn get_protocol_veresion() -> c_uint;
+		pub fn get_protocol_version() -> c_uint;
 		pub fn is_windowed_mode() -> bool;
 		pub fn flash_window();
 		pub fn get_client_version() -> c_int;
