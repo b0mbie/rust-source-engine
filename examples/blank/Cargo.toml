@@ -1,8 +1,12 @@
 [package]
-name = "blank-plugin"
+name = "blank"
 version = "0.1.0"
 edition = "2024"
 publish = false
+
+[lib]
+name = "blank"
+crate-type = ["cdylib"]
 
 [dependencies]
 rse-plugin.workspace = true

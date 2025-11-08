@@ -19,7 +19,7 @@ members = [
 	"rse-std",
 	"rse-std-macros",
 	
-	"examples/blank-plugin",
+	"examples/blank",
 ]
 
 [workspace.package]
