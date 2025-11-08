@@ -48,8 +48,8 @@ pub(crate) mod fs_consts;
 #[cfg(feature = "fs")]
 pub mod fs;
 
-#[cfg(feature = "server")]
-pub mod server;
+#[cfg(feature = "sv")]
+pub mod sv;
 
 pub mod prelude {
 	pub use crate::{

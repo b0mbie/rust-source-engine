@@ -1,7 +1,6 @@
 use ::core::{
 	cell::RefCell,
 	ffi::CStr,
-	mem::MaybeUninit,
 };
 use ::rse_game_interfaces::{
 	VEngineServer, VEngineServerImpl,
@@ -17,19 +16,17 @@ use crate::{
 	threads::MainThreadBound,
 };
 
-static SERVER: MainThreadBound<RefCell<MaybeUninit<VEngineServer>>> =
-	MainThreadBound::new(RefCell::new(MaybeUninit::uninit()));
+static SERVER: MainThreadBound<RefCell<Option<VEngineServer>>> =
+	MainThreadBound::new(RefCell::new(None));
 
 /// Tries to initialize the `IVEngineServer` functions in this module.
 /// 
 /// # Safety
 /// This function must be called from the main thread.
-/// 
-/// If this function returns `false`, then the functions in this module must not be used.
 pub(crate) unsafe fn attach(factories: PluginFactories) -> bool {
 	match factories.create_interface() {
 		Ok(iface) => {
-			unsafe { SERVER.get_unchecked().try_borrow_mut().unwrap_unchecked().write(iface); }
+			unsafe { *SERVER.get_unchecked().try_borrow_mut().unwrap_unchecked() = Some(iface); }
 			true
 		}
 		Err(error) => {
@@ -39,9 +36,17 @@ pub(crate) unsafe fn attach(factories: PluginFactories) -> bool {
 	}
 }
 
+#[cold]
+const fn not_init() -> ! {
+	panic!("server interface used without being initialized")
+}
+
 fn read<F: FnOnce(Option<&VEngineServer>) -> R, R>(f: F) -> R {
 	if let Some(guard) = SERVER.get().and_then(move |cell| cell.try_borrow().ok()) {
-		unsafe { f(Some(guard.assume_init_ref())) }
+		match *guard {
+			Some(ref srv) => f(Some(srv)),
+			None => not_init(),
+		}
 	} else {
 		f(None)
 	}
@@ -49,7 +54,10 @@ fn read<F: FnOnce(Option<&VEngineServer>) -> R, R>(f: F) -> R {
 
 fn write<F: FnOnce(Option<&mut VEngineServer>) -> R, R>(f: F) -> R {
 	if let Some(mut guard) = SERVER.get().and_then(move |cell| cell.try_borrow_mut().ok()) {
-		unsafe { f(Some(guard.assume_init_mut())) }
+		match *guard {
+			Some(ref mut srv) => f(Some(srv)),
+			None => not_init(),
+		}
 	} else {
 		f(None)
 	}
@@ -58,7 +66,18 @@ fn write<F: FnOnce(Option<&mut VEngineServer>) -> R, R>(f: F) -> R {
 /// # Safety
 /// The operations performed on the interface *must* support multi-threading.
 unsafe fn read_mt<F: FnOnce(&VEngineServer) -> R, R>(f: F) -> R {
-	unsafe { f(SERVER.get_unchecked().try_borrow().unwrap_unchecked().assume_init_ref()) }
+	unsafe {
+		// FIXME: We might need a better alternative to `RefCell` to be able to handle MT properly.
+		// Right now, there is no way to Just Get A Reference to the value wrapped by a `RefCell`
+		// without having to use `Result::unwrap_unchecked` and possibly getting garbage.
+		// Multi-threaded operations effectively bypass the borrow-checking rules;
+		// it might not be possible to represent this behavior with this type.
+		let guard = SERVER.get_unchecked().try_borrow().unwrap_unchecked();
+		match *guard {
+			Some(ref srv) => f(srv),
+			None => not_init(),
+		}
+	}
 }
 
 pub fn is_main_thread() -> bool {

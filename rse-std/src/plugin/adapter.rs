@@ -89,8 +89,8 @@ where
 		// SAFETY: `Self::load` is called on the main thread; `detach` is called in `Self::unload`.
 		unsafe { crate::con::cvar::attach(factories) }
 
-		#[cfg(feature = "server")]
-		unsafe { init!(crate::server::attach(factories)) }
+		#[cfg(feature = "sv")]
+		unsafe { init!(crate::sv::attach(factories)) }
 
 		match replace(&mut self.inner, Inner::NotLoaded) {
 			Inner::NotLoaded => {

@@ -7,8 +7,8 @@ authors.workspace = true
 [features]
 default = [
 	"macros",
-	"server",
 	"global-allocator",
+	"sv",
 	"fs",
 ]
 link-srv = ["rse-tier0/link-srv"]
@@ -16,9 +16,9 @@ link-optional = ["rse-tier0/link-optional"]
 doc = ["link-optional"]
 macros = ["dep:rse-std-macros"]
 global-allocator = []
-fs = []
 
-server = []
+sv = []
+fs = []
 
 [dependencies]
 atomic-wait.workspace = true
