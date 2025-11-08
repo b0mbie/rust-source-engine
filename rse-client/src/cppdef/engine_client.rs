@@ -210,7 +210,7 @@ vtable! {
 		pub fn reset_demo_interpolation();
 		pub fn set_gamestats_data(gamestats_data: *mut GamestatsData);
 		pub fn get_gamestats_data() -> *mut GamestatsData;
-		#[cfg(feature = "sdl")]
+		#[cfg(all(unix, not(feature = "unix-no-sdl")))]
 		pub fn get_mouse_delta(x: RefMut<c_int>, y: RefMut<c_int>, ignore_next_mouse_delta: bool);
 		pub fn server_cmd_key_values(key_values: *mut KeyValues);
 		pub fn is_skipping_playback() -> bool;
