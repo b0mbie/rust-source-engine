@@ -1,14 +1,14 @@
-pub use ::rse_game_interfaces::{
-	Model, Decal, Generic,
-};
-
-use ::rse_game_interfaces::{
-	VEngineServer, VEngineServerImpl,
-};
-use ::std::{
+use ::core::{
 	cell::RefCell,
 	ffi::CStr,
 	mem::MaybeUninit,
+};
+use ::rse_game_interfaces::{
+	VEngineServer, VEngineServerImpl,
+};
+
+pub use ::rse_game_interfaces::{
+	Model, Decal, Generic,
 };
 
 use crate::{

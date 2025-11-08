@@ -1,5 +1,9 @@
-use ::core::ffi::{
-	CStr, c_float, c_int,
+use ::rust_alloc::boxed::Box;
+use ::core::{
+	ffi::{
+		CStr, c_float, c_int,
+	},
+	pin::Pin,
 };
 use ::rse_convar::variable::ChangeVariable;
 
@@ -24,6 +28,10 @@ impl ConVar {
 		}
 	}
 
+	pub fn boxed(params: ConVarParams<'static>) -> Pin<Box<Self>> {
+		unsafe { Box::pin(Self::new(params)) }
+	}
+
 	/// # Safety
 	/// The [`ConVar`] must be *pinned* into an area of memory (with e.g. a `static` item).
 	pub const unsafe fn simple(name: &'static CStr, default: ConVarValue<'static>) -> Self {
@@ -46,7 +54,7 @@ impl ConVar {
 		self.inner.c_str()
 	}
 
-	pub fn register(&self) -> bool {
+	pub fn register(&'static self) -> bool {
 		self.inner.register()
 	}
 }

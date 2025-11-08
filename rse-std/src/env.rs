@@ -1,16 +1,16 @@
+use ::core::{
+	ffi::{
+		CStr, c_int, c_float,
+	},
+	marker::PhantomData,
+};
 use ::rse_tier0::{
 	linked::cmd::{
 		LinkedTier0CommandLine, command_line,
 	},
 	Tier0CommandLine,
 };
-use ::std::{
-	ffi::{
-		CStr, c_int, c_float,
-	},
-	marker::PhantomData,
-	sync::OnceLock,
-};
+use ::std::sync::OnceLock;
 
 static CMD: OnceLock<&'static LinkedTier0CommandLine> = OnceLock::new();
 

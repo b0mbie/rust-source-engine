@@ -6,6 +6,9 @@
 
 extern crate alloc as rust_alloc;
 
+#[doc(hidden)]
+pub use ::rse_plugin;
+
 #[cfg(feature = "macros")]
 pub use ::rse_std_macros::{
 	con_var, con_command,
@@ -59,6 +62,7 @@ pub mod prelude {
 				Variable, OldValue, NewValue,
 				ConVar,
 			},
+			CvarFlags,
 		},
 		ffi::{
 			CStr, CString,

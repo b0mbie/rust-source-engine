@@ -1,6 +1,8 @@
+use ::rust_alloc::boxed::Box;
 use ::core::{
 	fmt,
 	marker::PhantomData,
+	pin::Pin,
 };
 
 use super::{
@@ -27,11 +29,15 @@ where
 		}
 	}
 
+	pub fn boxed(params: ConVarParams<'static>) -> Pin<Box<Self>> {
+		unsafe { Box::pin(Self::new(params)) }
+	}
+
 	pub fn get(&self) -> T {
 		self.inner.value()
 	}
 
-	pub fn register(&self) -> bool {
+	pub fn register(&'static self) -> bool {
 		self.inner.register()
 	}
 }

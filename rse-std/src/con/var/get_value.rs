@@ -1,9 +1,8 @@
-use ::std::{
+use ::rust_alloc::{
 	borrow::Cow,
-	ffi::{
-		CString, CStr,
-	},
+	ffi::CString,
 };
+use ::core::ffi::CStr;
 
 use super::{
 	GenericConVar, CStrLock,

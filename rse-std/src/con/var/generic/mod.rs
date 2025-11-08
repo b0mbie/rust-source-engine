@@ -1,8 +1,10 @@
+use ::rust_alloc::boxed::Box;
 use ::core::{
 	cell::UnsafeCell,
 	ffi::{
 		c_float, c_int,
 	},
+	pin::Pin,
 };
 use ::rse_convar::{
 	console_base::RegistrableMut,
@@ -45,7 +47,7 @@ impl<T> GenericConVar<T> {
 		unsafe { StdVariable::c_str((*self.con_var.get()).as_mut_inner()) }
 	}
 
-	pub fn register(&self) -> bool {
+	pub fn register(&'static self) -> bool {
 		unsafe { crate::con::cvar::register_raw(self.as_registrable()) }
 	}
 
@@ -66,5 +68,9 @@ where
 				StaticConVarObject::new(StdVariable::new(inner), params)
 			}),
 		}
+	}
+
+	pub fn boxed(inner: T, params: ConVarParams<'static>) -> Pin<Box<Self>> {
+		unsafe { Box::pin(Self::new(inner, params)) }
 	}
 }

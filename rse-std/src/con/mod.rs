@@ -1,10 +1,10 @@
+use ::core::ffi::CStr;
 use ::rse_game_interfaces::cvar::{
 	registered::{
 		RegisteredIter, RegisteredIterMut,
 	},
 	Cvar, CvarImpl,
 };
-use ::std::ffi::CStr;
 
 pub use ::rse_convar::{
 	console_base::{

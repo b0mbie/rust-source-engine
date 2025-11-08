@@ -38,7 +38,7 @@ where
 		}
 	}
 
-	pub fn register(&self) -> bool {
+	pub fn register(&'static self) -> bool {
 		unsafe { crate::con::cvar::register_raw(self.as_registrable()) }
 	}
 
