@@ -32,10 +32,13 @@ pub mod alloc;
 pub mod con;
 pub mod env;
 pub mod ffi;
-pub mod fs;
 pub mod io;
 pub mod interfaces;
 pub mod plugin;
+
+pub(crate) mod fs_consts;
+#[cfg(feature = "fs")]
+pub mod fs;
 
 #[cfg(feature = "server")]
 pub mod server;

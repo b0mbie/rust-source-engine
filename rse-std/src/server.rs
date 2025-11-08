@@ -165,7 +165,7 @@ pub fn game_dir_into(dir: &mut GameDir) {
 #[derive(Default, Debug, Clone, Copy)]
 #[repr(transparent)]
 pub struct GameDir {
-	buffer: CBuffer<{crate::fs::MAX_OSPATH}>,
+	buffer: CBuffer<{crate::fs_consts::MAX_OSPATH}>,
 }
 
 impl GameDir {
