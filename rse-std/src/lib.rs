@@ -1,5 +1,10 @@
-pub use ::rse_convar;
-pub use ::rse_plugin;
+#![warn(
+	clippy::alloc_instead_of_core,
+	clippy::std_instead_of_alloc,
+	clippy::std_instead_of_core,
+)]
+
+extern crate alloc as rust_alloc;
 
 #[cfg(feature = "macros")]
 pub use ::rse_std_macros::{
