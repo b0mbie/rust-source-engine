@@ -60,7 +60,7 @@ pub mod prelude {
 			},
 			var::{
 				Variable, OldValue, NewValue,
-				ConVar,
+				ConVar, ConVarParams,
 			},
 			CvarFlags,
 		},
