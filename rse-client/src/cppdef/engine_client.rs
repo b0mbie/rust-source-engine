@@ -47,6 +47,7 @@ pub struct VEngineClientVt {
 	pub v013: VEngineClient013Vt,
 	pub engine_client: VEngineClientVtBase,
 }
+unsafe impl ::rse_cpp::ptr_compat::PointerFrom<VEngineClientVt> for VEngineClient013Vt {}
 
 vtable! {
 	// TODO: This should be tested to see if any functions were missed.
