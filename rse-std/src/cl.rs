@@ -67,7 +67,7 @@ pub fn flash_window() {
 	unsafe { read_mt(move |cl| cl.flash_window()) }
 }
 
-pub fn version() -> i64 {
+pub fn client_version() -> i64 {
 	unsafe { read_mt(move |cl| cl.client_version()) as _ }
 }
 
