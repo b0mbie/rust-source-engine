@@ -8,7 +8,7 @@ authors.workspace = true
 default = [
 	"macros",
 	"global-allocator",
-	"sv",
+	"cl", "sv",
 	"fs",
 ]
 link-srv = ["rse-tier0/link-srv"]
@@ -17,6 +17,7 @@ doc = ["link-optional"]
 macros = ["dep:rse-std-macros"]
 global-allocator = []
 
+cl = ["dep:rse-client"]
 sv = []
 fs = []
 
@@ -40,3 +41,7 @@ optional = true
 path = "../rse-tier0"
 default-features = false
 features = ["link-dll"]
+
+[dependencies.rse-client]
+workspace = true
+optional = true

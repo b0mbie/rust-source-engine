@@ -89,6 +89,12 @@ where
 		// SAFETY: `Self::load` is called on the main thread; `detach` is called in `Self::unload`.
 		unsafe { crate::con::cvar::attach(factories) }
 
+		#[cfg(feature = "fs")]
+		init!(crate::fs::attach(factories));
+
+		#[cfg(feature = "cl")]
+		unsafe { init!(crate::cl::attach(factories)) }
+
 		#[cfg(feature = "sv")]
 		unsafe { init!(crate::sv::attach(factories)) }
 

@@ -44,6 +44,9 @@ pub mod io;
 pub mod interfaces;
 pub mod plugin;
 
+#[cfg(feature = "cl")]
+pub mod cl;
+
 pub(crate) mod fs_consts;
 #[cfg(feature = "fs")]
 pub mod fs;
