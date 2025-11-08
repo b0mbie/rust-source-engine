@@ -14,15 +14,15 @@
 
 #![no_std]
 
-pub use ::rse_convar as convar;
-pub use ::rse_shared as game;
-pub use ::rse_game_interfaces as game_interfaces;
-pub use ::rse_interface as interface;
-
 pub mod cppdef;
+
+#[doc(hidden)]
+pub use ::rse_interface as interface;
 
 mod macros;
 
+mod factories;
+pub use factories::*;
 mod static_plugin;
 pub use static_plugin::*;
 mod plugin;
@@ -35,26 +35,13 @@ pub use reject_reason::*;
 pub mod prelude {
 	pub use ::core::ffi::CStr;
 	pub use crate::{
-		convar::command::Invocation,
 		cppdef::{
 			ClientIndex, PluginResult,
 			QueryCvarCookie, QueryCvarValueStatus,
 		},
-		game::ServerEdict,
-		game_interfaces::{
-			GameEventManager2, GameEventManager2Impl as _,
-			VEngineServer, VEngineServerImpl as _,
-			ServerGameDll, ServerGameDllImpl as _,
-			InterfaceFactories,
-			EmitSound,
-			PlayerInfoManager, PlayerInfoManagerImpl,
-			PlayerInfoImpl, PlayerInfo2Impl,
-		},
-		interface::{
-			InterfaceFactory, RawInterfaceFactory,
-		},
 		StaticPlugin, LoadablePlugin, Plugin,
 		ClientConnect, RejectReason,
+		PluginFactories, Invocation,
 		export_static_plugin, export_loadable_plugin,
 		export_static_plugin_as, export_loadable_plugin_as,
 		plugin_description,

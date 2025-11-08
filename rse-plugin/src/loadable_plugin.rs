@@ -6,7 +6,6 @@ use ::core::{
 };
 use ::rse_convar::command::Invocation;
 use ::rse_shared::ServerEdict;
-use ::rse_game_interfaces::InterfaceFactories;
 
 use crate::{
 	cppdef::{
@@ -14,6 +13,7 @@ use crate::{
 	},
 	RejectReason, ClientConnect,
 	StaticPlugin, Plugin,
+	PluginFactories,
 };
 
 /// Helper for a [`LoadablePlugin`] that implements [`StaticPlugin`],
@@ -81,11 +81,11 @@ impl<P> Default for PluginLoader<P> {
 pub trait LoadablePlugin: Sized + Plugin {
 	/// Returns the initialized plugin,
 	/// or `None` if loading failed for whatever reason.
-	fn load(factories: InterfaceFactories<'_>) -> Option<Self>;
+	fn load(factories: PluginFactories) -> Option<Self>;
 }
 
 impl<P: LoadablePlugin> StaticPlugin for PluginLoader<P> {
-	unsafe fn load(&mut self, factories: InterfaceFactories<'_>) -> bool {
+	unsafe fn load(&mut self, factories: PluginFactories) -> bool {
 		match replace(&mut self.inner, PluginLoaderInner::NotLoaded) {
 			PluginLoaderInner::NotLoaded => {
 				match P::load(factories) {
@@ -176,7 +176,7 @@ mod tests {
 
 	struct Dummy;
 	impl LoadablePlugin for Dummy {
-		fn load(factories: InterfaceFactories<'_>) -> Option<Self> {
+		fn load(factories: PluginFactories) -> Option<Self> {
 			let _ = factories;
 			Some(Self)
 		}
@@ -197,9 +197,9 @@ mod tests {
 			) -> Option<::core::ptr::NonNull<::core::ffi::c_void>> {
 				None
 			}
-			assert!(loader.load(InterfaceFactories::new(factrie, factrie)));
-			assert!(!loader.load(InterfaceFactories::new(factrie, factrie)));
-			assert!(!loader.load(InterfaceFactories::new(factrie, factrie)));
+			assert!(loader.load(PluginFactories::new(factrie, factrie)));
+			assert!(!loader.load(PluginFactories::new(factrie, factrie)));
+			assert!(!loader.load(PluginFactories::new(factrie, factrie)));
 		}
 	}
 }

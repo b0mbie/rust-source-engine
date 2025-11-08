@@ -3,7 +3,6 @@ pub use ::rse_game_interfaces::{
 };
 
 use ::rse_game_interfaces::{
-	InterfaceFactories,
 	VEngineServer, VEngineServerImpl,
 };
 use ::std::{
@@ -14,6 +13,7 @@ use ::std::{
 
 use crate::{
 	c_buffer::CBuffer,
+	plugin::PluginFactories,
 	threads::MainThreadBound,
 };
 
@@ -26,7 +26,7 @@ static SERVER: MainThreadBound<RefCell<MaybeUninit<VEngineServer>>> =
 /// This function must be called from the main thread.
 /// 
 /// If this function returns `false`, then the functions in this module must not be used.
-pub(crate) unsafe fn attach(factories: InterfaceFactories<'_>) -> bool {
+pub(crate) unsafe fn attach(factories: PluginFactories) -> bool {
 	match factories.create_interface() {
 		Ok(iface) => {
 			unsafe { SERVER.get_unchecked().try_borrow_mut().unwrap_unchecked().write(iface); }

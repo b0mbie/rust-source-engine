@@ -5,7 +5,7 @@ use ::core::{
 
 use crate::{
 	con::cmd::Invocation,
-	interfaces::InterfaceFactories,
+	plugin::PluginFactories,
 };
 
 use super::{
@@ -20,7 +20,7 @@ pub trait Plugin: Sized {
 	// which could otherwise provide nice logging for errors.
 	/// Type for errors that can occur during [`load`](Plugin::load).
 	type LoadError: Display;
-	fn load(factories: InterfaceFactories<'_>) -> Result<Self, Self::LoadError>;
+	fn load(factories: PluginFactories) -> Result<Self, Self::LoadError>;
 
 	fn description(&mut self) -> &CStr;
 

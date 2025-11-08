@@ -17,7 +17,6 @@ use ::rse_shared::{
 	cppdef::entities::edict_t,
 	ServerEdict,
 };
-use ::rse_game_interfaces::InterfaceFactories;
 use ::rse_interface::{
 	CreateInterfaceFn, RawInterface,
 	Interface, ToRawInterface,
@@ -29,6 +28,7 @@ use crate::{
 		INTERFACEVERSION_ISERVERPLUGINCALLBACKS,
 	},
 	ClientConnect, Plugin, RejectReason,
+	PluginFactories,
 };
 
 /// Trait for plugins that live throughout the life of the object loaded in memory that the plugin comes from.
@@ -51,7 +51,7 @@ pub trait StaticPlugin: Plugin {
 	/// Each call to `load` *must* eventually be followed by a call to [`unload`](StaticPlugin::unload).
 	/// 
 	/// If `load` returns `false`, then it *must not* be called again until `unload` is called.
-	unsafe fn load(&mut self, factories: InterfaceFactories<'_>) -> bool;
+	unsafe fn load(&mut self, factories: PluginFactories) -> bool;
 	/// Unloads the plugin.
 	/// 
 	/// # Safety
@@ -132,7 +132,7 @@ where
 	::rse_cpp::vtable_methods! {
 		this: VtObjectPtr<ServerPluginCallbacksVt>;
 		fn load(interface_factory: CreateInterfaceFn, game_server_factory: CreateInterfaceFn) -> bool {
-			let factories = InterfaceFactories::new(interface_factory, game_server_factory);
+			let factories = PluginFactories::new(interface_factory, game_server_factory);
 			unsafe { this_to_self!(mut this).object.data.load(factories) }
 		}
 		fn unload() {

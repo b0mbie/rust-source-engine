@@ -10,8 +10,9 @@ use ::rse_game_interfaces::{
 		Cvar, CvarImpl,
 		QueueMaterialThreadValue,
 	},
-	InterfaceFactories,
 };
+
+use crate::plugin::PluginFactories;
 
 static mut CVAR: Option<Cvar> = None;
 
@@ -62,7 +63,7 @@ pub unsafe fn register_raw(registrable: RegistrableMut) -> bool {
 /// This function must be called from the main thread.
 /// 
 /// A call to this function must eventually be followed by a call to [`detach`].
-pub unsafe fn attach(factories: InterfaceFactories<'_>) {
+pub unsafe fn attach(factories: PluginFactories) {
 	match factories.create_interface::<Cvar>() {
 		Ok(mut iface) => {
 			unsafe { set_dll_identifier(iface.allocate_dll_identifier()) };

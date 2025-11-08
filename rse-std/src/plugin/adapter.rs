@@ -4,15 +4,15 @@ use ::core::{
 	hint::unreachable_unchecked,
 	mem::replace,
 };
-use ::rse_game_interfaces::{
-	InterfaceFactories,
-};
 use ::rse_plugin::{
 	StaticPlugin, Plugin as CPlugin,
 };
 use ::rse_tier0::con_warn;
 
-use crate::con::cmd::Invocation;
+use crate::{
+	con::cmd::Invocation,
+	plugin::PluginFactories,
+};
 
 use super::{
 	ClientIndex, PluginResult, QueryCvarCookie, QueryCvarValueStatus,
@@ -73,7 +73,7 @@ impl<P> StaticPlugin for Adapter<P>
 where
 	P: Plugin,
 {
-	unsafe fn load(&mut self, factories: InterfaceFactories<'_>) -> bool {
+	unsafe fn load(&mut self, factories: PluginFactories) -> bool {
 		crate::threads::MAIN_THREAD.bind_to_current();
 
 		crate::panicking::install_panic_hook();

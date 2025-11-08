@@ -59,11 +59,11 @@ pub mod prelude {
 			con, dev,
 			dev_msg, dev_warn, con_msg, con_warn,
 		},
-		interfaces::InterfaceFactories,
 		plugin::{
 			ClientIndex, PluginResult, QueryCvarCookie, QueryCvarValueStatus,
 			RejectReason, ClientConnect,
 			Plugin, plugin_description,
+			PluginFactories,
 		},
 		export_plugin_as, export_plugin,
 	};

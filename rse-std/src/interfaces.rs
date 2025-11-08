@@ -1,3 +1,1 @@
-pub use ::rse_game_interfaces::{
-	InterfaceFactories, InterfaceOfFactory,
-};
+pub use ::rse_game_interfaces::InterfaceOfFactory;
