@@ -105,7 +105,8 @@ where
 					}
 				}
 			}
-			Inner::Loaded(p) => {
+			Inner::Loaded(mut p) => {
+				p.repeated_load(factories);
 				self.inner = Inner::LoadedAgain(p);
 				false
 			}

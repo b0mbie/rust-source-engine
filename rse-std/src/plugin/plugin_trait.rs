@@ -24,6 +24,11 @@ pub trait Plugin: Sized {
 
 	fn description(&mut self) -> &CStr;
 
+	/// Called when the plugin is attempted to be loaded a second time.
+	fn repeated_load(&mut self, factories: PluginFactories) {
+		let _ = factories;
+	}
+
 	fn pause(&mut self) {}
 	fn unpause(&mut self) {}
 	fn level_init(&mut self, map_name: &CStr) {

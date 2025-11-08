@@ -82,6 +82,11 @@ pub trait LoadablePlugin: Sized + Plugin {
 	/// Returns the initialized plugin,
 	/// or `None` if loading failed for whatever reason.
 	fn load(factories: PluginFactories) -> Option<Self>;
+
+	/// Called when the plugin is attempted to be loaded a second time.
+	fn repeated_load(&mut self, factories: PluginFactories) {
+		let _ = factories;
+	}
 }
 
 impl<P: LoadablePlugin> StaticPlugin for PluginLoader<P> {
@@ -96,7 +101,8 @@ impl<P: LoadablePlugin> StaticPlugin for PluginLoader<P> {
 					None => false,
 				}
 			}
-			PluginLoaderInner::Loaded(p) => {
+			PluginLoaderInner::Loaded(mut p) => {
+				p.repeated_load(factories);
 				self.inner = PluginLoaderInner::LoadedAgain(p);
 				false
 			}

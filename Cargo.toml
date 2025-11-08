@@ -21,6 +21,7 @@ members = [
 	
 	"examples/blank",
 	"examples/console",
+	"examples/repeated-load",
 ]
 
 [workspace.package]
