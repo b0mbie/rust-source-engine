@@ -22,6 +22,8 @@ members = [
 	"examples/blank",
 	"examples/console",
 	"examples/repeated-load",
+	"examples/client",
+	"examples/filesystem",
 ]
 
 [workspace.package]
@@ -31,6 +33,7 @@ authors = ["b0mbie"]
 cppdvt = { git = "https://github.com/b0mbie/cppdvt.git" }
 printf = { git = "https://github.com/b0mbie/printf-rs.git" }
 
+rse-client = { path = "./rse-client" }
 rse-convar = { path = "./rse-convar" }
 rse-cpp = { path = "./rse-cpp" }
 rse-interface = { path = "./rse-interface" }
