@@ -16,7 +16,7 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  DEFAULT_CRATE: rse_plugin
+  DEFAULT_CRATE: rse_std
 
 jobs:
   rustdoc:
