@@ -114,7 +114,7 @@ pub fn is_map_valid(map_name: &CStr) -> bool {
 	})
 }
 
-pub fn command(command: &CStr) {
+pub fn execute(command: &CStr) {
 	unsafe { read_mt(move |srv| srv.push_command_back(command)) }
 }
 
