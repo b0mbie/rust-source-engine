@@ -2,21 +2,24 @@
 resolver = "3"
 members = [
 	"rse-cpp",
-	"rse-shared", "rse-client",
+
+	"rse-shared",
+	"rse-client",
+	"rse-game-interfaces",
+
 	"rse-sound",
 	"rse-utl",
 	"rse-interface",
 	"rse-convar",
 	"rse-math",
 	"rse-scratch-pad",
-	"rse-game-interfaces",
 	"rse-tier0",
 	"rse-plugin",
-	"test-plugin",
-	"test-static-plugin",
-	"rse-std-macros",
+
 	"rse-std",
-	"test-std-plugin",
+	"rse-std-macros",
+	
+	"examples/blank-plugin",
 ]
 
 [workspace.package]
