@@ -2,7 +2,9 @@ use ::core::{
 	ffi::{
 		CStr, c_char, c_int, c_long, c_uint, c_void,
 	},
-	ptr::null_mut,
+	ptr::{
+		NonNull, null_mut,
+	},
 };
 use ::libc::{
 	SEEK_SET, SEEK_CUR, SEEK_END,
@@ -12,6 +14,8 @@ use ::rse_cpp::{
 };
 use ::rse_interface::cppdef::app_system::AppSystemVt;
 use ::rse_utl::cppdef::FileNameHandle;
+
+pub type ValidFileHandle = NonNull<c_void>;
 
 pub type FileHandle = *mut c_void;
 pub const FILESYSTEM_INVALID_HANDLE: FileHandle = null_mut();
