@@ -20,6 +20,7 @@ members = [
 	"rse-std-macros",
 	
 	"examples/blank",
+	"examples/console",
 ]
 
 [workspace.package]
