@@ -87,6 +87,7 @@ pub unsafe fn detach() {
 			cvar.unregister_all(dll_id);
 			reset_dll_identifier();
 		}
+		CVAR = None;
 	}
 }
 
