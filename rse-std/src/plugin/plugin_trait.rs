@@ -14,6 +14,14 @@ use super::{
 	ServerEdict,
 };
 
+/// Trait for server and client plugins.
+/// 
+/// # Unloading
+/// Unload logic should typically be present in the [`Drop`] implementation of the plugin.
+/// At that stage,
+/// all console variables and commands registered by the plugin with the standard library are already unloaded,
+/// and new console variables or commands cannot be registered,
+/// so the plugin can perform any destruction necessary.
 pub trait Plugin: Sized {
 	// TODO: Better error bound?
 	// `anyhow::Error` nor `Box<dyn ::core::error::Error>` work with `::core::error::Error`,
