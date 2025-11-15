@@ -9,6 +9,7 @@ use ::core::{
 	ptr::null_mut,
 	slice::from_raw_parts_mut,
 };
+use ::rse_cpp::c_str::opt_c_str_from_ptr;
 use ::rse_tier0::{
 	linked::mem::LinkedTier0Allocator,
 	Tier0Allocator,
@@ -124,12 +125,7 @@ impl CString {
 	/// Returns the [`CStr`] allocated inside of this value,
 	/// or `None` if no string has been allocated.
 	pub const fn as_alloc_c_str(&self) -> Option<&CStr> {
-		let ptr = self.0.string;
-		if !ptr.is_null() {
-			unsafe { Some(CStr::from_ptr(ptr)) }
-		} else {
-			None
-		}
+		unsafe { opt_c_str_from_ptr(self.0.string) }
 	}
 
 	/// Clears the string, making it empty.
