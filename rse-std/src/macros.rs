@@ -6,7 +6,7 @@ macro_rules! export_plugin_as {
 	} => {
 		$crate::rse_plugin::export_static_plugin_as! {
 			$(#[$attr])*
-			$vis $name: $crate::plugin::Adapter<$ty> = $crate::plugin::Adapter::new();
+			$vis static mut $name: $crate::plugin::Adapter<$ty> = $crate::plugin::Adapter::new();
 		}
 	};
 }

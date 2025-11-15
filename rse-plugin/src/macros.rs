@@ -12,13 +12,13 @@ macro_rules! plugin_description {
 }
 
 /// Exports a [`StaticPlugin`](crate::StaticPlugin),
-/// given the input `<visibility> <name>: <plugin type> = <initializer>;`,
+/// given the input `<visibility> static mut <name>: <plugin type> = <initializer>;`,
 /// putting the plugin instance into a `static mut` item.
 #[macro_export]
 macro_rules! export_static_plugin_as {
 	{
 		$(#[$attr:meta])*
-		$vis:vis $name:ident: $ty:ty = $init:expr;
+		$vis:vis static mut $name:ident: $ty:ty = $init:expr;
 	} => {
 		$(#[$attr])*
 		$vis static mut $name: $crate::PluginObject<$ty> = $crate::PluginObject::new($init);
@@ -32,7 +32,7 @@ macro_rules! export_static_plugin_as {
 					return_code: ::core::option::Option<&mut $crate::interface::cppdef::ReturnCode>,
 				) -> ::core::option::Option<$crate::interface::cppdef::RawInterface> {
 					let result = if name == <$crate::PluginObject<$ty> as $crate::interface::Interface>::IDENTIFIER {
-						unsafe { Some($crate::interface::ToRawInterface::to_raw_interface(&mut PLUGIN)) }
+						unsafe { Some($crate::interface::ToRawInterface::to_raw_interface(&mut $name)) }
 					} else {
 						None
 					};
@@ -46,11 +46,8 @@ macro_rules! export_static_plugin_as {
 					result
 				}
 			}
-			impl $crate::interface::DllInterfaceFactory for ExportedPlugin {
-				const INSTANCE: &Self = &ExportedPlugin;
-			}
 
-			$crate::interface::dll_interface_factory!(ExportedPlugin);
+			$crate::interface::export_interface_factory!(ExportedPlugin = ExportedPlugin);
 		};
 	};
 }
@@ -62,23 +59,23 @@ macro_rules! export_static_plugin {
 	($ty:ty = $init:expr) => {
 		const _: () = {
 			$crate::export_static_plugin_as! {
-				PLUGIN: $ty = $init;
+				static mut EXPORTED_STATIC_PLUGIN: $ty = $init;
 			}
 		};
 	};
 }
 
 /// Exports a [`LoadablePlugin`](crate::LoadablePlugin),
-/// given the input `<visibility> <name>: <plugin type>;`,
+/// given the input `<visibility> static mut <name>: <plugin type>;`,
 /// putting the plugin instance into a `static mut` item.
 #[macro_export]
 macro_rules! export_loadable_plugin_as {
 	{
 		$(#[$attr:meta])*
-		$vis:vis $name:ident: $ty:ty;
+		$vis:vis static mut $name:ident: $ty:ty;
 	} => {
 		$crate::export_static_plugin_as! {
-			$vis $name: $crate::PluginLoader<$ty> = $crate::PluginLoader::new();
+			$vis static mut $name: $crate::PluginLoader<$ty> = $crate::PluginLoader::new();
 		}
 	};
 }
