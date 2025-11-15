@@ -1,7 +1,9 @@
 use ::core::{
 	alloc::Layout,
 	cmp::Ordering,
-	ffi::CStr,
+	ffi::{
+		CStr, c_char,
+	},
 	fmt::{
 		self, Write,
 	},
@@ -243,6 +245,31 @@ impl CString {
 		unsafe { *self.0.string.wrapping_add(length) = 0 };
 
 		unsafe { from_raw_parts_mut(self.0.string as *mut u8, length) }
+	}
+
+	/// Consumes this C string buffer,
+	/// transferring ownership of the C string.
+	/// 
+	/// The returned pointer must be used with [`from_raw`](Self::from_raw) to deallocate the [`CString`] in Rust code;
+	/// however, it is permitted to pass the pointer to external code
+	/// if it itself can deallocate it using [`LinkedTier0Allocator`].
+	pub const fn into_raw(self) -> *mut c_char {
+		let ptr = self.0.string;
+		forget(self);
+		ptr
+	}
+
+	/// Takes ownership of a [`Self`] that is represented by a pointer.
+	/// 
+	/// # Safety
+	/// This function must only be called with either
+	/// a pointer returned by [`into_raw`](Self::into_raw), or
+	/// a valid pointer to a C string that was allocated with [`LinkedTier0Allocator`]
+	/// otherwise.
+	pub const unsafe fn from_raw(ptr: *mut c_char) -> Self {
+		Self(UtlString {
+			string: ptr,
+		})
 	}
 }
 
