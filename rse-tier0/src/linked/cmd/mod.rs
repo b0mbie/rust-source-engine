@@ -1,11 +1,12 @@
 use ::core::{
 	ffi::{
-		CStr, c_char, c_int, c_float,
+		CStr, c_int, c_float,
 	},
 	num::NonZero,
 	ptr::null,
 };
 use ::rse_cpp::{
+	c_str::opt_c_str_from_ptr,
 	VtObject, virtual_call,
 	vt_object_wrapper,
 	AsObject,
@@ -51,12 +52,12 @@ impl Tier0CommandLine for LinkedTier0CommandLine {
 		let mut value = null();
 		unsafe {
 			virtual_call!(self.as_object() => check_parm(key.as_ptr(), &mut value));
-			c_str_opt(value)
+			opt_c_str_from_ptr(value)
 		}
 	}
 
 	fn parm_str<'a>(&'a self, key: &CStr) -> Option<&'a CStr> {
-		unsafe { c_str_opt(virtual_call!(self.as_object() => parm_value_str(key.as_ptr(), null()))) }
+		unsafe { opt_c_str_from_ptr(virtual_call!(self.as_object() => parm_value_str(key.as_ptr(), null()))) }
 	}
 	fn parm_str_or<'a, 'def: 'a>(&'a self, key: &CStr, default: &'def CStr) -> &'def CStr {
 		unsafe { CStr::from_ptr(virtual_call!(self.as_object() => parm_value_str(key.as_ptr(), default.as_ptr()))) }
@@ -79,13 +80,5 @@ impl Tier0CommandLine for LinkedTier0CommandLine {
 	}
 	fn has_parm(&self, s: &CStr) -> bool {
 		unsafe { virtual_call!(self.as_object() => has_parm(s.as_ptr())) }
-	}
-}
-
-const unsafe fn c_str_opt<'a>(ptr: *const c_char) -> Option<&'a CStr> {
-	if !ptr.is_null() {
-		unsafe { Some(CStr::from_ptr(ptr)) }
-	} else {
-		None
 	}
 }
