@@ -9,6 +9,7 @@ mod flag_utils;
 mod transparent_wrappers;
 mod vtable_macros;
 
+pub mod c_str;
 pub mod ptr_compat;
 
 mod type_info;
