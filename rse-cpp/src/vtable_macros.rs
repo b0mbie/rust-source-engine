@@ -80,3 +80,10 @@ macro_rules! vtable_methods {
 		)*
 	};
 }
+
+#[macro_export]
+macro_rules! this_to_pin_self {
+	($($arg:tt)*) => {
+		::core::pin::Pin::new_unchecked($crate::this_to_self!($($arg)*))
+	};
+}
