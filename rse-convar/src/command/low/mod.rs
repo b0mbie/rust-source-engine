@@ -1,4 +1,7 @@
-use ::core::ffi::CStr;
+use ::core::{
+	ffi::CStr,
+	pin::Pin,
+};
 
 use crate::console_base::{
 	RawConsoleBase, CvarFlags,
@@ -25,16 +28,16 @@ where
 	Self: Sized,
 	Self: RawConsoleBase<ConCommandObject<'a, Self>>,
 {
-	fn name(object: &mut ConCommandObject<'a, Self>);
-	fn dispatch(object: &mut ConCommandObject<'a, Self>, invocation: &Invocation);
-	fn can_auto_complete(object: &mut ConCommandObject<'a, Self>) -> bool;
+	fn name(object: Pin<&mut ConCommandObject<'a, Self>>);
+	fn dispatch(object: Pin<&mut ConCommandObject<'a, Self>>, invocation: &Invocation);
+	fn can_auto_complete(object: Pin<&mut ConCommandObject<'a, Self>>) -> bool;
 	fn auto_complete_suggest(
-		object: &mut ConCommandObject<'a, Self>,
+		object: Pin<&mut ConCommandObject<'a, Self>>,
 		partial: &CStr,
 		suggestions: &mut Suggestions,
 	) -> SuggestionCount;
 
-	fn are_flags_set(object: &mut ConCommandObject<'a, Self>, flag: CvarFlags) -> bool {
+	fn are_flags_set(object: Pin<&mut ConCommandObject<'a, Self>>, flag: CvarFlags) -> bool {
 		object.as_base().are_flags_set(flag)
 	}
 }

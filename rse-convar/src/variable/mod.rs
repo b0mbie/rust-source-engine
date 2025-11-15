@@ -7,8 +7,6 @@ mod macros;
 
 mod ext;
 pub use ext::*;
-mod generic;
-pub use generic::*;
 mod get_value;
 pub use get_value::*;
 mod params;

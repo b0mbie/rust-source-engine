@@ -58,11 +58,9 @@ pub mod prelude {
 	pub use crate::{
 		con::{
 			cmd::{
-				Suggestions, Invocation,
-				Command, ConCommand,
+				Invocation, ConCommand,
 			},
 			var::{
-				Variable, OldValue, NewValue,
 				ConVar, ConVarParams,
 			},
 			CvarFlags,

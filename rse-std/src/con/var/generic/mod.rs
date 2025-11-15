@@ -8,11 +8,13 @@ use ::core::{
 };
 use ::rse_convar::{
 	console_base::RegistrableMut,
-	variable::low::StaticConVarObject,
+	variable::low::{
+		ConVarObject, StaticConVarObject,
+	},
 };
 
 use super::{
-	ChangeVariable,
+	Variable,
 	ConVarParams,
 	GetValue,
 };
@@ -24,45 +26,52 @@ pub use wrapper::StdCStrLock as CStrLock;
 
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct GenericConVar<T> {
-	con_var: UnsafeCell<StaticConVarObject<StdVariable<T>>>,
+pub struct GenericConVar<'str, T> {
+	con_var: UnsafeCell<StaticConVarObject<'str, StdVariable<T>>>,
 }
 
-unsafe impl<T: Sync> Sync for GenericConVar<T> {}
+unsafe impl<'str, T: Sync> Sync for GenericConVar<'str, T> {}
 
-impl<T> GenericConVar<T> {
+impl<'str, T> GenericConVar<'str, T> {
 	pub fn value<'a, V: GetValue<'a>>(&'a self) -> V {
 		V::get_value(self)
 	}
 
+	fn with_object_mut<'a, R, F: FnOnce(Pin<&'a mut ConVarObject<'str, StdVariable<T>>>) -> R>(&'a self, f: F) -> R {
+		unsafe {
+			let object_mut = Pin::new_unchecked((*self.con_var.get()).as_mut_inner());
+			f(object_mut)
+		}
+	}
+
 	pub fn float(&self) -> c_float {
-		unsafe { StdVariable::float((*self.con_var.get()).as_mut_inner()) }
+		self.with_object_mut(StdVariable::float)
 	}
 
 	pub fn int(&self) -> c_int {
-		unsafe { StdVariable::int((*self.con_var.get()).as_mut_inner()) }
+		self.with_object_mut(StdVariable::int)
 	}
 
 	pub fn c_str(&self) -> CStrLock<'_> {
-		unsafe { StdVariable::c_str((*self.con_var.get()).as_mut_inner()) }
+		self.with_object_mut(StdVariable::c_str)
 	}
 
 	pub fn register(&'static self) -> bool {
 		unsafe { crate::con::cvar::register_raw(self.as_registrable()) }
 	}
 
-	fn as_registrable(&self) -> RegistrableMut {
+	fn as_registrable(&'static self) -> RegistrableMut {
 		unsafe { (*self.con_var.get()).as_registrable() }
 	}
 }
 
-impl<T> GenericConVar<T>
+impl<'str, T> GenericConVar<'str, T>
 where
-	T: ChangeVariable,
+	T: Variable,
 {
 	/// # Safety
 	/// The returned object must be *pinned* into an area of memory (with e.g. a `static` item).
-	pub const unsafe fn new(inner: T, params: ConVarParams<'static>) -> Self {
+	pub const unsafe fn new(inner: T, params: ConVarParams<'str>) -> Self {
 		Self {
 			con_var: UnsafeCell::new(unsafe {
 				StaticConVarObject::new(StdVariable::new(inner), params)
@@ -70,7 +79,7 @@ where
 		}
 	}
 
-	pub fn boxed(inner: T, params: ConVarParams<'static>) -> Pin<Box<Self>> {
+	pub fn boxed(inner: T, params: ConVarParams<'str>) -> Pin<Box<Self>> {
 		unsafe { Box::pin(Self::new(inner, params)) }
 	}
 }

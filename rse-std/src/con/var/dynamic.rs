@@ -5,7 +5,6 @@ use ::core::{
 	},
 	pin::Pin,
 };
-use ::rse_convar::variable::ChangeVariable;
 
 use super::{
 	GenericConVar, CStrLock,
@@ -16,7 +15,7 @@ use super::{
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct ConVar {
-	inner: GenericConVar<DynConVar>,
+	inner: GenericConVar<'static, DynConVar>,
 }
 
 impl ConVar {
@@ -62,4 +61,4 @@ impl ConVar {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
 struct DynConVar;
-impl ChangeVariable for DynConVar {}
+impl super::Variable for DynConVar {}

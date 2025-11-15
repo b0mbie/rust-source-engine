@@ -1,3 +1,5 @@
+use ::core::pin::Pin;
+
 pub use crate::cppdef::CvarDllIdentifier;
 
 mod ext;
@@ -18,12 +20,23 @@ pub use registrable::*;
 /// `dll_identifier` must return a valid identifier previously returned by
 /// `ICvar::AllocateDLLIdentifier`.
 pub unsafe trait RawConsoleBase<Object: ?Sized> {
-	fn help(object: &mut Object);
-	fn add_flags(object: &mut Object, flags: CvarFlags);
-	fn is_registered(object: &mut Object) -> bool;
-	fn dll_identifier(object: &mut Object) -> CvarDllIdentifier;
+	fn help(object: Pin<&mut Object>);
+	fn add_flags(object: Pin<&mut Object>, flags: CvarFlags);
+	fn is_registered(object: Pin<&mut Object>) -> bool;
+	fn dll_identifier(object: Pin<&mut Object>) -> CvarDllIdentifier;
 
-	fn init(object: &mut Object) {
+	// TODO: Is this useful?
+	fn init(object: Pin<&mut Object>) {
+		let _ = object;
+	}
+
+	/// Allow the implementing type to use the data of `Object`
+	/// to properly destroy itself.
+	/// 
+	/// # Safety
+	/// This function must only be called *once* by `Object`
+	/// (typically, this would be done in its [`Drop`] implementation).
+	unsafe fn drop_with_object(object: &mut Object) {
 		let _ = object;
 	}
 }

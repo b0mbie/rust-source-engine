@@ -4,6 +4,7 @@ use ::core::{
 	},
 	fmt,
 	ops::Deref,
+	pin::Pin,
 };
 use ::libc::atof;
 use ::rse_convar::{
@@ -36,7 +37,7 @@ use crate::{
 };
 
 use super::super::{
-	ChangeVariable, OldValue, NewValue,
+	Variable, OldValue, NewValue,
 };
 
 pub struct StdCStrLock<'a> {
@@ -69,7 +70,6 @@ impl fmt::Debug for StdCStrLock<'_> {
 	}
 }
 
-/// Private implementation detail that relies on atomic types being used in `GenericConVar`.
 #[derive(Debug)]
 pub struct StdVariable<T> {
 	inner: T,
@@ -84,28 +84,29 @@ impl<T> StdVariable<T> {
 		}
 	}
 
-	pub fn set_number(object: &mut ConVarObject<'_, Self>, float: c_float, int: c_int) {
-		unsafe { Self::locked(
+	pub fn set_number(object: Pin<&mut ConVarObject<'_, Self>>, float: c_float, int: c_int) {
+		Self::locked(
 			object,
 			move |object| {
-				let data = &mut object.as_mut_raw().data;
+				let data = unsafe { &mut object.get_unchecked_mut().as_mut_raw().data };
 				data.value_float = float;
 				data.value_int = int;
 			}
-		) }
+		)
 	}
 
-	pub fn float(object: &mut ConVarObject<'_, Self>) -> c_float {
+	pub fn float(object: Pin<&mut ConVarObject<'_, Self>>) -> c_float {
 		unsafe { Self::locked(object, move |object| object.as_ext().float()) }
 	}
 
-	pub fn int(object: &mut ConVarObject<'_, Self>) -> c_int {
+	pub fn int(object: Pin<&mut ConVarObject<'_, Self>>) -> c_int {
 		unsafe { Self::locked(object, move |object| object.as_ext().int()) }
 	}
 
-	pub fn c_str<'a>(object: &'a mut ConVarObject<'_, Self>) -> StdCStrLock<'a> {
+	pub fn c_str<'a>(object: Pin<&'a mut ConVarObject<'_, Self>>) -> StdCStrLock<'a> {
 		unsafe {
 			object.inner.lock_value();
+			let object = Pin::into_inner_unchecked(object);
 			StdCStrLock {
 				c_str: object.as_ext().c_str(),
 				lock: &object.inner.value_lock,
@@ -113,12 +114,12 @@ impl<T> StdVariable<T> {
 		}
 	}
 
-	fn locked<R, F: FnOnce(&mut ConVarObject<'_, Self>) -> R>(
-		object: &mut ConVarObject<'_, Self>, f: F,
+	fn locked<R, F: FnOnce(Pin<&mut ConVarObject<'_, Self>>) -> R>(
+		mut object: Pin<&mut ConVarObject<'_, Self>>, f: F,
 	) -> R {
 		unsafe {
 			object.inner.lock_value();
-			let result = f(object);
+			let result = f(object.as_mut());
 			object.inner.unlock_value();
 			result
 		}
@@ -135,9 +136,9 @@ impl<T> StdVariable<T> {
 
 impl<'a, T> RawVariable<'a> for StdVariable<T>
 where
-	T: ChangeVariable,
+	T: Variable,
 {
-	fn set_c_str(object: &mut ConVarObject<'a, Self>, value: Option<&CStr>) {
+	fn set_c_str(object: Pin<&mut ConVarObject<'a, Self>>, value: Option<&CStr>) {
 		let mut ctx = StdCtx::new(object);
 		if !ctx.set_preamble(value) {
 			return
@@ -161,11 +162,11 @@ where
 
 		ctx.set_number(new_float_value, new_float_value as _);
 
-		if !object.as_base().are_flags_set(CvarFlags::NEVER_AS_STRING) {
-			Self::change_string_value(object, value, old_value);
+		if !ctx.object.as_base().are_flags_set(CvarFlags::NEVER_AS_STRING) {
+			Self::change_string_value(ctx.object, value, old_value);
 		}
 	}
-	fn set_float_forced(object: &mut ConVarObject<'a, Self>, mut value: c_float) {
+	fn set_float_forced(object: Pin<&mut ConVarObject<'a, Self>>, mut value: c_float) {
 		let mut ctx = StdCtx::new(object);
 		if !ctx.set_preamble(value) {
 			return
@@ -182,7 +183,7 @@ where
 			ctx.change_string_value_impl(old_value_string.as_c_str(), old_value);
 		}
 	}
-	fn set_int(object: &mut ConVarObject<'a, Self>, mut value: c_int) {
+	fn set_int(object: Pin<&mut ConVarObject<'a, Self>>, mut value: c_int) {
 		let mut ctx = StdCtx::new(object);
 		if !ctx.set_preamble(value) {
 			return
@@ -203,13 +204,13 @@ where
 			ctx.change_string_value_impl(old_value_string.as_c_str(), old_value);
 		}
 	}
-	fn set_float(object: &mut ConVarObject<'a, Self>, value: c_float) {
+	fn set_float(object: Pin<&mut ConVarObject<'a, Self>>, value: c_float) {
 		let mut ctx = StdCtx::new(object);
 		if ctx.float() != value {
-			Self::set_float_forced(object, value)
+			Self::set_float_forced(ctx.object, value)
 		}
 	}
-	fn change_string_value(object: &mut ConVarObject<'a, Self>, new_value: Option<&CStr>, old_value: c_float) {
+	fn change_string_value(object: Pin<&mut ConVarObject<'a, Self>>, new_value: Option<&CStr>, old_value: c_float) {
 		let mut ctx = StdCtx::new(object);
 		let old_value_string = ctx.old_value_string();
 		ctx.with_value_string_mut(
@@ -224,18 +225,18 @@ where
 }
 
 unsafe impl<'a, T> RawConsoleBase<ConVarObject<'a, Self>> for StdVariable<T> {
-	fn help(object: &mut ConVarObject<'a, Self>) {
+	fn help(object: Pin<&mut ConVarObject<'a, Self>>) {
 		let _ = object;
 		// `T::HELP` is already stored inside of the object.
 		// unsafe { object.as_mut_base().as_mut_inner().help_string = T::HELP.map(move |s| s.as_ptr()).unwrap_or_default() }
 	}
-	fn add_flags(object: &mut ConVarObject<'a, Self>, flags: CvarFlags) {
-		object.as_mut_base().add_flags(flags)
+	fn add_flags(object: Pin<&mut ConVarObject<'a, Self>>, flags: CvarFlags) {
+		unsafe { object.get_unchecked_mut().as_mut_base().add_flags(flags) }
 	}
-	fn is_registered(object: &mut ConVarObject<'a, Self>) -> bool {
+	fn is_registered(object: Pin<&mut ConVarObject<'a, Self>>) -> bool {
 		object.as_base().is_registered()
 	}
-	fn dll_identifier(object: &mut ConVarObject<'a, Self>) -> CvarDllIdentifier {
+	fn dll_identifier(object: Pin<&mut ConVarObject<'a, Self>>) -> CvarDllIdentifier {
 		let _ = object;
 		crate::con::cvar::dll_identifier()
 	}
@@ -243,29 +244,29 @@ unsafe impl<'a, T> RawConsoleBase<ConVarObject<'a, Self>> for StdVariable<T> {
 
 #[repr(transparent)]
 struct StdCtx<'a, 's, T> {
-	pub object: &'a mut ConVarObject<'s, StdVariable<T>>,
+	pub object: Pin<&'a mut ConVarObject<'s, StdVariable<T>>>,
 }
 
 impl<'a, 's, T> StdCtx<'a, 's, T> {
-	pub const fn new(object: &'a mut ConVarObject<'s, StdVariable<T>>) -> Self {
+	pub const fn new(object: Pin<&'a mut ConVarObject<'s, StdVariable<T>>>) -> Self {
 		Self {
 			object,
 		}
 	}
 
 	pub fn set_number(&mut self, float: c_float, int: c_int) {
-		StdVariable::set_number(self.object, float, int)
+		StdVariable::set_number(self.object.as_mut(), float, int)
 	}
 
 	pub fn float(&mut self) -> c_float {
-		StdVariable::float(self.object)
+		StdVariable::float(self.object.as_mut())
 	}
 
 	/// # Safety
 	/// The current value of the [`ConVarExt`] must not be accessed.
 	/// Use [`Self::set_float`]/[`Self::float`] or [`Self::set_int`]/[`Self::int`] for atomic access instead.
-	pub const unsafe fn ext(&'a self) -> &'a ConVarExt {
-		unsafe { self.object.as_ext() }
+	pub unsafe fn ext(&'a self) -> &'a ConVarExt {
+		unsafe { self.object.as_ref().get_ref().as_ext() }
 	}
 
 	pub fn set_preamble<V>(&mut self, value: V) -> bool
@@ -276,7 +277,7 @@ impl<'a, 's, T> StdCtx<'a, 's, T> {
 		if self.object.as_base().flags().is_for_material_thread() {
 			unsafe {
 				if !is_material_thread_set_allowed() {
-					queue_material_thread_set(self.object.as_mut_raw(), value);
+					queue_material_thread_set(self.object.as_mut().get_unchecked_mut().as_mut_raw(), value);
 					false
 				} else {
 					true
@@ -294,7 +295,7 @@ impl<'a, 's, T> StdCtx<'a, 's, T> {
 		self.object.inner.lock_value();
 
 		let mut inner = {
-			let ext = unsafe { self.object.as_mut_ext() };
+			let ext = unsafe { self.object.as_mut().get_unchecked_mut().as_mut_ext() };
 			let ptr = ext.as_inner().value_string;
 			let default_ptr = ext.as_inner().default_value;
 			if EMPTY.as_ptr() == ptr {
@@ -316,7 +317,7 @@ impl<'a, 's, T> StdCtx<'a, 's, T> {
 		// The string may have changed, so we need to fix it.
 		unsafe {
 			let ptr = inner.string;
-			self.object.as_mut_raw().data.value_string = if !ptr.is_null() {
+			self.object.as_mut().get_unchecked_mut().as_mut_raw().data.value_string = if !ptr.is_null() {
 				ptr
 			} else {
 				EMPTY.as_ptr() as _
@@ -339,7 +340,7 @@ impl<'a, 's, T> StdCtx<'a, 's, T> {
 
 	pub fn change_string_value_impl(&mut self, old_c_str: &CStr, old_value: c_float)
 	where
-		T: ChangeVariable,
+		T: Variable,
 	{
 		self.object.inner.lock_value();
 		if old_c_str != unsafe { self.ext().c_str() } {
@@ -352,10 +353,9 @@ impl<'a, 's, T> StdCtx<'a, 's, T> {
 			};
 
 			unsafe {
-				let (ext, inner) = self.object.ext_and_mut_inner();
-				T::on_changed(
+				let (ext, inner) = self.object.as_mut().get_unchecked_mut().ext_and_mut_inner();
+				inner.inner.on_changed(
 					NewValue {
-						inner: &mut inner.inner,
 						c_str: ext.c_str(),
 						float: ext.float(),
 						int: ext.int(),
@@ -365,7 +365,7 @@ impl<'a, 's, T> StdCtx<'a, 's, T> {
 			}
 
 			unsafe {
-				call_global_change_callbacks(self.object.as_mut_raw(), old_c_str, old_value);
+				call_global_change_callbacks(self.object.as_mut().get_unchecked_mut().as_mut_raw(), old_c_str, old_value);
 			}
 		}
 		unsafe { self.object.inner.unlock_value() }

@@ -1,4 +1,5 @@
 use ::core::ffi::CStr;
+use ::rse_cpp::c_str::opt_c_str_from_ptr;
 
 use super::CvarFlags;
 
@@ -32,12 +33,7 @@ impl ConCommandBaseExt {
 	}
 
 	pub const fn help(&self) -> Option<&CStr> {
-		let ptr = self.0.help_string;
-		if !ptr.is_null() {
-			unsafe { Some(CStr::from_ptr(ptr)) }
-		} else {
-			None
-		}
+		unsafe { opt_c_str_from_ptr(self.0.help_string) }
 	}
 
 	pub const fn is_registered(&self) -> bool {

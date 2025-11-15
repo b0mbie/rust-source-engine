@@ -11,7 +11,8 @@ use ::rse_cpp::{
 		convert_ref, convert_mut, convert_mut_ptr,
 	},
 	convert_vt_ref, convert_vt_mut,
-	new_vtable_self, vtable_methods, this_to_self,
+	new_vtable_self, vtable_methods,
+	this_to_self, this_to_pin_self,
 	VtObjectPtr,
 	RefConst, RefMut,
 	AsObject, VtObject,
@@ -48,14 +49,19 @@ use super::{
 	RawCommand, Suggestions, Invocation,
 };
 
+const _: () = {
+	const fn assert_unpin<T: Unpin>() {}
+	assert_unpin::<ConCommandObject<'_, ()>>()
+};
+
 #[repr(C)]
-pub struct ConCommandObject<'a, T> {
+pub struct ConCommandObject<'str, T> {
 	con_command: ConCommand,
 	pub inner: T,
-	_strings: PhantomData<&'a CStr>,
+	_strings: PhantomData<&'str CStr>,
 }
 
-impl<'a, T> ConCommandObject<'a, T> {
+impl<'str, T> ConCommandObject<'str, T> {
 	pub const fn as_inner(&self) -> &ConCommand {
 		&self.con_command
 	}
@@ -79,9 +85,9 @@ impl<'a, T> ConCommandObject<'a, T> {
 	}
 }
 
-impl<'a, T> ConCommandObject<'a, T>
+impl<'str, T> ConCommandObject<'str, T>
 where
-	T: RawCommand<'a>,
+	T: RawCommand<'str>,
 {
 	/// # Safety
 	/// `ext` must be properly initialized.
@@ -98,7 +104,7 @@ where
 
 	pub const fn new(
 		inner: T,
-		name: &'a CStr, help: Option<&'a CStr>,
+		name: &'str CStr, help: Option<&'str CStr>,
 		flags: CvarFlags,
 	) -> Self {
 		unsafe { Self::from_raw(
@@ -170,26 +176,30 @@ where
 	vtable_methods! {
 		this: VtObjectPtr<ConCommandBaseVt>;
 		fn is_flag_set(flag: c_int) -> bool {
-			T::are_flags_set(this_to_self!(mut this), CvarFlags::from_bits_retain(flag))
+			let this = unsafe { this_to_pin_self!(mut this) };
+			T::are_flags_set(this, CvarFlags::from_bits_retain(flag))
 		}
 		fn add_flags(flags: c_int) {
-			T::add_flags(this_to_self!(mut this), CvarFlags::from_bits_retain(flags))
+			let this = unsafe { this_to_pin_self!(mut this) };
+			T::add_flags(this, CvarFlags::from_bits_retain(flags))
 		}
 		fn get_name() -> *const c_char {
-			let this = this_to_self!(mut this);
-			T::name(this);
-			this.con_command.data.base.name
+			let this_pinned = unsafe { this_to_pin_self!(mut this) };
+			T::name(this_pinned);
+			this_to_self!(ref this).con_command.data.base.name
 		}
 		fn get_help_text() -> *const c_char {
-			let this = this_to_self!(mut this);
-			T::help(this);
-			this.con_command.data.base.help_string
+			let this_pinned = unsafe { this_to_pin_self!(mut this) };
+			T::help(this_pinned);
+			this_to_self!(ref this).con_command.data.base.help_string
 		}
 		fn is_registered() -> bool {
-			T::is_registered(this_to_self!(mut this))
+			let this = unsafe { this_to_pin_self!(mut this) };
+			T::is_registered(this)
 		}
 		fn get_dll_identifier() -> CvarDllIdentifier {
-			T::dll_identifier(this_to_self!(mut this))
+			let this = unsafe { this_to_pin_self!(mut this) };
+			T::dll_identifier(this)
 		}
 		fn create_base(name: *const c_char, help_string: *const c_char, flags: c_int) {
 			let _ = this;
@@ -199,7 +209,8 @@ where
 			// Do nothing here. This method is purely for usage in the `ConCommandBase` constructor.
 		}
 		fn init() {
-			T::init(this_to_self!(mut this))
+			let this = unsafe { this_to_pin_self!(mut this) };
+			T::init(this)
 		}
 	}
 
@@ -213,14 +224,17 @@ where
 				)
 			};
 			let suggestions = unsafe { Suggestions::from_mut(suggestions) };
-			T::auto_complete_suggest(this_to_self!(mut this), partial, suggestions).get()
+			let this = unsafe { this_to_pin_self!(mut this) };
+			T::auto_complete_suggest(this, partial, suggestions).get()
 		}
 		fn can_auto_complete() -> bool {
-			T::can_auto_complete(this_to_self!(mut this))
+			let this = unsafe { this_to_pin_self!(mut this) };
+			T::can_auto_complete(this)
 		}
 		fn dispatch(command: RefConst<CCommand>) {
 			let invocation = unsafe { Invocation::from_ptr(command.as_ptr()) };
-			T::dispatch(this_to_self!(mut this), invocation)
+			let this = unsafe { this_to_pin_self!(mut this) };
+			T::dispatch(this, invocation)
 		}
 	}
 }

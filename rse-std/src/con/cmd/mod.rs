@@ -1,6 +1,7 @@
 pub use ::rse_convar::command::{
-	Command, DispatchCommand,
-	Suggestions, Invocation,
+	DispatchCommand,
+	Suggestions,
+	Invocation, Arg, ArgIter,
 };
 
 mod dynamic;

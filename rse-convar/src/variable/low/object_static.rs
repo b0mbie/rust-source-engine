@@ -12,20 +12,30 @@ use super::{
 };
 
 #[repr(transparent)]
-pub struct StaticConVarObject<T> {
-	maybe_unparented: ConVarObject<'static, T>,
+pub struct StaticConVarObject<'str, T> {
+	maybe_unparented: ConVarObject<'str, T>,
 }
 
-impl<T> StaticConVarObject<T> {
+impl<'str, T> StaticConVarObject<'str, T> {
+	pub const unsafe fn from_object(object: ConVarObject<'str, T>) -> Self {
+		Self {
+			maybe_unparented: object,
+		}
+	}
+
+	pub fn into_object(self) -> ConVarObject<'str, T> {
+		self.maybe_unparented
+	}
+
 	pub const fn as_registrable(&mut self) -> RegistrableMut {
 		unsafe { self.as_mut_inner().as_mut_raw() as *mut _ as *mut _ }
 	}
 
-	pub const unsafe fn as_inner(&self) -> &ConVarObject<'static, T> {
+	pub const unsafe fn as_inner(&self) -> &ConVarObject<'str, T> {
 		&self.maybe_unparented
 	}
 
-	pub const fn as_mut_inner(&mut self) -> &mut ConVarObject<'static, T> {
+	pub const fn as_mut_inner(&mut self) -> &mut ConVarObject<'str, T> {
 		self.maybe_unparented.init_parent();
 		&mut self.maybe_unparented
 	}
@@ -47,15 +57,13 @@ impl<T> StaticConVarObject<T> {
 	}
 }
 
-impl<T> StaticConVarObject<T>
+impl<'str, T> StaticConVarObject<'str, T>
 where
-	T: RawVariable<'static>,
+	T: RawVariable<'str>,
 {
 	/// # Safety
 	/// The [`StaticConVarObject`] must be *pinned* into an area of memory (with e.g. a `static` item).
-	pub const unsafe fn new(inner: T, params: ConVarParams<'static>) -> Self {
-		Self {
-			maybe_unparented: ConVarObject::unparented(inner, params),
-		}
+	pub const unsafe fn new(inner: T, params: ConVarParams<'str>) -> Self {
+		unsafe { Self::from_object(ConVarObject::unparented(inner, params)) }
 	}
 }

@@ -18,13 +18,9 @@ pub use wrappers::*;
 pub mod prelude {
 	pub use crate::{
 		command::{
-			DllCommand, Suggestions,
-			Command, DispatchCommand,
+			DispatchCommand, Suggestions,
 		},
 		console_base::CvarDllIdentifier,
-		variable::{
-			Variable, NewValue, OldValue,
-		},
 	};
 
 	#[cfg(feature = "macros")]
