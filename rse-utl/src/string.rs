@@ -157,6 +157,15 @@ impl CString {
 		}
 	}
 
+	/// Shortens the C string to the specified length
+	/// without affecting its allocated capacity.
+	pub fn truncate(&mut self, new_len: usize) {
+		if self.len() < new_len
+		&& let Some(bytes) = self.as_mut_bytes() {
+			unsafe { *bytes.get_unchecked_mut(new_len) = 0 }
+		}
+	}
+
 	/// Converts this C string to its ASCII lower case equivalent in-place.
 	pub fn make_ascii_lowercase(&mut self) {
 		if let Some(bytes) = self.as_mut_bytes() {
