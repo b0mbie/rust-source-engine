@@ -114,7 +114,7 @@ where
 					next: null_mut(),
 					registered: false,
 					name: name.as_ptr(),
-					help_string: crate::util::c_str_ptr(help),
+					help_string: ::rse_cpp::c_str::opt_c_str_as_ptr(help),
 					flags: flags.bits(),
 				},
 				command_callback: CommandCallback {

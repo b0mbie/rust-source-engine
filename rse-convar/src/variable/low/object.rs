@@ -9,7 +9,9 @@ use ::core::{
 };
 use ::rse_cpp::{
 	ptr_compat::PointerFrom,
-	c_str::opt_c_str_from_ptr,
+	c_str::{
+		opt_c_str_from_ptr, opt_c_str_as_ptr,
+	},
 	convert_vt_ref, convert_vt_mut,
 	new_vtable_self, vtable_methods, virtual_call,
 	this_to_self, this_to_pin_self,
@@ -184,7 +186,7 @@ where
 					next: null_mut(),
 					registered: false,
 					name: name.as_ptr(),
-					help_string: crate::util::c_str_ptr(help),
+					help_string: opt_c_str_as_ptr(help),
 					flags: flags.bits(),
 				},
 				iface: VTablePtr::from_ref(Self::IFACE_VT),

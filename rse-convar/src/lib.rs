@@ -6,8 +6,6 @@ pub use ::concat_idents;
 
 pub mod cppdef;
 
-mod util;
-
 pub mod console_base;
 pub mod command;
 pub mod variable;
