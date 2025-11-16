@@ -1,5 +1,8 @@
-use ::core::ffi::{
-	CStr, c_char,
+use ::core::{
+	ffi::{
+		CStr, c_char,
+	},
+	ptr::null,
 };
 
 /// Returns a [`CStr`] from a C pointer if it is non-null.
@@ -12,5 +15,14 @@ pub const unsafe fn opt_c_str_from_ptr<'a>(ptr: *const c_char) -> Option<&'a CSt
 		unsafe { Some(CStr::from_ptr(ptr)) }
 	} else {
 		None
+	}
+}
+
+/// Returns a C string pointer from an optional [`CStr`] if it is `Some`,
+/// returning null if it is `None`.
+pub const fn opt_c_str_as_ptr(s: Option<&CStr>) -> *const c_char {
+	match s {
+		Some(s) => s.as_ptr(),
+		None => null(),
 	}
 }
