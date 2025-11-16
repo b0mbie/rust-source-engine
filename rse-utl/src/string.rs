@@ -130,6 +130,17 @@ impl CString {
 		unsafe { opt_c_str_from_ptr(self.0.string) }
 	}
 
+	/// Leaks this C string buffer into a [`CStr`],
+	/// returning `None` if there was no allocation for the string.
+	pub const fn leak<'a>(self) -> Option<&'a CStr> {
+		let ptr = self.0.string;
+		forget(self);
+		if ptr.is_null() {
+			return None
+		}
+		unsafe { Some(CStr::from_ptr(ptr)) }
+	}
+
 	/// Clears the string, making it empty.
 	#[doc(alias = "Purge")]
 	pub fn clear(&mut self) {
