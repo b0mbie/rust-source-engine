@@ -187,7 +187,7 @@ impl CString {
 	pub fn set(&mut self, value: &CStr) {
 		let bytes = value.to_bytes();
 		if !bytes.is_empty() {
-			unsafe { self.set_unchecked(bytes) }
+			self.copy_from_slice(bytes)
 		} else {
 			self.clear()
 		}
@@ -202,21 +202,16 @@ impl CString {
 				let inner = unsafe { self.alloc_to(until_nul.len()) };
 				inner.copy_from_slice(until_nul);
 			} else {
-				unsafe { self.set_unchecked(bytes) }
+				self.copy_from_slice(bytes)
 			}
 		} else {
 			self.clear()
 		}
 	}
 
-	/// Copies the non-empty slice of bytes into the buffer.
-	/// 
-	/// # Safety
-	/// `bytes` must not be empty,
-	/// and must not contain inner NUL (`0x00`) characters.
-	pub unsafe fn set_unchecked(&mut self, bytes: &[u8]) {
+	/// Copies the given slice of bytes verbatim into the buffer.
+	pub fn copy_from_slice(&mut self, bytes: &[u8]) {
 		let len = bytes.len();
-		debug_assert_ne!(len, 0, "`set_non_empty` called with empty slice");
 		let inner = unsafe { self.alloc_to(len) };
 		inner.copy_from_slice(bytes);
 	}
