@@ -11,6 +11,20 @@ pub struct ConVarValue<'a> {
 	pub int: c_int,
 }
 
+impl<'a> ConVarValue<'a> {
+	/// Parse a [`CStr`] to properly initialize the [`c_float`] and [`c_int`] values.
+	pub fn parse(c_str: &'a CStr) -> Self {
+		let ptr = c_str.as_ptr();
+		let float = unsafe { ::libc::atof(ptr) as c_float };
+		let int = unsafe { ::libc::atoi(ptr) };
+		Self {
+			c_str,
+			float,
+			int,
+		}
+	}
+}
+
 #[derive(Default, Debug, Clone, Copy)]
 pub struct ConVarParams<'a> {
 	pub name: &'a CStr,

@@ -10,6 +10,7 @@ macros = ["dep:concat-idents"]
 
 [dependencies]
 concat-idents = { version = "1.1.5", optional = true }
+libc.workspace = true
 rse-cpp.workspace = true
 rse-interface.workspace = true
 rse-utl.workspace = true
