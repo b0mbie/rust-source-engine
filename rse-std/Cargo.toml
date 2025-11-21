@@ -22,8 +22,7 @@ sv = []
 fs = []
 
 [dependencies]
-atomic-wait.workspace = true
-atomic.workspace = true
+atomic-wait = "1.1.0"
 libc.workspace = true
 thiserror.workspace = true
 rse-convar.workspace = true
@@ -45,3 +44,11 @@ features = ["link-dll"]
 [dependencies.rse-client]
 workspace = true
 optional = true
+
+[dependencies.atomic]
+version = "0.6.1"
+default-features = false
+
+[dependencies.thread-bound]
+git = "https://github.com/b0mbie/thread-bound-rs.git"
+default-features = false
