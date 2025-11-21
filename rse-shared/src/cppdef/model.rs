@@ -1,12 +1,13 @@
 use ::core::ffi::{
-	c_char, c_short, c_ushort, c_void,
+	c_char, c_short, c_ushort,
 };
 use ::rse_math::VectorAligned;
 
 // `struct model_t` is never implemented, only used behind a pointer.
-#[repr(transparent)]
-#[allow(non_camel_case_types)]
-pub struct model_t(c_void);
+::rse_cpp::opaque_type! {
+	#[allow(non_camel_case_types)]
+	pub struct model_t;
+}
 
 // TODO: This is called `csurface_t` in code. Figure out why, and maybe rename.
 #[derive(Debug)]
