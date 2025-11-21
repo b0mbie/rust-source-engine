@@ -4,6 +4,7 @@ use ::core::ffi::{
 
 use crate::{
 	vtable, VtObjectPtr,
+	virtual_fn,
 };
 
 vtable! {
@@ -31,12 +32,15 @@ pub struct TypeInfo {
 }
 
 type This = VtObjectPtr<GccTypeInfoVt>;
-unsafe extern "C" fn noop(_: This) {}
-unsafe extern "C" fn noop_false(_: This) -> bool {
-	false
+
+virtual_fn! {
+	fn noop(_: This) {}
 }
-unsafe extern "C" fn noop_unknown(_: This) -> SubKind {
-	SubKind::Unknown
+virtual_fn! {
+	fn noop_false(_: This) -> bool { false }
+}
+virtual_fn! {
+	fn noop_unknown(_: This) -> SubKind { SubKind::Unknown }
 }
 
 impl TypeInfo {
