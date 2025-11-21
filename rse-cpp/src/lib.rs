@@ -6,6 +6,7 @@ pub use ::bitflags::bitflags;
 pub use ::cppdvt::*;
 
 mod flag_utils;
+mod opaque_type;
 mod transparent_wrappers;
 mod vtable_macros;
 
