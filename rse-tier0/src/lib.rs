@@ -5,6 +5,9 @@ pub use ::rse_math::Color;
 pub mod fmt_adapters;
 pub mod mem_alloc;
 
+mod platform;
+pub use platform::*;
+
 mod cmd;
 pub use cmd::*;
 mod errors;
@@ -15,6 +18,8 @@ mod mem;
 pub use mem::*;
 mod spew;
 pub use spew::*;
+mod thread;
+pub use thread::*;
 
 #[cfg(feature = "link-dll")]
 pub mod linked;

@@ -4,6 +4,7 @@ mod errors;
 pub mod cmd;
 pub mod mem;
 pub mod spew;
+pub mod thread;
 
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct LinkedTier0;
