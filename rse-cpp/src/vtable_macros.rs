@@ -4,22 +4,13 @@ macro_rules! vtable_methods {
 		$this:ident : $this_ty:ty;
 		$(
 			$(#[$attr:meta])*
-			fn $name:ident($($param:tt)*) $(-> $return:ty)? {
-				$($body:tt)*
-			}
+			fn $name:ident($($param:tt)*) $(-> $return:ty)? $body:block
 		)*
 	} => {
 		$(
-			#[cfg(all(windows, target_arch = "x86"))]
-			$(#[$attr])*
-			unsafe extern "thiscall" fn $name($this: $this_ty, $($param)*) $(-> $return)? {
-				$($body)*
-			}
-
-			#[cfg(not(all(windows, target_arch = "x86")))]
-			$(#[$attr])*
-			unsafe extern "C" fn $name($this: $this_ty, $($param)*) $(-> $return)? {
-				$($body)*
+			$crate::virtual_fn! {
+				$(#[$attr])*
+				fn $name($this: $this_ty, $($param)*) $(-> $return)? $body
 			}
 		)*
 	};
