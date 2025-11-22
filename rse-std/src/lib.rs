@@ -15,6 +15,7 @@ pub use ::rse_std_macros::{
 };
 
 #[doc(hidden)]
+#[cfg(feature = "macros")]
 pub use ::rse_std_macros::cvar_value_detail;
 
 #[cfg(feature = "macros")]
