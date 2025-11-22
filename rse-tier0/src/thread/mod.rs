@@ -56,7 +56,7 @@ pub trait Tier0Thread {
 
 pub const TT_INFINITE: c_uint = 0xffffffff;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
 pub struct RawThreadHandle {
 	raw: NonNull<ThreadHandleInner>,
