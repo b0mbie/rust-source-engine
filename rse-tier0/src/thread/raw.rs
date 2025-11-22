@@ -15,6 +15,7 @@ use crate::{
 
 use super::ThreadData;
 
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct RawThread<Tier0>
 where
 	Tier0: Tier0Thread,
@@ -22,6 +23,17 @@ where
 	handle: RawThreadHandle,
 	tier0: Tier0,
 }
+
+unsafe impl<Tier0> Send for RawThread<Tier0>
+where
+	Tier0: Tier0Thread,
+	Tier0: Send,
+{}
+unsafe impl<Tier0> Sync for RawThread<Tier0>
+where
+	Tier0: Tier0Thread,
+	Tier0: Sync,
+{}
 
 impl<Tier0> Drop for RawThread<Tier0>
 where
