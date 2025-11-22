@@ -17,7 +17,9 @@ pub struct StaticConVarObject<'str, T> {
 }
 
 impl<'str, T> StaticConVarObject<'str, T> {
-	pub const unsafe fn from_object(object: ConVarObject<'str, T>) -> Self {
+	/// # Safety
+	/// `object` must be unparented.
+	pub const unsafe fn from_unparented(object: ConVarObject<'str, T>) -> Self {
 		Self {
 			maybe_unparented: object,
 		}
@@ -31,6 +33,8 @@ impl<'str, T> StaticConVarObject<'str, T> {
 		unsafe { self.as_mut_inner().as_mut_raw() as *mut _ as *mut _ }
 	}
 
+	/// # Safety
+	/// The returned [`ConVarObject`] may be unparented.
 	pub const unsafe fn as_inner(&self) -> &ConVarObject<'str, T> {
 		&self.maybe_unparented
 	}
@@ -64,6 +68,6 @@ where
 	/// # Safety
 	/// The [`StaticConVarObject`] must be *pinned* into an area of memory (with e.g. a `static` item).
 	pub const unsafe fn new(inner: T, params: ConVarParams<'str>) -> Self {
-		unsafe { Self::from_object(ConVarObject::unparented(inner, params)) }
+		unsafe { Self::from_unparented(ConVarObject::unparented(inner, params)) }
 	}
 }
