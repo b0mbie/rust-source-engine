@@ -66,6 +66,9 @@ impl<'str, T> ConCommandObject<'str, T> {
 		&self.con_command
 	}
 
+	/// # Safety
+	/// The returned [`ConCommand`]'s public fields must not be mutated
+	/// such that they could cause Undefined Behavior when used in conjunction with `T`.
 	pub const unsafe fn as_mut_inner(&mut self) -> &mut ConCommand {
 		&mut self.con_command
 	}
