@@ -8,6 +8,7 @@ use ::rse_plugin::{
 	StaticPlugin, Plugin as CPlugin,
 };
 use ::rse_tier0::con_warn;
+use ::std::panic::catch_unwind;
 
 use crate::{
 	con::cmd::Invocation,
@@ -74,39 +75,46 @@ where
 	P: Plugin,
 {
 	unsafe fn load(&mut self, factories: PluginFactories) -> bool {
-		crate::threads::MAIN_THREAD.bind_to_current();
-
-		crate::panicking::install_panic_hook();
-
-		macro_rules! init {
-			($result:expr $(,)?) => {
-				if !$result {
-					return false
-				}
-			};
-		}
-
-		// SAFETY: `Self::load` is called on the main thread; `detach` is called in `Self::unload`.
-		unsafe { crate::con::cvar::attach(factories) }
-
-		#[cfg(feature = "fs")]
-		init!(crate::fs::attach(factories));
-
-		#[cfg(feature = "cl")]
-		unsafe { init!(crate::cl::attach(factories)) }
-
-		#[cfg(feature = "sv")]
-		unsafe { init!(crate::sv::attach(factories)) }
-
 		match replace(&mut self.inner, Inner::NotLoaded) {
 			Inner::NotLoaded => {
-				match P::load(factories) {
-					Ok(plugin) => {
+				crate::panicking::install_panic_hook();
+
+				#[allow(unused_macros)]
+				macro_rules! init {
+					($result:expr $(,)?) => {
+						if !$result {
+							return false
+						}
+					};
+				}
+
+				crate::thread::attach();
+
+				// SAFETY: `Self::load` is called on the main thread; `detach` is called in `Self::unload`.
+				unsafe { crate::con::cvar::attach(factories) }
+
+				#[cfg(feature = "fs")]
+				init!(crate::fs::attach(factories));
+
+				#[cfg(feature = "cl")]
+				unsafe { init!(crate::cl::attach(factories)) }
+
+				#[cfg(feature = "sv")]
+				unsafe { init!(crate::sv::attach(factories)) }
+
+				match catch_unwind(move || P::load(factories)) {
+					Ok(Ok(plugin)) => {
 						self.inner = Inner::Loaded(plugin);
 						true
 					}
-					Err(error) => {
+					Ok(Err(error)) => {
 						con_warn!("{error}");
+						false
+					}
+					Err(payload) => {
+						// There's nothing for us to really do with the payload.
+						// The panic hook installed above should've printed the payload, if it is printable.
+						let _ = payload;
 						false
 					}
 				}
@@ -134,6 +142,7 @@ where
 			Inner::Loaded(p) => {
 				// SAFETY: `Self::unload` is called on the main thread.
 				unsafe { crate::con::cvar::detach() };
+				crate::thread::detach();
 				drop(p);
 				self.inner = Inner::NotLoaded;
 			}

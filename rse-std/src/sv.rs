@@ -13,7 +13,7 @@ pub use ::rse_game_interfaces::{
 use crate::{
 	c_buffer::CBuffer,
 	plugin::PluginFactories,
-	threads::MainThreadBound,
+	thread::MainThreadBound,
 };
 
 static SERVER: MainThreadBound<RefCell<Option<VEngineServer>>> =

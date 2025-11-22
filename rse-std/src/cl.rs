@@ -9,7 +9,7 @@ use ::rse_client::interfaces::{
 
 use crate::{
 	plugin::PluginFactories,
-	threads::MainThreadBound,
+	thread::MainThreadBound,
 };
 
 pub fn execute(command: &CStr) {

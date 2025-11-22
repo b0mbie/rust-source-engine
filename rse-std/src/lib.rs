@@ -34,7 +34,6 @@ pub(crate) mod c_strings;
 pub(crate) mod fmt_util;
 
 pub(crate) mod panicking;
-pub(crate) mod threads;
 
 mod macros;
 
@@ -45,10 +44,12 @@ pub mod ffi;
 pub mod io;
 pub mod interfaces;
 pub mod plugin;
+pub mod thread;
 
 #[cfg(feature = "cl")]
 pub mod cl;
 
+#[allow(dead_code)]
 pub(crate) mod fs_consts;
 #[cfg(feature = "fs")]
 pub mod fs;

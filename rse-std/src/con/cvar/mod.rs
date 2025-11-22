@@ -17,10 +17,12 @@ use crate::plugin::PluginFactories;
 static mut CVAR: Option<Cvar> = None;
 
 pub fn with_cvar_mut<F: FnOnce(&mut Cvar) -> R, R>(f: F) -> Option<R> {
-	crate::threads::MAIN_THREAD.try_run(move || {
+	if crate::thread::on_main_thread() {
 		#[allow(static_mut_refs)]
 		unsafe { CVAR.as_mut().map(f) }
-	}).flatten()
+	} else {
+		None
+	}
 }
 
 pub unsafe fn call_global_change_callbacks(registered: *mut ConVar, old_string: &CStr, old_float: c_float) {
