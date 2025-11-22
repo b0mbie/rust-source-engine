@@ -3,7 +3,9 @@ use ::core::{
 		CStr, c_float, c_int,
 	},
 	fmt,
-	ops::Deref,
+	ops::{
+		Deref, DerefMut,
+	},
 	pin::Pin,
 };
 use ::libc::atof;
@@ -76,6 +78,18 @@ pub struct StdVariable<T> {
 	value_lock: Futex,
 }
 
+impl<T> Deref for StdVariable<T> {
+	type Target = T;
+	fn deref(&self) -> &Self::Target {
+		&self.inner
+	}
+}
+impl<T> DerefMut for StdVariable<T> {
+	fn deref_mut(&mut self) -> &mut Self::Target {
+		&mut self.inner
+	}
+}
+
 impl<T> StdVariable<T> {
 	pub const fn new(inner: T) -> Self {
 		Self {
@@ -136,7 +150,7 @@ impl<T> StdVariable<T> {
 
 impl<'a, T> RawVariable<'a> for StdVariable<T>
 where
-	T: Variable,
+	T: Variable<'a>,
 {
 	fn set_c_str(object: Pin<&mut ConVarObject<'a, Self>>, value: Option<&CStr>) {
 		let mut ctx = StdCtx::new(object);
@@ -179,7 +193,7 @@ where
 
 		if !ctx.object.as_base().are_flags_set(CvarFlags::NEVER_AS_STRING) {
 			let old_value_string = ctx.old_value_string();
-			ctx.with_value_string_mut(move |s| c_strings::print_float(s, value));
+			ctx.with_value_string_mut(move |s| c_strings::print_float_to_utl(s, value));
 			ctx.change_string_value_impl(old_value_string.as_c_str(), old_value);
 		}
 	}
@@ -200,7 +214,7 @@ where
 
 		if !ctx.object.as_base().are_flags_set(CvarFlags::NEVER_AS_STRING) {
 			let old_value_string = ctx.old_value_string();
-			ctx.with_value_string_mut(move |s| c_strings::print_int(s, value));
+			ctx.with_value_string_mut(move |s| c_strings::print_int_to_utl(s, value));
 			ctx.change_string_value_impl(old_value_string.as_c_str(), old_value);
 		}
 	}
@@ -224,7 +238,10 @@ where
 	}
 }
 
-unsafe impl<'a, T> RawConsoleBase<ConVarObject<'a, Self>> for StdVariable<T> {
+unsafe impl<'a, T> RawConsoleBase<ConVarObject<'a, Self>> for StdVariable<T>
+where
+	T: Variable<'a>,
+{
 	fn help(object: Pin<&mut ConVarObject<'a, Self>>) {
 		let _ = object;
 		// `T::HELP` is already stored inside of the object.
@@ -239,6 +256,9 @@ unsafe impl<'a, T> RawConsoleBase<ConVarObject<'a, Self>> for StdVariable<T> {
 	fn dll_identifier(object: Pin<&mut ConVarObject<'a, Self>>) -> CvarDllIdentifier {
 		let _ = object;
 		crate::con::cvar::dll_identifier()
+	}
+	unsafe fn drop_with_object(object: &mut ConVarObject<'a, Self>) {
+		unsafe { T::drop_with_object(object) }
 	}
 }
 
@@ -340,7 +360,7 @@ impl<'a, 's, T> StdCtx<'a, 's, T> {
 
 	pub fn change_string_value_impl(&mut self, old_c_str: &CStr, old_value: c_float)
 	where
-		T: Variable,
+		T: Variable<'s>,
 	{
 		self.object.inner.lock_value();
 		if old_c_str != unsafe { self.ext().c_str() } {

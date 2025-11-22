@@ -2,11 +2,14 @@
 
 use ::core::{
 	ffi::{
-		CStr, c_char, c_float, c_double,
+		CStr, c_char, c_float,
 	},
-	fmt,
+	fmt::{
+		Write, self,
+	},
 };
-use ::libc::snprintf;
+
+use crate::fmt_util::CStrWrite;
 
 #[derive(Clone, Copy)]
 #[repr(transparent)]
@@ -37,6 +40,9 @@ impl<const N: usize> CBuffer<N> {
 		&self.bytes
 	}
 
+	/// # Safety
+	/// The returned buffer must be terminated with a NUL character
+	/// by the time the [`CBuffer`] is available again.
 	pub const unsafe fn bytes_mut(&mut self) -> &mut [u8; N] {
 		&mut self.bytes
 	}
@@ -47,7 +53,11 @@ impl<const N: usize> CBuffer<N> {
 
 	pub fn print_float(&mut self, value: c_float) {
 		unsafe {
-			snprintf(self.as_mut_ptr(), self.capacity(), c"%f".as_ptr(), value as c_double);
+			let Some(mut f) = CStrWrite::new(self.bytes_mut()) else {
+				return
+			};
+			let _ = write!(f, "{value}");
+			f.finish();
 		}
 	}
 }

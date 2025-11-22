@@ -61,4 +61,4 @@ impl ConVar {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
 struct DynConVar;
-impl super::Variable for DynConVar {}
+impl<'a> super::Variable<'a> for DynConVar {}

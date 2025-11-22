@@ -2,15 +2,13 @@ use ::rust_alloc::boxed::Box;
 use ::core::{
 	cell::UnsafeCell,
 	ffi::{
-		c_float, c_int,
+		CStr, c_float, c_int,
 	},
 	pin::Pin,
 };
 use ::rse_convar::{
 	console_base::RegistrableMut,
-	variable::low::{
-		ConVarObject, StaticConVarObject,
-	},
+	variable::low::StaticConVarObject,
 };
 
 use super::{
@@ -32,28 +30,43 @@ pub struct GenericConVar<'str, T> {
 
 unsafe impl<'str, T: Sync> Sync for GenericConVar<'str, T> {}
 
+macro_rules! with_object_mut {
+	($generic_con_var:expr; |$object_mut:ident| $body:expr) => {{
+		let generic_con_var = $generic_con_var;
+		unsafe {
+			let $object_mut = ::core::pin::Pin::new_unchecked((*generic_con_var.con_var.get()).as_mut_inner());
+			$body
+		}
+	}};
+}
+
 impl<'str, T> GenericConVar<'str, T> {
 	pub fn value<'a, V: GetValue<'a>>(&'a self) -> V {
 		V::get_value(self)
 	}
 
-	fn with_object_mut<'a, R, F: FnOnce(Pin<&'a mut ConVarObject<'str, StdVariable<T>>>) -> R>(&'a self, f: F) -> R {
-		unsafe {
-			let object_mut = Pin::new_unchecked((*self.con_var.get()).as_mut_inner());
-			f(object_mut)
-		}
+	pub const fn name(&self) -> &'str CStr {
+		with_object_mut!(self; |object| object.into_ref().get_ref().name())
+	}
+
+	pub const fn default(&self) -> &'str CStr {
+		with_object_mut!(self; |object| object.into_ref().get_ref().default())
+	}
+
+	pub const fn help(&self) -> Option<&'str CStr> {
+		with_object_mut!(self; |object| object.into_ref().get_ref().help())
 	}
 
 	pub fn float(&self) -> c_float {
-		self.with_object_mut(StdVariable::float)
+		with_object_mut!(self; |object| StdVariable::float(object))
 	}
 
 	pub fn int(&self) -> c_int {
-		self.with_object_mut(StdVariable::int)
+		with_object_mut!(self; |object| StdVariable::int(object))
 	}
 
 	pub fn c_str(&self) -> CStrLock<'_> {
-		self.with_object_mut(StdVariable::c_str)
+		with_object_mut!(self; |object| StdVariable::c_str(object))
 	}
 
 	pub fn register(&'static self) -> bool {
@@ -67,7 +80,7 @@ impl<'str, T> GenericConVar<'str, T> {
 
 impl<'str, T> GenericConVar<'str, T>
 where
-	T: Variable,
+	T: Variable<'str>,
 {
 	/// # Safety
 	/// The returned object must be *pinned* into an area of memory (with e.g. a `static` item).
