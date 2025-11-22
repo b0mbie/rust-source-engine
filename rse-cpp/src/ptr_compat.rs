@@ -1,8 +1,8 @@
+//! Utilities for dealing with pointer-compatible objects.
+
 use ::core::ptr::NonNull;
 
 /// Converts a pointer to `T` to a pointer to `U`.
-/// 
-/// The pointer can be safely dereferenced.
 pub const fn convert_non_null<T, U>(ptr: NonNull<T>) -> NonNull<U>
 where
 	U: PointerFrom<T>,
@@ -27,8 +27,6 @@ where
 }
 
 /// Converts a pointer to `T` to a pointer to `U`.
-/// 
-/// The pointer can be safely dereferenced.
 pub const fn convert_ptr<T, U>(ptr: *const T) -> *const U
 where
 	U: PointerFrom<T>,
@@ -71,7 +69,7 @@ where
 /// - The implementing type is the first field of `Src`
 ///   (typically requiring that the implementing type is `repr(C)`).
 /// - The implementing type has *some* of the *first* fields of `Src`, at the exact same offsets;
-///   `size_of::<Self>() <= size_of::<Dest>()`.
+///   `size_of::<Self>() <= size_of::<Src>()`.
 /// 
 /// Besides these, however, there are other cases where some type may be pointer-from-compatible with `Src`.
 /// Notably, [`WithVTable<VTable, T>`](crate::WithVTable) is pointer-from-compatible with `WithVTable<VTable2, U>`
