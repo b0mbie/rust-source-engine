@@ -24,6 +24,7 @@ members = [
 	"examples/repeated-load",
 	"examples/client",
 	"examples/filesystem",
+	"examples/multithreaded",
 ]
 
 [workspace.package]
