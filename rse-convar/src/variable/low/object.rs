@@ -93,20 +93,32 @@ impl<'str, T> ConVarObject<'str, T> {
 		&mut self.con_var
 	}
 
-	pub const fn as_object(&self) -> &VtObject<ConVarVt> {
+	/// # Safety
+	/// The object's parent must've been initialized with [`init_parent`](Self::init_parent) beforehand
+	/// to be able to use the returned object safely.
+	pub const unsafe fn as_object(&self) -> &VtObject<ConVarVt> {
 		self.con_var.as_object()
 	}
 
-	pub const fn as_mut_object(&mut self) -> &mut VtObject<ConVarVt> {
+	/// # Safety
+	/// The object's parent must've been initialized with [`init_parent`](Self::init_parent) beforehand
+	/// to be able to use the returned object safely.
+	pub const unsafe fn as_mut_object(&mut self) -> &mut VtObject<ConVarVt> {
 		self.con_var.as_mut_object()
 	}
 
-	pub const fn as_base_object(&self) -> &VtObject<ConCommandBaseVtBase> {
-		convert_vt_ref(self.as_object())
+	/// # Safety
+	/// The object's parent must've been initialized with [`init_parent`](Self::init_parent) beforehand
+	/// to be able to use the returned object safely.
+	pub const unsafe fn as_base_object(&self) -> &VtObject<ConCommandBaseVtBase> {
+		convert_vt_ref(unsafe { self.as_object() })
 	}
 
-	pub const fn as_mut_base_object(&mut self) -> &mut VtObject<ConCommandBaseVtBase> {
-		convert_vt_mut(self.as_mut_object())
+	/// # Safety
+	/// The object's parent must've been initialized with [`init_parent`](Self::init_parent) beforehand
+	/// to be able to use the returned object safely.
+	pub const unsafe fn as_mut_base_object(&mut self) -> &mut VtObject<ConCommandBaseVtBase> {
+		convert_vt_mut(unsafe { self.as_mut_object() })
 	}
 
 	pub const fn as_base(&self) -> &ConCommandBaseExt {
