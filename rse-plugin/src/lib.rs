@@ -3,7 +3,7 @@
 //! Users of this crate will usually want to implement [`LoadablePlugin`]/[`StaticPlugin`] and [`Plugin`].
 //! 
 //! # Panicking
-//! Rust plugin methods that are called by C++ are defined with the `extern "C"` ABI,
+//! Rust plugin methods that are called by C++ are defined with a non-unwinding ABI,
 //! so panicking inside of such a function will typically not unwind the stack beyond the boundary between C++ and Rust.
 //! 
 //! **While it is safe to panic, it is not recommended for proper error handling.**
