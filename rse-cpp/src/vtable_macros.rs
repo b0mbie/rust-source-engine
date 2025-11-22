@@ -1,18 +1,23 @@
 #[macro_export]
 macro_rules! vtable_methods {
 	{
-		$this:ident : $this_ty:ty;
-		$(
-			$(#[$attr:meta])*
-			fn $name:ident($($param:tt)*) $(-> $return:ty)? $body:block
-		)*
+		$this:ident: $this_ty:ty;
+	} => {};
+
+	{
+		$this:ident: $this_ty:ty;
+		$(#[$attr:meta])*
+		fn $name:ident($($param:tt)*) $(-> $return:ty)? { $($body:tt)* }
+		$($rest:tt)*
 	} => {
-		$(
-			$crate::virtual_fn! {
-				$(#[$attr])*
-				fn $name($this: $this_ty, $($param)*) $(-> $return)? $body
-			}
-		)*
+		$crate::virtual_fn! {
+			$(#[$attr])*
+			fn $name($this: $this_ty, $($param)*) $(-> $return)? { $($body)* }
+		}
+		$crate::vtable_methods! {
+			$this: $this_ty;
+			$($rest)*
+		}
 	};
 }
 
