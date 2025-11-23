@@ -5,6 +5,7 @@ use ::core::{
 	},
 	pin::Pin,
 };
+use ::rse_convar::console_base::RegistrableMut;
 
 use super::{
 	GenericConVar, CStrLock,
@@ -55,6 +56,10 @@ impl ConVar {
 
 	pub fn register(&'static self) -> bool {
 		self.inner.register()
+	}
+
+	pub fn as_registrable(&'static self) -> RegistrableMut {
+		self.inner.as_registrable()
 	}
 }
 

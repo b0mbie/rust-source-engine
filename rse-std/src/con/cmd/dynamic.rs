@@ -1,6 +1,9 @@
 use ::core::ffi::CStr;
 use ::rse_convar::{
-	console_base::CvarFlags,
+	console_base::{
+		CvarFlags,
+		RegistrableMut,
+	},
 	command::{
 		Invocation, Suggestions,
 	},
@@ -15,7 +18,7 @@ pub type CompleteCallback = fn(&CStr, &mut Suggestions);
 
 #[repr(transparent)]
 pub struct ConCommand {
-	inner: GenericConCommand<DynConCommand>,
+	inner: GenericConCommand<'static, DynConCommand>,
 }
 
 impl ConCommand {
@@ -38,6 +41,10 @@ impl ConCommand {
 
 	pub fn register(&'static self) -> bool {
 		self.inner.register()
+	}
+
+	pub fn as_registrable(&self) -> RegistrableMut {
+		self.inner.as_registrable()
 	}
 }
 

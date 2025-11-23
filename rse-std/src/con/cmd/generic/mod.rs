@@ -16,19 +16,19 @@ mod wrapper;
 use wrapper::StdCommand;
 
 #[repr(transparent)]
-pub struct GenericConCommand<T> {
-	con_command: UnsafeCell<ConCommandObject<'static, StdCommand<T>>>,
+pub struct GenericConCommand<'str, T> {
+	con_command: UnsafeCell<ConCommandObject<'str, StdCommand<T>>>,
 }
 
-unsafe impl<T: Sync> Sync for GenericConCommand<T> {}
+unsafe impl<'str, T: Sync> Sync for GenericConCommand<'str, T> {}
 
-impl<T> GenericConCommand<T>
+impl<'str, T> GenericConCommand<'str, T>
 where
 	T: DispatchCommand,
 {
 	pub const fn new(
 		inner: T,
-		name: &'static CStr, help: Option<&'static CStr>, flags: CvarFlags,
+		name: &'str CStr, help: Option<&'str CStr>, flags: CvarFlags,
 	) -> Self {
 		Self {
 			con_command: UnsafeCell::new(ConCommandObject::new(
@@ -42,7 +42,7 @@ where
 		unsafe { crate::con::cvar::register_raw(self.as_registrable()) }
 	}
 
-	fn as_registrable(&self) -> RegistrableMut {
+	pub fn as_registrable(&self) -> RegistrableMut {
 		unsafe { (*self.con_command.get()).as_registrable() }
 	}
 }
