@@ -2,7 +2,6 @@
 
 pub mod low;
 
-#[cfg(feature = "macros")]
 mod macros;
 
 mod ext;

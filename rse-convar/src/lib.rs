@@ -1,9 +1,5 @@
 #![no_std]
 
-#[cfg(feature = "macros")]
-#[doc(hidden)]
-pub use ::concat_idents;
-
 pub mod cppdef;
 
 pub mod console_base;
@@ -21,6 +17,5 @@ pub mod prelude {
 		console_base::CvarDllIdentifier,
 	};
 
-	#[cfg(feature = "macros")]
 	pub use crate::cvar_value;
 }
