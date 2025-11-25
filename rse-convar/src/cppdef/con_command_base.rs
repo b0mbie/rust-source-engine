@@ -9,12 +9,13 @@ use ::rse_cpp::{
 
 use super::CvarDllIdentifier;
 
+pub type Registrable = WithVTable<ConCommandBaseVtBase, ConCommandBaseExt>;
 pub type ConCommandBase = WithVTable<ConCommandBaseVt, ConCommandBaseExt>;
 
 #[derive(Debug)]
 #[repr(C)]
 pub struct ConCommandBaseExt {
-	pub next: *mut ConCommandBase,
+	pub next: *mut Registrable,
 	pub registered: bool,
 	pub name: *const c_char,
 	pub help_string: *const c_char,
@@ -31,7 +32,7 @@ pub struct ConCommandBaseVt {
 unsafe impl PointerFrom<ConCommandBaseVt> for ConCommandBaseVtBase {}
 
 vtable! {
-	/// Part of the VTable for [`ConCommandBase`] that is compatible with both [`ConVar`] and [`ConCommand`].
+	/// Part of the VTable for [`ConCommandBase`] that is compatible with both `ConVar` and `ConCommand`.
 	pub ConCommandBaseVtBase {
 		pub fn destructor();
 		#[cfg(not(windows))]
