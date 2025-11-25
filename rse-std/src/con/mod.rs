@@ -7,10 +7,8 @@ use ::rse_game_interfaces::cvar::{
 };
 
 pub use ::rse_convar::{
-	console_base::{
-		RegistrableMut, CvarFlags,
-	},
-	ConCommandBase as Registered, ConVar as Variable, ConCommand as Command,
+	console_base::CvarFlags,
+	Registrable as Registered, ConVar as Variable, ConCommand as Command,
 };
 
 pub(crate) mod cvar;
