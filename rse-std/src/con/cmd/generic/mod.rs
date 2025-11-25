@@ -3,6 +3,7 @@ use ::core::{
 	ffi::CStr,
 };
 use ::rse_convar::{
+	cppdef::ConCommand,
 	console_base::{
 		RegistrableMut,
 		CvarFlags,
@@ -36,6 +37,10 @@ where
 				name, help, flags,
 			)),
 		}
+	}
+
+	pub const fn as_inner(&self) -> &ConCommand {
+		unsafe { (*self.con_command.get()).as_inner() }
 	}
 
 	pub fn register(&'static self) -> bool {
