@@ -15,7 +15,10 @@ use ::rse_utl::cppdef::{
 };
 
 use super::{
-	ConCommandBaseVt, ConCommandBaseExt, Command,
+	ConCommandBaseVt,
+	ConCommandBaseVtBase,
+	ConCommandBaseExt,
+	Command,
 };
 
 pub type ConCommand = WithVTable<ConCommandVt, ConCommandExt>;
@@ -73,6 +76,7 @@ pub struct ConCommandVt {
 	pub base: ConCommandBaseVt,
 	pub con_command: ConCommandVtBase,
 }
+unsafe impl PointerFrom<ConCommandVt> for ConCommandBaseVtBase {}
 unsafe impl PointerFrom<ConCommandVt> for ConCommandBaseVt {}
 
 vtable! {
