@@ -9,16 +9,16 @@ extern crate alloc as rust_alloc;
 #[doc(hidden)]
 pub use ::rse_plugin;
 
-#[cfg(feature = "macros")]
+#[cfg(feature = "proc-macros")]
 pub use ::rse_std_macros::{
 	con_var, con_command,
 };
 
 #[doc(hidden)]
-#[cfg(feature = "macros")]
+#[cfg(feature = "proc-macros")]
 pub use ::rse_std_macros::cvar_value_detail;
 
-#[cfg(feature = "macros")]
+#[cfg(feature = "proc-macros")]
 #[macro_export]
 macro_rules! cvar_value {
 	($value:literal $(,)?) => {{
@@ -83,7 +83,7 @@ pub mod prelude {
 		},
 		export_plugin_as, export_plugin,
 	};
-	#[cfg(feature = "macros")]
+	#[cfg(feature = "proc-macros")]
 	pub use crate::{
 		cvar_value,
 		con_var, con_command,

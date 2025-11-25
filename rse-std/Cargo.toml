@@ -6,14 +6,14 @@ authors.workspace = true
 
 [features]
 default = [
-	"macros",
+	"proc-macros",
 	"global-allocator",
 	"fs",
 ]
 link-srv = ["rse-tier0/link-srv"]
 link-optional = ["rse-tier0/link-optional"]
 doc = ["link-optional"]
-macros = ["dep:rse-std-macros"]
+proc-macros = ["dep:rse-std-macros"]
 global-allocator = []
 
 cl = ["dep:rse-client"]
