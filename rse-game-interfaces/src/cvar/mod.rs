@@ -2,12 +2,15 @@ use ::core::ffi::{
 	CStr, c_float, c_int,
 };
 use ::rse_convar::{
-	cppdef::ConVar as CConVar,
+	cppdef::{
+		Registrable as CRegistrable,
+		ConVar as CConVar,
+	},
 	console_base::{
 		CvarDllIdentifier,
 		RegistrableMut,
 	},
-	ConCommandBase, ConVar, ConCommand,
+	Registrable, ConVar, ConCommand,
 };
 use ::rse_cpp::{
 	AsObject,
@@ -68,7 +71,7 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// Registered console commands and variables *must* eventually be unregistered with
 	/// [`unregister_raw`](CvarImpl::unregister_raw) or [`unregister_all`](CvarImpl::unregister_all).
 	unsafe fn register_raw(&mut self, registrable: RegistrableMut) {
-		unsafe { virtual_call!(self.as_object() => cvar.register_con_command(registrable)) }
+		unsafe { virtual_call!(self.as_object() => cvar.register_con_command(registrable.as_ptr() as _)) }
 	}
 
 	/// Unregister the console variable or command `registrable` with this interface,
@@ -77,7 +80,7 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// # Safety
 	/// `registrable` must have been registered with this interface.
 	unsafe fn unregister_raw(&mut self, registrable: RegistrableMut) {
-		unsafe { virtual_call!(self.as_object() => cvar.unregister_con_command(registrable)) }
+		unsafe { virtual_call!(self.as_object() => cvar.unregister_con_command(registrable.as_ptr() as _)) }
 	}
 
 	/// Unregister all console variables and commands associated with the given `dll_identifier`.
@@ -96,10 +99,11 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// The returned value
 	/// may be unregistered at any time on the main thread.
 	/// Therefore, this function *must* only be called on the main thread.
-	unsafe fn find(&self, name: &CStr) -> Option<&ConCommandBase> {
+	unsafe fn find(&self, name: &CStr) -> Option<&Registrable> {
 		unsafe {
 			virtual_call!(self.as_object() => cvar.find_command_base_const(name.as_ptr()))
-				.as_ref().map(move |ptr| ConCommandBase::from_ref(ptr))
+				.cast::<CRegistrable>()
+				.as_ref().map(move |ptr| Registrable::from_ref(ptr))
 		}
 	}
 
@@ -110,10 +114,11 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// The returned value
 	/// may be unregistered at any time on the main thread.
 	/// Therefore, this function *must* only be called on the main thread.
-	unsafe fn find_mut(&mut self, name: &CStr) -> Option<&mut ConCommandBase> {
+	unsafe fn find_mut(&mut self, name: &CStr) -> Option<&mut Registrable> {
 		unsafe {
 			virtual_call!(self.as_object() => cvar.find_command_base(name.as_ptr()))
-				.as_mut().map(move |ptr| ConCommandBase::from_mut(ptr))
+				.cast::<CRegistrable>()
+				.as_mut().map(move |ptr| Registrable::from_mut(ptr))
 		}
 	}
 
@@ -183,7 +188,7 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	unsafe fn registered(&self) -> RegisteredIter<'_> {
 		unsafe {
 			let ptr = virtual_call!(self.as_object() => cvar.get_commands_const());
-			RegisteredIter::from_ptr(ptr)
+			RegisteredIter::from_ptr(ptr as _)
 		}
 	}
 
@@ -198,7 +203,7 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	unsafe fn registered_mut(&mut self) -> RegisteredIterMut<'_> {
 		unsafe {
 			let ptr = virtual_call!(self.as_object() => cvar.get_commands());
-			RegisteredIterMut::from_ptr(ptr)
+			RegisteredIterMut::from_ptr(ptr as _)
 		}
 	}
 

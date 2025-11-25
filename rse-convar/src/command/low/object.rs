@@ -8,7 +8,7 @@ use ::core::{
 use ::rse_cpp::{
 	ptr_compat::{
 		PointerFrom,
-		convert_ref, convert_mut, convert_mut_ptr,
+		convert_ref, convert_mut,
 	},
 	convert_vt_ref, convert_vt_mut,
 	new_vtable_self, vtable_methods,
@@ -41,7 +41,7 @@ use crate::{
 	console_base::{
 		CvarFlags,
 		ConCommandBaseExt,
-		RegistrableMut,
+		RegistrableMut, registrable_mut,
 	},
 };
 
@@ -130,7 +130,7 @@ where
 	}
 
 	pub const fn as_registrable(&mut self) -> RegistrableMut {
-		convert_mut_ptr(&mut self.con_command)
+		registrable_mut(&mut self.con_command)
 	}
 
 	const VTABLE: &'static ConCommandVt = &ConCommandVt {

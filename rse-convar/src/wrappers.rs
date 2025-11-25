@@ -5,7 +5,7 @@ use ::rse_cpp::transparent_wrapper;
 
 use crate::{
 	cppdef::{
-		ConCommandBase as CConCommandBase,
+		Registrable as CRegistrable,
 		ConVar as CConVar, ConCommand as CConCommand,
 	},
 	console_base::ConCommandBaseExt,
@@ -13,10 +13,10 @@ use crate::{
 };
 
 transparent_wrapper! {
-	pub struct ConCommandBase for CConCommandBase as "ConCommandBase";
+	pub struct Registrable for CRegistrable as "Registrable";
 }
 
-impl ConCommandBase {
+impl Registrable {
 	pub const fn ext(&self) -> &ConCommandBaseExt {
 		unsafe { ConCommandBaseExt::from_ref(&self.0.data) }
 	}
@@ -28,7 +28,7 @@ impl ConCommandBase {
 	pub fn is_command(&self) -> bool {
 		let object = self.0.as_object();
 		let this = object.as_ptr().cast();
-		unsafe { (object.vtable().base.is_command)(this) }
+		unsafe { (object.vtable().is_command)(this) }
 	}
 
 	pub fn kind(&self) -> Kind<'_> {
@@ -76,13 +76,13 @@ impl ConCommandBase {
 	}
 }
 
-impl Deref for ConCommandBase {
+impl Deref for Registrable {
 	type Target = ConCommandBaseExt;
 	fn deref(&self) -> &Self::Target {
 		self.ext()
 	}
 }
-impl DerefMut for ConCommandBase {
+impl DerefMut for Registrable {
 	fn deref_mut(&mut self) -> &mut Self::Target {
 		self.ext_mut()
 	}

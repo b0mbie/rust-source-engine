@@ -2,7 +2,9 @@ use ::core::ffi::{
 	CStr, c_float, c_int,
 };
 
-use crate::console_base::RegistrableMut;
+use crate::console_base::{
+	RegistrableMut, registrable_mut,
+};
 
 use super::{
 	super::{
@@ -30,7 +32,9 @@ impl<'str, T> StaticConVarObject<'str, T> {
 	}
 
 	pub const fn as_registrable(&mut self) -> RegistrableMut {
-		unsafe { self.as_mut_inner().as_mut_raw() as *mut _ as *mut _ }
+		unsafe {
+			registrable_mut(self.as_mut_inner().as_mut_raw())
+		}
 	}
 
 	/// # Safety
