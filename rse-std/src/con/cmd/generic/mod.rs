@@ -23,6 +23,12 @@ pub struct GenericConCommand<'str, T> {
 
 unsafe impl<'str, T: Sync> Sync for GenericConCommand<'str, T> {}
 
+impl<'str, T> GenericConCommand<'str, T> {
+	pub fn as_registrable(&self) -> RegistrableMut {
+		unsafe { (*self.con_command.get()).as_registrable() }
+	}
+}
+
 impl<'str, T> GenericConCommand<'str, T>
 where
 	T: DispatchCommand,
@@ -45,9 +51,5 @@ where
 
 	pub fn register(&'static self) -> bool {
 		unsafe { crate::con::cvar::register_raw(self.as_registrable()) }
-	}
-
-	pub fn as_registrable(&self) -> RegistrableMut {
-		unsafe { (*self.con_command.get()).as_registrable() }
 	}
 }
