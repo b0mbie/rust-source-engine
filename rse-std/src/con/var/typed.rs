@@ -4,6 +4,7 @@ use ::core::{
 	marker::PhantomData,
 	pin::Pin,
 };
+use ::rse_convar::console_base::RegistrableMut;
 
 use super::{
 	ConVar, ConVarParams,
@@ -14,6 +15,16 @@ use super::{
 pub struct TypedConVar<T> {
 	inner: ConVar,
 	_value_ty: PhantomData<fn() -> T>,
+}
+
+impl<T> TypedConVar<T> {
+	pub fn register(&'static self) -> bool {
+		self.inner.register()
+	}
+
+	pub const fn as_registrable(&'static self) -> RegistrableMut {
+		self.inner.as_registrable()
+	}
 }
 
 impl<T> TypedConVar<T>
@@ -35,10 +46,6 @@ where
 
 	pub fn get(&self) -> T {
 		self.inner.value()
-	}
-
-	pub fn register(&'static self) -> bool {
-		self.inner.register()
 	}
 }
 
