@@ -86,6 +86,10 @@ impl<'str, T> ConCommandObject<'str, T> {
 			convert_mut::<_, VtObject<ConCommandVt>>(&mut self.con_command)
 		)
 	}
+
+	pub const fn as_registrable(&mut self) -> RegistrableMut {
+		registrable_mut(&mut self.con_command)
+	}
 }
 
 impl<'str, T> ConCommandObject<'str, T>
@@ -127,10 +131,6 @@ where
 				bits: ConCommandBits::new(),
 			},
 		) }
-	}
-
-	pub const fn as_registrable(&mut self) -> RegistrableMut {
-		registrable_mut(&mut self.con_command)
 	}
 
 	const VTABLE: &'static ConCommandVt = &ConCommandVt {
