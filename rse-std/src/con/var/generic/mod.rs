@@ -73,7 +73,7 @@ impl<'str, T> GenericConVar<'str, T> {
 		unsafe { crate::con::cvar::register_raw(self.as_registrable()) }
 	}
 
-	pub fn as_registrable(&'static self) -> RegistrableMut {
+	pub const fn as_registrable(&'static self) -> RegistrableMut {
 		unsafe { (*self.con_var.get()).as_registrable() }
 	}
 }

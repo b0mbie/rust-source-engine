@@ -58,7 +58,7 @@ impl ConVar {
 		self.inner.register()
 	}
 
-	pub fn as_registrable(&'static self) -> RegistrableMut {
+	pub const fn as_registrable(&'static self) -> RegistrableMut {
 		self.inner.as_registrable()
 	}
 }
