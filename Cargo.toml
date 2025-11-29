@@ -25,6 +25,7 @@ members = [
 	"examples/client",
 	"examples/filesystem",
 	"examples/multithreaded",
+	"examples/autoregister",
 ]
 
 [workspace.package]

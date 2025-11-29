@@ -105,6 +105,8 @@ where
 				match catch_unwind(move || P::load(factories)) {
 					Ok(Ok(plugin)) => {
 						self.inner = Inner::Loaded(plugin);
+						#[cfg(feature = "cvar-autoregister")]
+						crate::con::register_all();
 						true
 					}
 					Ok(Err(error)) => {

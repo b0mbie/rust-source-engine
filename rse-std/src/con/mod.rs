@@ -13,6 +13,11 @@ pub use ::rse_convar::{
 
 pub(crate) mod cvar;
 
+#[cfg(feature = "cvar-autoregister")]
+mod autoregister;
+#[cfg(feature = "cvar-autoregister")]
+pub use autoregister::*;
+
 pub mod cmd;
 pub mod var;
 

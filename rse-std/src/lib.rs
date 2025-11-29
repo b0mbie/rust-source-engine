@@ -84,6 +84,8 @@ pub mod prelude {
 		},
 		export_plugin_as, export_plugin,
 	};
+	#[cfg(feature = "cvar-autoregister")]
+	pub use crate::autoregistered;
 	#[cfg(feature = "proc-macros")]
 	pub use crate::{
 		cvar_value,
