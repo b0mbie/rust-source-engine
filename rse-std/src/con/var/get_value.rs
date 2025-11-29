@@ -19,7 +19,15 @@ macro_rules! impl_from_int {
 		$(
 			impl<'a> GetValue<'a> for $target {
 				fn get_value<T>(con_var: &'a GenericConVar<T>) -> Self {
-					con_var.int() as _
+					let int = con_var.int();
+					let clamped = if size_of_val(&int) > size_of::<$target>() {
+						int.clamp(<$target>::MIN as _, <$target>::MAX as _)
+					} else if <$target>::MIN == 0 {
+						int.max(0)
+					} else {
+						int
+					};
+					clamped as _
 				}
 			}
 		)*
