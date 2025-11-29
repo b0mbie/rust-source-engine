@@ -188,8 +188,11 @@ pub trait VEngineServerImpl: AsObject<VEngineServerVt> {
 }
 impl<T: ?Sized + AsObject<VEngineServerVt>> VEngineServerImpl for T {}
 
+/// Index to a precached model.
 pub type Model = NonZero<c_int>;
+/// Index to a precached decal.
 pub type Decal = c_int;
+/// Index to a precached generic file.
 pub type Generic = c_int;
 
 owned_vt_object_wrapper! {
