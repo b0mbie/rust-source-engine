@@ -65,6 +65,7 @@ pub mod prelude {
 			},
 			var::{
 				ConVar, ConVarParams,
+				TypedConVar,
 			},
 			CvarFlags,
 		},
