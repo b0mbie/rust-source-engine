@@ -80,10 +80,6 @@ unsafe fn read_mt<F: FnOnce(&VEngineServer) -> R, R>(f: F) -> R {
 	}
 }
 
-pub fn is_main_thread() -> bool {
-	SERVER.can_be_accessed()
-}
-
 pub fn system_time() -> f32 {
 	unsafe { read_mt(move |srv| srv.system_time()) }
 }
