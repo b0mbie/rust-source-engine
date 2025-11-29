@@ -8,7 +8,8 @@
 //! Detached threads that have not finished
 //! by the time the plugin is unloading
 //! are `join`ed to wait until they finish.
-//! 
+//! Threads that run alongside the plugin should use [`running`]
+//! to check when the plugin is shutting down.
 //! A value of `false` signals to all remaining threads that they should
 //! start shutting down, if they're still running.
 //! Threads that do not cooperate will forever hang the program,
