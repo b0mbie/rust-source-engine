@@ -12,7 +12,10 @@ default = [
 ]
 link-srv = ["rse-tier0/link-srv"]
 link-optional = ["rse-tier0/link-optional"]
-doc = ["link-optional"]
+doc = [
+	"link-optional",
+	"cl", "sv",
+]
 proc-macros = ["dep:rse-std-macros"]
 global-allocator = []
 
@@ -45,6 +48,10 @@ workspace = true
 optional = true
 
 [dependencies.atomic]
+version = "0.6.1"
+default-features = false
+
+[dependencies.ctor]
 version = "0.6.1"
 default-features = false
 
