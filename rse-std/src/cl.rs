@@ -1,3 +1,5 @@
+//! Source Engine client functionality.
+
 use ::core::{
 	cell::RefCell,
 	ffi::CStr,
@@ -12,23 +14,38 @@ use crate::{
 	thread::MainThreadBound,
 };
 
+/// Inserts `command` into the command buffer as if it was typed by the client to their console.
+/// 
+/// # Restrictions
+/// Only commands that are marked
+/// [`FCVAR_CLIENTCMD_CAN_EXECUTE`](crate::con::CvarFlags::CLIENTCMD_CAN_EXECUTE)
+/// can be executed from this function.
+/// Use [`execute_unrestricted`]
+/// to be able to execute any command.
 pub fn execute(command: &CStr) {
 	unsafe { read_mt(move |cl| cl.as_v013().client_cmd(command)) }
 }
 
+/// Inserts `command` into the command buffer as if it was typed by the client to their console.
+/// 
+/// # Restrictions
+/// Unlike [`execute`],
+/// this function can execute any command.
 pub fn execute_unrestricted(command: &CStr) {
 	unsafe { read_mt(move |cl| cl.as_v013().client_cmd_unrestricted(command)) }
 }
 
+/// Returns the size of the area that the game is being rendered to.
 pub fn screen_size() -> (usize, usize) {
 	unsafe { read_mt(move |cl| {
 		let mut width = 0;
 		let mut height = 0;
 		cl.as_v013().screen_size(&mut width, &mut height);
-		(width as _, height as _)
+		(width.max(0) as _, height.max(0) as _)
 	}) }
 }
 
+/// Returns `true` if the client is currently in-game.
 pub fn in_game() -> bool {
 	read(move |cl| if let Some(cl) = cl {
 		cl.as_v013().is_in_game()
@@ -37,6 +54,7 @@ pub fn in_game() -> bool {
 	})
 }
 
+/// Returns `true` if the client is currently connected to a server.
 pub fn connected() -> bool {
 	read(move |cl| if let Some(cl) = cl {
 		cl.as_v013().is_connected()
@@ -45,16 +63,22 @@ pub fn connected() -> bool {
 	})
 }
 
+/// Takes a screenshot of the game,
+/// saving the resulting file to the specified `path`
+/// in the specified `folder`
+/// relative to the game directory.
 pub fn take_screenshot(path: &CStr, folder: Option<&CStr>) {
 	read(move |cl| if let Some(cl) = cl {
 		cl.as_v013().take_screenshot(path, folder)
 	})
 }
 
+/// Returns the protocol version number.
 pub fn protocol_version() -> u64 {
 	unsafe { read_mt(move |cl| cl.protocol_version()) as _ }
 }
 
+/// Returns `true` if the game is running in windowed mode.
 pub fn is_windowed() -> bool {
 	read(move |cl| if let Some(cl) = cl {
 		cl.is_windowed_mode()
@@ -63,14 +87,17 @@ pub fn is_windowed() -> bool {
 	})
 }
 
+/// Flashes the game window if the system allows for it.
 pub fn flash_window() {
 	unsafe { read_mt(move |cl| cl.flash_window()) }
 }
 
+/// Returns the client version number.
 pub fn client_version() -> i64 {
 	unsafe { read_mt(move |cl| cl.client_version()) as _ }
 }
 
+/// Returns `true` if the game window is focused.
 pub fn is_focused() -> bool {
 	read(move |cl| if let Some(cl) = cl {
 		cl.is_active_app()
