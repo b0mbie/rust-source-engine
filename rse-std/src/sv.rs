@@ -1,3 +1,5 @@
+//! Source Engine server functionality.
+
 use ::core::{
 	cell::RefCell,
 	ffi::CStr,
@@ -80,13 +82,17 @@ unsafe fn read_mt<F: FnOnce(&VEngineServer) -> R, R>(f: F) -> R {
 	}
 }
 
+/// Returns the current system time.
 pub fn system_time() -> f32 {
 	unsafe { read_mt(move |srv| srv.system_time()) }
 }
+
+/// Returns `true` if the running server is a dedicated server.
 pub fn is_dedicated() -> bool {
 	unsafe { read_mt(move |srv| srv.is_dedicated_server()) }
 }
 
+/// Returns the current server time.
 pub fn server_time() -> f32 {
 	read(move |srv| if let Some(srv) = srv {
 		srv.server_time() as _
@@ -95,6 +101,7 @@ pub fn server_time() -> f32 {
 	})
 }
 
+/// Returns `true` if the server is paused.
 pub fn is_paused() -> bool {
 	read(move |srv| if let Some(srv) = srv {
 		srv.is_paused()
@@ -102,18 +109,24 @@ pub fn is_paused() -> bool {
 		false
 	})
 }
-pub fn is_map_valid(map_name: &CStr) -> bool {
+
+/// Returns `true` if the given `map` is a valid map.
+pub fn is_map_valid(map: &CStr) -> bool {
 	read(move |srv| if let Some(srv) = srv {
-		srv.is_map_valid(map_name)
+		srv.is_map_valid(map)
 	} else {
 		false
 	})
 }
 
+/// Inserts `command` at the end of the command buffer.
 pub fn execute(command: &CStr) {
 	unsafe { read_mt(move |srv| srv.push_command_back(command)) }
 }
 
+/// Precaches a model.
+/// 
+/// `preload` indicates whether the file will be precached before level startup.
 pub fn precache_model(path: &CStr, preload: bool) -> Option<Model> {
 	write(move |srv| if let Some(srv) = srv {
 		srv.precache_model(path, preload)
@@ -121,11 +134,19 @@ pub fn precache_model(path: &CStr, preload: bool) -> Option<Model> {
 		None
 	})
 }
+
+/// Precaches a sentence file.
+/// 
+/// `preload` indicates whether the file will be precached before level startup.
 pub fn precache_sentence_file(path: &CStr, preload: bool) {
 	write(move |srv| if let Some(srv) = srv {
 		srv.precache_sentence_file(path, preload)
 	})
 }
+
+/// Precaches a decal.
+/// 
+/// `preload` indicates whether the file will be precached before level startup.
 pub fn precache_decal(path: &CStr, preload: bool) -> Decal {
 	write(move |srv| if let Some(srv) = srv {
 		srv.precache_decal(path, preload)
@@ -133,6 +154,10 @@ pub fn precache_decal(path: &CStr, preload: bool) -> Decal {
 		0
 	})
 }
+
+/// Precaches a generic file.
+/// 
+/// `preload` indicates whether the file will be precached before level startup.
 pub fn precache_generic(path: &CStr, preload: bool) -> Generic {
 	write(move |srv| if let Some(srv) = srv {
 		srv.precache_generic(path, preload)
@@ -142,6 +167,8 @@ pub fn precache_generic(path: &CStr, preload: bool) -> Generic {
 }
 
 const DEFAULT_PRECACHED: bool = false; // Nah.
+
+/// Returns `true` if the given model is precached.
 pub fn is_model_precached(path: &CStr) -> bool {
 	read(move |srv| if let Some(srv) = srv {
 		srv.is_model_precached(path)
@@ -149,6 +176,8 @@ pub fn is_model_precached(path: &CStr) -> bool {
 		DEFAULT_PRECACHED
 	})
 }
+
+/// Returns `true` if the given decal is precached.
 pub fn is_decal_precached(path: &CStr) -> bool {
 	read(move |srv| if let Some(srv) = srv {
 		srv.is_decal_precached(path)
@@ -156,6 +185,8 @@ pub fn is_decal_precached(path: &CStr) -> bool {
 		DEFAULT_PRECACHED
 	})
 }
+
+/// Returns `true` if the given generic file is precached.
 pub fn is_generic_precached(path: &CStr) -> bool {
 	read(move |srv| if let Some(srv) = srv {
 		srv.is_generic_precached(path)
@@ -164,6 +195,7 @@ pub fn is_generic_precached(path: &CStr) -> bool {
 	})
 }
 
+/// Returns a [`GameDir`] buffer that contains the path to the game directory.
 pub fn game_dir() -> GameDir {
 	unsafe {
 		read_mt(move |srv| {
@@ -173,10 +205,13 @@ pub fn game_dir() -> GameDir {
 		})
 	}
 }
+
+/// Writes the path to the game directory into the given [`GameDir`] buffer.
 pub fn game_dir_into(dir: &mut GameDir) {
 	unsafe { read_mt(move |srv| srv.game_dir(dir.buffer.bytes_mut())) }
 }
 
+/// Buffer that holds the path to the game directory as a C string.
 #[derive(Default, Debug, Clone, Copy)]
 #[repr(transparent)]
 pub struct GameDir {
@@ -184,12 +219,14 @@ pub struct GameDir {
 }
 
 impl GameDir {
+	/// Returns a new, empty buffer.
 	pub const fn new() -> Self {
 		Self {
 			buffer: CBuffer::new(),
 		}
 	}
 
+	/// Returns the [`CStr`] that represents the path to the game directory.
 	pub const fn as_c_str(&self) -> &CStr {
 		self.buffer.as_c_str()
 	}
