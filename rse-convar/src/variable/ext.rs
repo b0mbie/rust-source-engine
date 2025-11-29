@@ -10,10 +10,6 @@ use ::core::{
 
 use crate::console_base::ConCommandBaseExt;
 
-use super::{
-	GetValue, ValueView,
-};
-
 ::rse_cpp::transparent_wrapper! {
 	pub struct ConVarExt for crate::cppdef::ConVarExt as "ConVarExt";
 }
@@ -79,11 +75,6 @@ impl ConVarExt {
 	/// Returns the default string value of this ConVar.
 	pub const fn default(&self) -> &CStr {
 		unsafe { CStr::from_ptr(self.0.default_value) }
-	}
-
-	/// Returns the `T` value of this ConVar.
-	pub fn value<'a, T: GetValue<'a>>(&'a self) -> T {
-		T::get_value(ValueView::new(self))
 	}
 
 	/// Returns the [`CStr`] value of this ConVar.

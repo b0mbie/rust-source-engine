@@ -7,9 +7,7 @@ use crate::console_base::{
 };
 
 use super::{
-	super::{
-		ConVarParams, GetValue,
-	},
+	super::ConVarParams,
 	RawVariable, ConVarObject,
 };
 
@@ -58,10 +56,6 @@ impl<'str, T> StaticConVarObject<'str, T> {
 
 	pub const fn int(&self) -> c_int {
 		unsafe { self.as_inner().as_ext().int() }
-	}
-
-	pub fn value<'a, V: GetValue<'a>>(&'a self) -> V {
-		unsafe { self.as_inner().as_ext().value() }
 	}
 }
 
