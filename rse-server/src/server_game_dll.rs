@@ -2,16 +2,16 @@ use ::core::ffi::CStr;
 use ::rse_cpp::{
 	AsObject, virtual_call, owned_vt_object_wrapper,
 };
+use ::rse_game_interfaces::{
+	InterfaceOfFactory, GameServerFactory,
+};
 use ::rse_shared::{
 	ServerClasses, ServerClassesMut, ServerClass,
 };
 
-use crate::{
-	cppdef::{
-		ServerGameDllVt, INTERFACEVERSION_SERVERGAMEDLL,
-		TickInterval,
-	},
-	InterfaceOfFactory, GameServerFactory,
+use crate::cppdef::{
+	ServerGameDllVt, INTERFACEVERSION_SERVERGAMEDLL,
+	TickInterval,
 };
 
 pub trait ServerGameDllImpl: AsObject<ServerGameDllVt> {

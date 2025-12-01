@@ -4,11 +4,11 @@ use ::core::{
 	cell::RefCell,
 	ffi::CStr,
 };
-use ::rse_game_interfaces::{
+use ::rse_server::{
 	VEngineServer, VEngineServerImpl,
 };
 
-pub use ::rse_game_interfaces::{
+pub use ::rse_server::{
 	Model, Decal, Generic,
 };
 

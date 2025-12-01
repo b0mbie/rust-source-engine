@@ -39,11 +39,8 @@ pub trait PlayerInfoManagerImpl: AsObject<PlayerInfoManagerVt> {
 			Some(PlayerInfo2::from_object_const(VtObject::from_ptr_const(ptr)))
 		}
 	}
-	fn global_vars_mut(&self) -> &'static mut GlobalVars {
-		unsafe { &mut *virtual_call!(self.as_object() => get_global_vars()) }
-	}
-	fn global_vars(&self) -> &'static GlobalVars {
-		unsafe { &*virtual_call!(self.as_object() => get_global_vars()) }
+	fn global_vars(&self) -> *mut GlobalVars {
+		unsafe { virtual_call!(self.as_object() => get_global_vars()) }
 	}
 }
 impl<T: ?Sized + AsObject<PlayerInfoManagerVt>> PlayerInfoManagerImpl for T {}

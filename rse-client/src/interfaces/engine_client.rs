@@ -14,7 +14,7 @@ use crate::cppdef::engine_client::{
 	VEngineClientVt, VENGINE_CLIENT_INTERFACE_VERSION,
 };
 
-/// Safe interface to `IVEngineServer`.
+/// Safe interface to `IVEngineClient`.
 /// 
 /// # Thread safety
 /// Unless otherwise specified,
@@ -65,7 +65,7 @@ pub trait VEngineClientImpl: AsObject<VEngineClientVt> {
 }
 impl<T: ?Sized + AsObject<VEngineClientVt>> VEngineClientImpl for T {}
 
-/// Safe interface to `IVEngineServer013`.
+/// Safe interface to `IVEngineClient013`.
 /// 
 /// # Thread safety
 /// Unless otherwise specified,

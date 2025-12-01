@@ -1,16 +1,17 @@
 use ::core::ffi::{
 	CStr, c_char, c_float, c_int,
 };
-use ::rse_convar::cppdef::{
-	ConCommandBase, ConCommand, ConVar,
-	CvarDllIdentifier,
-	FnChangeCallback,
-};
 use ::rse_cpp::{
 	vtable, RefConst, VtObjectMut, VtObjectPtr,
 };
 use ::rse_interface::cppdef::app_system::AppSystemVt;
 use ::rse_math::Color;
+
+use crate::cppdef::{
+	ConCommandBase, ConCommand, ConVar,
+	CvarDllIdentifier,
+	FnChangeCallback,
+};
 
 pub const CVAR_INTERFACE_VERSION: &CStr = c"VEngineCvar004";
 vtable! {

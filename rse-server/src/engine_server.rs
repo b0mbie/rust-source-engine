@@ -8,17 +8,17 @@ use ::core::{
 use ::rse_cpp::{
 	AsObject, virtual_call, owned_vt_object_wrapper,
 };
+use ::rse_game_interfaces::{
+	InterfaceOfFactory, AppSystemFactory,
+};
 use ::rse_shared::cppdef::{
 	SteamId,
 	SoundLevel,
 };
 use ::rse_math::Vector;
 
-use crate::{
-	cppdef::{
-		VEngineServerVt, INTERFACEVERSION_VENGINESERVER,
-	},
-	InterfaceOfFactory, AppSystemFactory,
+use crate::cppdef::{
+	VEngineServerVt, INTERFACEVERSION_VENGINESERVER,
 };
 
 /// Safe interface to `IVEngineServer`.

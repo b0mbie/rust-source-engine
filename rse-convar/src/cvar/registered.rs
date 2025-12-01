@@ -4,7 +4,8 @@ use ::core::{
 		null, null_mut,
 	},
 };
-use ::rse_convar::{
+
+use crate::{
 	cppdef::Registrable as CRegistrable,
 	Registrable,
 };

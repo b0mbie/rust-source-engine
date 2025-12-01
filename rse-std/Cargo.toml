@@ -21,7 +21,7 @@ proc-macros = ["dep:rse-std-macros"]
 global-allocator = []
 
 cl = ["dep:rse-client"]
-sv = []
+sv = ["dep:rse-server"]
 fs = []
 
 cvar-autoregister = []
@@ -47,6 +47,10 @@ default-features = false
 features = ["link-dll"]
 
 [dependencies.rse-client]
+workspace = true
+optional = true
+
+[dependencies.rse-server]
 workspace = true
 optional = true
 

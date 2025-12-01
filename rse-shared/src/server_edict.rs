@@ -1,6 +1,6 @@
-use crate::cppdef::entities::edict_t;
-
-pub use crate::cppdef::entities::EdictIndex;
+use crate::cppdef::entities::{
+	edict_t, EdictIndex,
+};
 
 /// # Layout
 /// This type has the exact same layout as the C++ [`edict_t`].

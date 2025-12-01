@@ -10,6 +10,7 @@ use ::core::{
 };
 use ::libc::atof;
 use ::rse_convar::{
+	cvar::QueueMaterialThreadValue,
 	console_base::{
 		RawConsoleBase,
 		CvarDllIdentifier, CvarFlags,
@@ -21,7 +22,6 @@ use ::rse_convar::{
 		ConVarExt,
 	},
 };
-use ::rse_game_interfaces::cvar::QueueMaterialThreadValue;
 use ::rse_utl::{
 	cppdef::UtlString,
 	CString,

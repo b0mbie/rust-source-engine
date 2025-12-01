@@ -9,7 +9,6 @@ xbox360 = ["rse-utl/xbox360"]
 
 [dependencies]
 libc.workspace = true
-rse-convar.workspace = true
 rse-cpp.workspace = true
 rse-shared.workspace = true
 rse-interface.workspace = true

@@ -1,5 +1,5 @@
 use ::core::ffi::CStr;
-use ::rse_game_interfaces::cvar::{
+use ::rse_convar::cvar::{
 	registered::{
 		RegisteredIter, RegisteredIterMut,
 	},

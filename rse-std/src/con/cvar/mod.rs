@@ -2,14 +2,12 @@ use ::core::ffi::{
 	CStr, c_float,
 };
 use ::rse_convar::{
-	cppdef::ConVar,
-	console_base::RegistrableMut,
-};
-use ::rse_game_interfaces::{
 	cvar::{
 		Cvar, CvarImpl,
 		QueueMaterialThreadValue,
 	},
+	cppdef::ConVar,
+	console_base::RegistrableMut,
 };
 
 use crate::plugin::PluginFactories;

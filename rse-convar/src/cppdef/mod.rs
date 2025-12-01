@@ -9,5 +9,7 @@ mod con_var;
 pub use con_var::*;
 mod command;
 pub use command::*;
+mod cvar;
+pub use cvar::*;
 
 pub mod fcvar;

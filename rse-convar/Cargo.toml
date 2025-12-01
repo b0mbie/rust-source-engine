@@ -4,8 +4,13 @@ version = "0.1.0"
 edition = "2024"
 authors.workspace = true
 
+[features]
+xbox360 = ["rse-utl/xbox360"]
+
 [dependencies]
 libc.workspace = true
 rse-cpp.workspace = true
+rse-game-interfaces.workspace = true
 rse-interface.workspace = true
+rse-math.workspace = true
 rse-utl.workspace = true

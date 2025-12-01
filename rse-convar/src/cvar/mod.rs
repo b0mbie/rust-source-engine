@@ -1,28 +1,25 @@
 use ::core::ffi::{
 	CStr, c_float, c_int,
 };
-use ::rse_convar::{
+use ::rse_cpp::{
+	AsObject,
+	virtual_call,
+};
+use ::rse_game_interfaces::{
+	InterfaceOfFactory, AppSystemFactory,
+};
+
+use crate::{
 	cppdef::{
 		Registrable as CRegistrable,
 		ConVar as CConVar,
+		CVAR_INTERFACE_VERSION, CvarVt,
 	},
 	console_base::{
 		CvarDllIdentifier,
 		RegistrableMut,
 	},
 	Registrable, ConVar, ConCommand,
-};
-use ::rse_cpp::{
-	AsObject,
-	virtual_call,
-};
-
-use crate::cppdef::{
-	CVAR_INTERFACE_VERSION, CvarVt,
-};
-
-use super::{
-	InterfaceOfFactory, AppSystemFactory,
 };
 
 pub mod registered;

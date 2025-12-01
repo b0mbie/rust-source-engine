@@ -5,6 +5,7 @@ members = [
 
 	"rse-shared",
 	"rse-client",
+	"rse-server",
 	"rse-game-interfaces",
 
 	"rse-sound",
@@ -43,6 +44,7 @@ rse-game-interfaces = { path = "./rse-game-interfaces" }
 rse-math = { path = "./rse-math" }
 rse-plugin = { path = "./rse-plugin" }
 rse-scratch-pad = { path = "./rse-scratch-pad" }
+rse-server = { path = "./rse-server" }
 rse-sound = { path = "./rse-sound" }
 rse-std = { path = "./rse-std" }
 rse-tier0 = { path = "./rse-tier0" }
