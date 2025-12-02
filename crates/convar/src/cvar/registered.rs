@@ -17,6 +17,11 @@ pub struct RegisteredIter<'a> {
 }
 
 impl<'a> RegisteredIter<'a> {
+	/// # Safety
+	/// `first` must either be
+	/// a [`Registrable`](CRegistrable)
+	/// that is valid for the `'a` lifetime
+	/// or null.
 	pub const unsafe fn from_ptr(first: *const CRegistrable) -> Self {
 		Self {
 			current: first,
@@ -60,6 +65,11 @@ pub struct RegisteredIterMut<'a> {
 }
 
 impl<'a> RegisteredIterMut<'a> {
+	/// # Safety
+	/// `first` must either be
+	/// a [`Registrable`](CRegistrable)
+	/// that is valid for the `'a` lifetime
+	/// or null.
 	pub const unsafe fn from_ptr(first: *mut CRegistrable) -> Self {
 		Self {
 			current: first,
