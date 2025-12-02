@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2024"
 authors.workspace = true
 
+[lints]
+workspace = true
+
 [features]
 default = ["voice"]
 # Equivalent to the absence of the `NO_VOICE` define.

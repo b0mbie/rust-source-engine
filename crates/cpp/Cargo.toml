@@ -3,6 +3,9 @@ name = "rse-cpp"
 edition = "2024"
 publish = false
 
+[lints]
+workspace = true
+
 [features]
 default = ["gcc"]
 gcc = []

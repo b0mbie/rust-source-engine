@@ -29,6 +29,9 @@ members = [
 	"examples/autoregister",
 ]
 
+[workspace.lints.clippy]
+use_self = "warn"
+
 [workspace.package]
 authors = ["b0mbie"]
 
