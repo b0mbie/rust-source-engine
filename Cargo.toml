@@ -1,24 +1,24 @@
 [workspace]
 resolver = "3"
 members = [
-	"rse-cpp",
+	"crates/cpp",
 
-	"rse-shared",
-	"rse-client",
-	"rse-server",
-	"rse-game-interfaces",
+	"crates/shared",
+	"crates/client",
+	"crates/server",
+	"crates/game-interfaces",
 
-	"rse-sound",
-	"rse-utl",
-	"rse-interface",
-	"rse-convar",
-	"rse-math",
-	"rse-scratch-pad",
-	"rse-tier0",
-	"rse-plugin",
+	"crates/sound",
+	"crates/utl",
+	"crates/interface",
+	"crates/convar",
+	"crates/math",
+	"crates/scratch-pad",
+	"crates/tier0",
+	"crates/plugin",
 
-	"rse-std",
-	"rse-std-macros",
+	"crates/std",
+	"crates/std-macros",
 	
 	"examples/blank",
 	"examples/console",
@@ -35,20 +35,20 @@ authors = ["b0mbie"]
 [workspace.dependencies]
 printf = { git = "https://github.com/b0mbie/printf-rs.git" }
 
-rse-client = { path = "./rse-client" }
-rse-convar = { path = "./rse-convar" }
-rse-cpp = { path = "./rse-cpp" }
-rse-interface = { path = "./rse-interface" }
-rse-shared = { path = "./rse-shared" }
-rse-game-interfaces = { path = "./rse-game-interfaces" }
-rse-math = { path = "./rse-math" }
-rse-plugin = { path = "./rse-plugin" }
-rse-scratch-pad = { path = "./rse-scratch-pad" }
-rse-server = { path = "./rse-server" }
-rse-sound = { path = "./rse-sound" }
-rse-std = { path = "./rse-std" }
-rse-tier0 = { path = "./rse-tier0" }
-rse-utl = { path = "./rse-utl" }
+rse-client = { path = "./crates/client" }
+rse-convar = { path = "./crates/convar" }
+rse-cpp = { path = "./crates/cpp" }
+rse-interface = { path = "./crates/interface" }
+rse-shared = { path = "./crates/shared" }
+rse-game-interfaces = { path = "./crates/game-interfaces" }
+rse-math = { path = "./crates/math" }
+rse-plugin = { path = "./crates/plugin" }
+rse-scratch-pad = { path = "./crates/scratch-pad" }
+rse-server = { path = "./crates/server" }
+rse-sound = { path = "./crates/sound" }
+rse-std = { path = "./crates/std" }
+rse-tier0 = { path = "./crates/tier0" }
+rse-utl = { path = "./crates/utl" }
 
 [workspace.dependencies.cppdvt]
 git = "https://github.com/b0mbie/cppdvt.git"

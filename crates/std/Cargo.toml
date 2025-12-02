@@ -38,11 +38,11 @@ rse-plugin.workspace = true
 rse-utl.workspace = true
 
 [dependencies.rse-std-macros]
-path = "../rse-std-macros"
+path = "../std-macros"
 optional = true
 
 [dependencies.rse-tier0]
-path = "../rse-tier0"
+path = "../tier0"
 default-features = false
 features = ["link-dll"]
 
