@@ -108,7 +108,7 @@ impl Arg {
 	}
 
 	/// Returns an iterator over [`Arg`] that maps each one to a [`CStr`].
-	pub fn iter(slice: &[Arg]) -> ArgIter<'_> {
+	pub fn iter(slice: &[Self]) -> ArgIter<'_> {
 		ArgIter {
 			inner: slice.iter(),
 		}

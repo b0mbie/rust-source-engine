@@ -126,17 +126,17 @@ impl StdSeek for File {
 
 impl Read for File {
 	fn read(&mut self, buf: &mut [u8]) -> IoResult<usize> {
-		File::read(self, buf).ok_or_else(move || IoError::other("failed to read into buffer"))
+		Self::read(self, buf).ok_or_else(move || IoError::other("failed to read into buffer"))
 	}
 }
 
 impl Write for File {
 	fn write(&mut self, buf: &[u8]) -> IoResult<usize> {
-		File::write(self, buf).ok_or_else(move || IoError::other("failed to write data"))
+		Self::write(self, buf).ok_or_else(move || IoError::other("failed to write data"))
 	}
 
 	fn flush(&mut self) -> IoResult<()> {
-		File::flush(self);
+		Self::flush(self);
 		Ok(())
 	}
 }

@@ -36,7 +36,7 @@ pub trait AsObject<VTable> {
 	fn as_object(&self) -> &VtObject<VTable>;
 }
 impl<VTable> AsObject<VTable> for VtObject<VTable> {
-	fn as_object(&self) -> &VtObject<VTable> {
+	fn as_object(&self) -> &Self {
 		self
 	}
 }
