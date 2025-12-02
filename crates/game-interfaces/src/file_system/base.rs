@@ -24,18 +24,30 @@ pub trait BaseFileSystemImpl: AsObject<BaseFileSystemVt> {
 		}
 	}
 
+	/// # Safety
+	/// `raw` must be an open file handle
+	/// that came from this interface.
 	unsafe fn close(&self, raw: ValidFileHandle) {
 		unsafe { virtual_call!(self.as_object() => close(raw.as_ptr())) }
 	}
 
+	/// # Safety
+	/// `raw` must be an open file handle
+	/// that came from this interface.
 	unsafe fn seek(&self, raw: ValidFileHandle, pos: c_int, method: FileSystemSeek) {
 		unsafe { virtual_call!(self.as_object() => seek(raw.as_ptr(), pos, method)) }
 	}
 
+	/// # Safety
+	/// `raw` must be an open file handle
+	/// that came from this interface.
 	unsafe fn tell(&self, raw: ValidFileHandle) -> c_uint {
 		unsafe { virtual_call!(self.as_object() => tell(raw.as_ptr())) }
 	}
 
+	/// # Safety
+	/// `raw` must be an open file handle
+	/// that came from this interface.
 	unsafe fn size(&self, raw: ValidFileHandle) -> c_uint {
 		unsafe { virtual_call!(self.as_object() => size(raw.as_ptr())) }
 	}
@@ -44,16 +56,25 @@ pub trait BaseFileSystemImpl: AsObject<BaseFileSystemVt> {
 		unsafe { virtual_call!(self.as_object() => size_at(path.as_ptr(), path_id.as_ptr())) }
 	}
 
+	/// # Safety
+	/// `raw` must be an open file handle
+	/// that came from this interface.
 	unsafe fn flush(&self, raw: ValidFileHandle) {
 		unsafe { virtual_call!(self.as_object() => flush(raw.as_ptr())) }
 	}
 
+	/// # Safety
+	/// `raw` must be an open file handle
+	/// that came from this interface.
 	unsafe fn read(&self, raw: ValidFileHandle, buffer: &mut [u8]) -> c_int {
 		unsafe { virtual_call!(
 			self.as_object() => read(buffer.as_mut_ptr().cast(), slice_len_c_int(buffer.len()), raw.as_ptr())
 		) }
 	}
 
+	/// # Safety
+	/// `raw` must be an open file handle
+	/// that came from this interface.
 	unsafe fn write(&self, raw: ValidFileHandle, data: &[u8]) -> c_int {
 		unsafe { virtual_call!(
 			self.as_object() => write(data.as_ptr().cast(), slice_len_c_int(data.len()), raw.as_ptr())
