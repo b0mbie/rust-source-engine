@@ -84,8 +84,11 @@ macro_rules! owned_vt_object_wrapper {
 		#[repr(transparent)]
 		$(#[$attr])*
 		$vis struct $name {
-			object: &'static mut $crate::VtObject<$vtable>,
+			object: ::core::ptr::NonNull<$crate::VtObject<$vtable>>,
 		}
+
+		unsafe impl Send for $name {}
+		unsafe impl Sync for $name {}
 
 		#[automatically_derived]
 		impl $crate::OwnedVtObjectWrapper for $name {
@@ -93,7 +96,7 @@ macro_rules! owned_vt_object_wrapper {
 			unsafe fn from_ptr(ptr: $crate::VtObjectPtr<Self::VTable>) -> Self {
 				unsafe {
 					Self {
-						object: $crate::VtObject::from_ptr_mut(ptr),
+						object: ptr.cast(),
 					}
 				}
 			}
@@ -102,7 +105,7 @@ macro_rules! owned_vt_object_wrapper {
 		#[automatically_derived]
 		impl $crate::AsObject<$vtable> for $name {
 			fn as_object(&self) -> &$crate::VtObject<$vtable> {
-				self.object
+				unsafe { self.object.as_ref() }
 			}
 		}
 	};
