@@ -136,7 +136,7 @@ impl InterfaceOfFactory for VEngineClient {
 }
 
 owned_vt_object_wrapper! {
-	pub struct VEngineClient013 for VEngineClientVt;
+	pub struct VEngineClient013 for VEngineClient013Vt;
 }
 unsafe impl Interface for VEngineClient013 {
 	const IDENTIFIER: &CStr = VENGINE_CLIENT_INTERFACE_VERSION_13;
