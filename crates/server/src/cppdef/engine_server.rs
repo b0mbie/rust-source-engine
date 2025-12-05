@@ -60,6 +60,9 @@ vtable! {
 }
 
 pub const INTERFACEVERSION_VENGINESERVER: &CStr = c"VEngineServer023";
+pub const INTERFACEVERSION_VENGINESERVER_VERSION_22: &CStr = c"VEngineServer022";
+pub const INTERFACEVERSION_VENGINESERVER_VERSION_21: &CStr = c"VEngineServer021";
+pub const INTERFACEVERSION_VENGINESERVER_INT: c_int = 23;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum FindMapResult {
@@ -86,6 +89,7 @@ pub enum FindMapResult {
 }
 
 vtable! {
+	// TODO: Figure out what the difference is between different `VEngineServer` versions.
 	pub VEngineServerVt {
 		pub fn change_level(s1: *const c_char, s2: *const c_char);
 		pub fn is_map_valid(filename: *const c_char) -> c_int;
