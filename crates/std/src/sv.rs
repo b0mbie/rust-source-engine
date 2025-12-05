@@ -69,14 +69,9 @@ fn write<F: FnOnce(Option<&mut VEngineServer>) -> R, R>(f: F) -> R {
 /// The operations performed on the interface *must* support multi-threading.
 unsafe fn read_mt<F: FnOnce(&VEngineServer) -> R, R>(f: F) -> R {
 	unsafe {
-		// FIXME: We might need a better alternative to `RefCell` to be able to handle MT properly.
-		// Right now, there is no way to Just Get A Reference to the value wrapped by a `RefCell`
-		// without having to use `Result::unwrap_unchecked` and possibly getting garbage.
-		// Multi-threaded operations effectively bypass the borrow-checking rules;
-		// it might not be possible to represent this behavior with this type.
-		let guard = SERVER.get_unchecked().try_borrow().unwrap_unchecked();
-		match *guard {
-			Some(ref srv) => f(srv),
+		let srv = &*SERVER.get_unchecked().as_ptr();
+		match srv {
+			Some(srv) => f(srv),
 			None => not_init(),
 		}
 	}
