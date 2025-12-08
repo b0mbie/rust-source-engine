@@ -7,8 +7,7 @@ use ::rse_cpp::{
 
 use crate::{
 	plugin::PluginFactories,
-	raw::exclusive::UnsafeExclusive,
-	thread::MainThreadBound,
+	raw::global_interface::GlobalInterface,
 };
 
 pub use ::rse_client::{
@@ -31,7 +30,7 @@ pub(crate) unsafe fn attach(factories: PluginFactories) -> bool {
 		;
 	match result {
 		Ok(inner) => {
-			unsafe { CLIENT.get_unchecked().inspect(move |cell| *cell = inner) }
+			unsafe { CLIENT.inspect_unchecked(move |cl| *cl = inner) }
 			true
 		}
 		Err(error) => {
@@ -49,31 +48,38 @@ const fn not_init() -> ! {
 /// # Safety
 /// This function must not be called
 /// in a function that is called by
-/// [`get`].
-pub unsafe fn get<R, F: FnOnce(Option<&mut Client>) -> R>(f: F) -> R {
-	if let Some(cell) = CLIENT.get() {
-		let f = move |inner: &mut Inner| {
+/// [`inspect`] or [`inspect_mt`].
+/// 
+/// Additionally, the operations performed on the interface
+/// *must* support multi-threading.
+pub unsafe fn inspect<R, F: FnOnce(Option<&mut Client>) -> R>(f: F) -> R {
+	let f = move |inner: Option<&mut Inner>| {
+		let cl = inner.map(move |inner| {
 			match Client::from_mut(inner) {
-				Some(sv) => f(Some(sv)),
+				Some(sv) => sv,
 				None => not_init(),
 			}
-		};
-		unsafe { cell.inspect(f) }
-	} else {
-		f(None)
-	}
+		});
+		f(cl)
+	};
+	unsafe { CLIENT.inspect(f) }
 }
 
 /// # Safety
-/// The operations performed on the interface *must* support multi-threading.
-pub unsafe fn get_mt<R, F: FnOnce(&Client) -> R>(f: F) -> R {
-	let f = move |inner: &mut Inner| {
-		match Client::from_mut(inner) {
+/// This function must not be called
+/// in a function that is called by
+/// [`inspect`] or [`inspect_mt`].
+/// 
+/// Additionally, the operations performed on the interface
+/// *must* support multi-threading.
+pub unsafe fn inspect_mt<R, F: FnOnce(&Client) -> R>(f: F) -> R {
+	let f = move |inner: &Inner| {
+		match Client::from_ref(inner) {
 			Some(sv) => f(sv),
 			None => not_init(),
 		}
 	};
-	unsafe { CLIENT.get_unchecked().inspect(f) }
+	unsafe { CLIENT.inspect_mt(f) }
 }
 
 #[repr(transparent)]
@@ -105,6 +111,14 @@ impl Client {
 			inner => unsafe { Some(&mut *(inner as *mut Inner as *mut Self)) }
 		}
 	}
+
+	const fn from_ref(inner: &Inner) -> Option<&Self> {
+		match inner {
+			Inner::None => None,
+			// SAFETY: `Self` is a transparent wrapper for `Inner`.
+			inner => unsafe { Some(&*(inner as *const Inner as *const Self)) }
+		}
+	}
 }
 
 impl AsObject<VEngineClient013Vt> for Client {
@@ -119,4 +133,4 @@ enum Inner {
 	V13(VEngineClient013),
 }
 
-static CLIENT: MainThreadBound<UnsafeExclusive<Inner>> = MainThreadBound::new(UnsafeExclusive::new(Inner::None));
+static CLIENT: GlobalInterface<Inner> = GlobalInterface::new(Inner::None);

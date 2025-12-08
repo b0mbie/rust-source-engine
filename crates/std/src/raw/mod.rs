@@ -3,3 +3,4 @@ pub use ::rse_cpp::{
 };
 
 pub(crate) mod exclusive;
+pub(crate) mod global_interface;
