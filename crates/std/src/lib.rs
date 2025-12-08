@@ -44,6 +44,7 @@ pub mod ffi;
 pub mod io;
 pub mod interfaces;
 pub mod plugin;
+pub mod raw;
 pub mod thread;
 
 #[cfg(feature = "cl")]

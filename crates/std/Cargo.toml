@@ -34,6 +34,7 @@ atomic-wait = "1.1.0"
 libc.workspace = true
 thiserror.workspace = true
 rse-convar.workspace = true
+rse-cpp.workspace = true
 rse-shared.workspace = true
 rse-game-interfaces.workspace = true
 rse-interface.workspace = true

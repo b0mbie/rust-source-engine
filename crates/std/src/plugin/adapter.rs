@@ -97,10 +97,10 @@ where
 				init!(crate::fs::attach(factories));
 
 				#[cfg(feature = "cl")]
-				unsafe { init!(crate::cl::attach(factories)) }
+				unsafe { init!(crate::cl::raw::attach(factories)) }
 
 				#[cfg(feature = "sv")]
-				unsafe { init!(crate::sv::attach(factories)) }
+				unsafe { init!(crate::sv::raw::attach(factories)) }
 
 				match catch_unwind(move || P::load(factories)) {
 					Ok(Ok(plugin)) => {
