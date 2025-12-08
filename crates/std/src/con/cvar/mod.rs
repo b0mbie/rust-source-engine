@@ -1,95 +1,89 @@
-use ::core::ffi::{
-	CStr, c_float,
-};
-use ::rse_convar::{
-	cvar::{
-		Cvar, CvarImpl,
-		QueueMaterialThreadValue,
-	},
-	cppdef::ConVar,
-	console_base::RegistrableMut,
+use ::core::ffi::CStr;
+use ::rse_convar::cvar::CvarImpl;
+
+use crate::futex::Futex;
+
+use super::{
+	Registered, Variable, Command,
 };
 
-use crate::plugin::PluginFactories;
+pub use ::rse_convar::cvar::registered::{
+	RegisteredIter, RegisteredIterMut,
+};
 
-static mut CVAR: Option<Cvar> = None;
+mod helpers;
+pub(crate) use helpers::*;
 
-pub fn with_cvar_mut<F: FnOnce(&mut Cvar) -> R, R>(f: F) -> Option<R> {
-	if crate::thread::on_main_thread() {
-		#[allow(static_mut_refs)]
-		unsafe { CVAR.as_mut().map(f) }
+pub mod raw;
+use raw::Cvar;
+
+pub fn with_cvars<F: FnOnce(Cvars<'_>) -> R, R>(f: F) -> Option<R> {
+	static USING_CVARS: Futex = Futex::new();
+	if USING_CVARS.try_lock() {
+		let f = move |cvar: Option<&mut Cvar>| cvar.map(move |cvar| f(Cvars(cvar)));
+		let result = unsafe { raw::inspect(f) };
+		unsafe { USING_CVARS.unlock() };
+		result
 	} else {
 		None
 	}
 }
 
-pub unsafe fn call_global_change_callbacks(registered: *mut ConVar, old_string: &CStr, old_float: c_float) {
-	#[allow(static_mut_refs)]
-	unsafe {
-		if let Some(cvar) = CVAR.as_ref() {
-			cvar.call_global_change_callbacks(registered, old_string, old_float);
+#[repr(transparent)]
+pub struct Cvars<'a>(&'a mut Cvar);
+
+macro_rules! cvar_find_fns {
+	{
+		result = $result:ty;
+		find = $find:ident;
+		find_mut = $find_mut:ident;
+		$(#[$attr:meta])*
+	} => {
+		$(#[$attr])*
+		pub fn $find(&self, name: &CStr) -> Option<&$result> {
+			unsafe { self.0.$find(name) }
 		}
+
+		$(#[$attr])*
+		pub fn $find_mut(&mut self, name: &CStr) -> Option<&mut $result> {
+			unsafe { self.0.$find_mut(name) }
+		}
+	};
+}
+
+impl<'a> Cvars<'a> {
+	cvar_find_fns! {
+		result = Registered;
+		find = find;
+		find_mut = find_mut;
+		/// Finds a named console variable or command,
+		/// returning `None` if one was not found.
+	}
+
+	cvar_find_fns! {
+		result = Variable;
+		find = find_var;
+		find_mut = find_var_mut;
+		/// Finds a named console variable,
+		/// returning `None` if one was not found.
+	}
+
+	cvar_find_fns! {
+		result = Command;
+		find = find_cmd;
+		find_mut = find_cmd_mut;
+		/// Finds a named console command,
+		/// returning `None` if one was not found.
+	}
+
+	/// Returns an iterator over all registered console variables and commands.
+	pub fn registered(&self) -> RegisteredIter<'_> {
+		unsafe { self.0.registered() }
+	}
+
+	/// Returns an iterator over all registered console variables and commands,
+	/// allowing mutable access to them.
+	pub fn registered_mut(&mut self) -> RegisteredIterMut<'_> {
+		unsafe { self.0.registered_mut() }
 	}
 }
-
-pub unsafe fn is_material_thread_set_allowed() -> bool {
-	#[allow(static_mut_refs)]
-	unsafe {
-		if let Some(cvar) = CVAR.as_ref() {
-			cvar.is_material_thread_set_allowed()
-		} else {
-			false
-		}
-	}
-}
-
-pub unsafe fn queue_material_thread_set<V: QueueMaterialThreadValue>(con_var: *mut ConVar, value: V) {
-	#[allow(static_mut_refs)]
-	unsafe {
-		if let Some(cvar) = CVAR.as_mut() {
-			cvar.queue_material_thread_set(con_var, value);
-		}
-	}
-}
-
-pub unsafe fn register_raw(registrable: RegistrableMut) -> bool {
-	with_cvar_mut(move |cvar| unsafe {
-		cvar.register_raw(registrable);
-		true
-	}).unwrap_or(false)
-}
-
-/// # Safety
-/// This function must be called from the main thread.
-/// 
-/// A call to this function must eventually be followed by a call to [`detach`].
-pub unsafe fn attach(factories: PluginFactories) {
-	match factories.create_interface::<Cvar>() {
-		Ok(mut iface) => {
-			unsafe { set_dll_identifier(iface.allocate_dll_identifier()) };
-			unsafe { CVAR = Some(iface) };
-		}
-		Err(error) => {
-			::rse_tier0::con_warn!("{error}");
-		}
-	}
-}
-
-/// # Safety
-/// This function must be called from the main thread.
-pub unsafe fn detach() {
-	let dll_id = dll_identifier();
-	#[allow(static_mut_refs)]
-	unsafe {
-		if dll_id >= FIRST_INIT_DLL_ID
-			&& let Some(cvar) = CVAR.as_mut()
-		{
-			cvar.unregister_all(dll_id);
-			reset_dll_identifier();
-		}
-		CVAR = None;
-	}
-}
-
-mod dll_id;
-pub use dll_id::*;

@@ -91,7 +91,7 @@ where
 				crate::thread::attach();
 
 				// SAFETY: `Self::load` is called on the main thread; `detach` is called in `Self::unload`.
-				unsafe { crate::con::cvar::attach(factories) }
+				unsafe { crate::con::cvar::raw::attach(factories) }
 
 				#[cfg(feature = "fs")]
 				init!(crate::fs::attach(factories));
@@ -143,7 +143,7 @@ where
 			Inner::NotLoaded => { /* nothing to do */ }
 			Inner::Loaded(p) => {
 				// SAFETY: `Self::unload` is called on the main thread.
-				unsafe { crate::con::cvar::detach() };
+				unsafe { crate::con::cvar::raw::detach() };
 				crate::thread::detach();
 				drop(p);
 				self.inner = Inner::NotLoaded;

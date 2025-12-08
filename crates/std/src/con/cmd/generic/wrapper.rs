@@ -72,7 +72,7 @@ where
 	}
 	fn dll_identifier(object: Pin<&mut ConCommandObject<'a, Self>>) -> CvarDllIdentifier {
 		let _ = object;
-		crate::con::cvar::dll_identifier()
+		crate::con::cvar::raw::dll_identifier()
 	}
 }
 
