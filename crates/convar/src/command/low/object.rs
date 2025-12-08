@@ -109,10 +109,16 @@ where
 		}
 	}
 
-	pub const fn new(
+	/// # Safety
+	/// `command_callback`, `completion_callback` and `bits`
+	/// must be properly initialized for `T`.
+	pub const unsafe fn new(
 		inner: T,
 		name: &'str CStr, help: Option<&'str CStr>,
 		flags: CvarFlags,
+		command_callback: CommandCallback,
+		completion_callback: CompletionCallback,
+		bits: ConCommandBits,
 	) -> Self {
 		unsafe { Self::from_raw(
 			inner,
@@ -124,11 +130,9 @@ where
 					help_string: ::rse_cpp::c_str::opt_c_str_as_ptr(help),
 					flags: flags.bits(),
 				},
-				command_callback: CommandCallback {
-					v1: empty_command_callback_v1,
-				},
-				completion_callback: CompletionCallback { not_used: () },
-				bits: ConCommandBits::new(),
+				command_callback,
+				completion_callback,
+				bits,
 			},
 		) }
 	}
@@ -258,5 +262,3 @@ impl<T> AsObject<ConCommandBaseVt> for ConCommandObject<'_, T> {
 		)
 	}
 }
-
-unsafe extern "C" fn empty_command_callback_v1() {}
