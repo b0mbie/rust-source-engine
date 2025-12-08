@@ -9,14 +9,3 @@ pub mod cvar;
 
 mod wrappers;
 pub use wrappers::*;
-
-pub mod prelude {
-	pub use crate::{
-		command::{
-			DispatchCommand, Suggestions,
-		},
-		console_base::CvarDllIdentifier,
-	};
-
-	pub use crate::cvar_value;
-}
