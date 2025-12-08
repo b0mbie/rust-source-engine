@@ -1,7 +1,5 @@
 //! APIs for interacting with Console Commands, or *ConCommands*.
 
-mod generic;
-pub use generic::*;
 mod invocation;
 pub use invocation::*;
 mod suggestions;
