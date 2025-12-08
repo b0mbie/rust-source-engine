@@ -9,21 +9,21 @@ autoregistered! {
 		..ConVarParams::EMPTY
 	}) };
 
-	static PRINT_O_COUNT: ConCommand = ConCommand::new(
+	static PRINT_O_COUNT: ConCommand = ConCommand::plain(
 		c"rse_autoregister_print_o_count",
 		None,
 		CvarFlags::empty(),
-		move |_| {
+		move || {
 			con_msg!("{}", O_COUNT.get());
 		},
 		None,
 	);
 
-	static GREET: ConCommand = ConCommand::new(
+	static GREET: ConCommand = ConCommand::plain(
 		c"rse_autoregister_greet",
 		None,
 		CvarFlags::empty(),
-		move |_| {
+		move || {
 			con().msg_raw(c"Hell");
 			for _ in 1..=O_COUNT.get() {
 				con().msg_raw('o');

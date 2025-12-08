@@ -1,20 +1,15 @@
 use ::core::ffi::CStr;
-use ::rse_convar::{
-	console_base::{
-		CvarFlags,
-		RegistrableMut,
-	},
-	command::{
-		Invocation, Suggestions,
-	},
+use ::rse_convar::console_base::{
+	CvarFlags,
+	RegistrableMut,
 };
 
 use super::{
-	GenericConCommand, DispatchCommand,
+	GenericConCommand, GenericCommand,
+	DispatchFn, CompleteFn,
+	DispatchPlainFn, DispatchWithFn,
+	Callbacks,
 };
-
-pub type DispatchCallback = fn(&Invocation);
-pub type CompleteCallback = fn(&CStr, &mut Suggestions);
 
 #[repr(transparent)]
 pub struct ConCommand {
@@ -22,19 +17,46 @@ pub struct ConCommand {
 }
 
 impl ConCommand {
-	pub const fn new(
+	pub const fn plain(
 		name: &'static CStr, help: Option<&'static CStr>,
 		flags: CvarFlags,
-		dispatch: DispatchCallback,
-		complete: Option<CompleteCallback>,
+		dispatch: DispatchPlainFn,
+		complete: Option<CompleteFn>,
+	) -> Self {
+		Self::with_callbacks(
+			name, help, flags,
+			Callbacks::Functions {
+				dispatch: DispatchFn::Plain(dispatch),
+				complete,
+			},
+		)
+	}
+
+	pub const fn with_args(
+		name: &'static CStr, help: Option<&'static CStr>,
+		flags: CvarFlags,
+		dispatch: DispatchWithFn,
+		complete: Option<CompleteFn>,
+	) -> Self {
+		Self::with_callbacks(
+			name, help, flags,
+			Callbacks::Functions {
+				dispatch: DispatchFn::With(dispatch),
+				complete,
+			},
+		)
+	}
+
+	pub const fn with_callbacks(
+		name: &'static CStr, help: Option<&'static CStr>,
+		flags: CvarFlags,
+		callbacks: Callbacks,
 	) -> Self {
 		Self {
 			inner: GenericConCommand::new(
-				DynConCommand {
-					dispatch,
-					complete,
-				},
+				DynConCommand,
 				name, help, flags,
+				callbacks,
 			),
 		}
 	}
@@ -49,21 +71,6 @@ impl ConCommand {
 }
 
 #[derive(Debug, Clone, Copy, Hash)]
-struct DynConCommand {
-	pub dispatch: DispatchCallback,
-	pub complete: Option<CompleteCallback>,
-}
+struct DynConCommand;
 
-impl DispatchCommand for DynConCommand {
-	fn dispatch(&mut self, invocation: &Invocation) {
-		(self.dispatch)(invocation)
-	}
-	fn can_auto_complete(&mut self) -> bool {
-		self.complete.is_some()
-	}
-	fn auto_complete(&mut self, partial: &CStr, suggestions: &mut Suggestions) {
-		if let Some(complete) = self.complete {
-			complete(partial, suggestions)
-		}
-	}
-}
+impl<'a> GenericCommand<'a> for DynConCommand {}

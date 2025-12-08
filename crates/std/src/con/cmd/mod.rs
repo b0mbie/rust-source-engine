@@ -1,6 +1,5 @@
 pub use ::rse_convar::command::{
-	DispatchCommand,
-	Suggestions,
+	Suggestions, SuggestionCount,
 	Invocation, Arg, ArgIter,
 };
 

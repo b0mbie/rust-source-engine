@@ -10,7 +10,7 @@ static GREETING: ConVar = unsafe { ConVar::new(
 	}
 ) };
 
-static GREET: ConCommand = ConCommand::new(
+static GREET: ConCommand = ConCommand::with_args(
 	c"rse_console_polite_echo",
 	Some(c"Echoes arguments with politeness."),
 	CvarFlags::empty(),
@@ -23,7 +23,15 @@ static GREET: ConCommand = ConCommand::new(
 		}
 		con().msg_raw(c"\n");
 	},
-	None,
+	Some(move |partial, suggestions| {
+		let Ok(partial) = partial.to_str() else {
+			return
+		};
+
+		if !partial.trim_end().ends_with(" \":)\"") {
+			suggestions.try_push(format!("{partial} \":)\""));
+		}
+	}),
 );
 
 struct Console;
