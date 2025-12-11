@@ -23,13 +23,7 @@ impl ConCommand {
 		dispatch: DispatchPlainFn,
 		complete: Option<CompleteFn>,
 	) -> Self {
-		Self::with_callbacks(
-			name, help, flags,
-			Callbacks::Functions {
-				dispatch: DispatchFn::Plain(dispatch),
-				complete,
-			},
-		)
+		Self::with_fn(name, help, flags, DispatchFn::Plain(dispatch), complete)
 	}
 
 	pub const fn with_args(
@@ -38,10 +32,19 @@ impl ConCommand {
 		dispatch: DispatchWithFn,
 		complete: Option<CompleteFn>,
 	) -> Self {
+		Self::with_fn(name, help, flags, DispatchFn::With(dispatch), complete)
+	}
+
+	pub const fn with_fn(
+		name: &'static CStr, help: Option<&'static CStr>,
+		flags: CvarFlags,
+		dispatch: DispatchFn,
+		complete: Option<CompleteFn>,
+	) -> Self {
 		Self::with_callbacks(
 			name, help, flags,
 			Callbacks::Functions {
-				dispatch: DispatchFn::With(dispatch),
+				dispatch,
 				complete,
 			},
 		)
