@@ -3,6 +3,8 @@ pub use ::rse_convar::command::{
 	Invocation, Arg, ArgIter,
 };
 
+mod callbacks;
+pub use callbacks::*;
 mod dynamic;
 pub use dynamic::*;
 mod generic;

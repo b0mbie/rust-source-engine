@@ -15,24 +15,8 @@ use ::rse_convar::{
 };
 
 use super::{
-	Invocation, Suggestions,
+	Callbacks, DispatchFn,
 };
-
-pub enum Callbacks {
-	Functions {
-		dispatch: DispatchFn,
-		complete: Option<CompleteFn>,
-	},
-}
-
-pub enum DispatchFn {
-	Plain(DispatchPlainFn),
-	With(DispatchWithFn),
-}
-
-pub type DispatchPlainFn = fn();
-pub type DispatchWithFn = fn(invocation: &Invocation);
-pub type CompleteFn = fn(partial: &CStr, suggestions: &mut Suggestions);
 
 mod wrapper;
 use wrapper::*;

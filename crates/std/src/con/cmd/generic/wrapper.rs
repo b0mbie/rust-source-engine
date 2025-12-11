@@ -23,10 +23,8 @@ use ::rse_convar::{
 	},
 };
 
-use super::{
-	super::{
-		Suggestions, Invocation, GenericCommand,
-	},
+use super::super::{
+	Suggestions, Invocation, GenericCommand,
 	DispatchPlainFn, DispatchWithFn, CompleteFn,
 };
 
