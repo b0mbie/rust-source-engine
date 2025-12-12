@@ -91,6 +91,7 @@ flags! {
 	b"hidden" <=> HIDDEN,
 	b"protected" <=> PROTECTED,
 	b"userinfo" <=> USERINFO,
+	b"printable_only" <=> PRINTABLE_ONLY,
 	b"unlogged" <=> UNLOGGED,
 	b"never_as_string" <=> NEVER_AS_STRING,
 	b"demo" <=> DEMO,
