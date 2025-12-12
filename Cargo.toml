@@ -27,6 +27,7 @@ members = [
 	"examples/filesystem",
 	"examples/multithreaded",
 	"examples/autoregister",
+	"examples/cvar-modifier",
 ]
 
 [workspace.lints.clippy]

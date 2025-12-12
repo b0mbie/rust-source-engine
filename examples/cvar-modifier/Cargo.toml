@@ -1,0 +1,15 @@
+[package]
+name = "example-cvar-modifier"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[features]
+link-srv = ["rse-std/link-srv"]
+
+[lib]
+name = "cvarmodifier"
+crate-type = ["cdylib"]
+
+[dependencies]
+rse-std.workspace = true
