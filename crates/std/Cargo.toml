@@ -31,6 +31,7 @@ cvar-autoregister = []
 
 [dependencies]
 atomic-wait = "1.1.0"
+bitflags.workspace = true
 libc.workspace = true
 thiserror.workspace = true
 rse-convar.workspace = true
@@ -68,4 +69,10 @@ default-features = false
 
 [dependencies.thread-bound]
 git = "https://github.com/b0mbie/thread-bound-rs.git"
+version = "0.1.0"
 default-features = false
+
+[dependencies.phf]
+version = "0.13.1"
+default-features = false
+features = ["macros"]
