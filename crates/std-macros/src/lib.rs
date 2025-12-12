@@ -2,8 +2,9 @@
 
 use ::darling::FromMeta;
 use ::proc_macro::TokenStream;
-use proc_macro2::Span;
-use ::proc_macro2::TokenStream as TokenStream2;
+use ::proc_macro2::{
+	Span, TokenStream as TokenStream2,
+};
 use ::syn::{
 	parse_macro_input, parse,
 	Result,
@@ -11,6 +12,8 @@ use ::syn::{
 	ItemStatic,
 	ItemFn,
 	Type, Expr,
+	Error,
+	Ident,
 };
 use ::quote::{
 	quote, ToTokens,
@@ -44,6 +47,18 @@ pub fn con_command(args: TokenStream, item: TokenStream) -> TokenStream {
 fn con_command_impl(args: TokenStream, item: TokenStream) -> Result<TokenStream> {
 	let item: ItemFn = parse(item)?;
 
+	let constructor = match item.sig.inputs.len() {
+		0 => "plain",
+		1 => "with_args",
+		_ => {
+			return Err(Error::new_spanned(
+				item.sig.inputs,
+				"console command dispatch functions must only take 0 or 1 arguments",
+			))
+		}
+	};
+	let constructor = Ident::new(constructor, Span::mixed_site());
+
 	let args: ConCommand = parse(args)?;
 	let name = if let Some(name) = args.name {
 		name.0
@@ -58,23 +73,25 @@ fn con_command_impl(args: TokenStream, item: TokenStream) -> Result<TokenStream>
 	let flags = args.flags.unwrap_or_else(default_flags);
 	let complete = opt_to_stream(args.complete);
 
-	let vis = item.vis.clone();
 	let ident = &item.sig.ident;
 
 	let mut item_name = item.sig.ident.clone();
 	item_name.set_span(Span::mixed_site());
 
 	Ok(quote! {
-		#[allow(non_upper_case_globals)]
-		#vis static #item_name: ::rse_std::con::cmd::ConCommand = ::rse_std::con::cmd::ConCommand::new(
-			#name, #help,
-			#flags,
-			{
-				#item
-				#ident
-			},
-			#complete,
-		);
+		const _: () = {
+			#[allow(non_upper_case_globals)]
+			static #item_name: ::rse_std::con::cmd::ConCommand = ::rse_std::con::cmd::ConCommand::#constructor(
+				#name, #help,
+				#flags,
+				{
+					#item
+					#ident
+				},
+				#complete,
+			);
+			::rse_std::opt_autoregister! { &#item_name }
+		};
 	}.into())
 }
 
