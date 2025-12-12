@@ -11,3 +11,7 @@ mod dynamic;
 pub use dynamic::*;
 mod generic;
 pub use generic::*;
+mod partial;
+pub use partial::*;
+mod pieces;
+pub use pieces::*;

@@ -1,7 +1,6 @@
-use ::core::ffi::CStr;
-
 use super::{
 	Invocation, Suggestions,
+	Partial,
 };
 
 pub enum Callbacks {
@@ -48,4 +47,4 @@ pub enum DispatchFn {
 
 pub type DispatchPlainFn = fn();
 pub type DispatchWithFn = fn(invocation: &Invocation);
-pub type CompleteFn = fn(partial: &CStr, suggestions: &mut Suggestions);
+pub type CompleteFn = fn(partial: Partial<'_>, suggestions: &mut Suggestions);

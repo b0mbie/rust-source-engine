@@ -72,6 +72,10 @@ git = "https://github.com/b0mbie/thread-bound-rs.git"
 version = "0.1.0"
 default-features = false
 
+[dependencies.sourconpars]
+git = "https://github.com/b0mbie/sourconpars.git"
+version = "0.1.0"
+
 [dependencies.phf]
 version = "0.13.1"
 default-features = false
