@@ -81,7 +81,7 @@ where
 /// # Examples
 /// This trait can be freely implemented for `repr(transparent)` wrappers:
 /// ```
-/// # use rse_cpp::PointerFrom;
+/// # use rse_cpp::ptr_compat::PointerFrom;
 /// pub type ForeignType = u8;
 /// 
 /// #[repr(transparent)]
@@ -93,7 +93,7 @@ where
 /// 
 /// For C++ types, the following is typically valid:
 /// ```
-/// # use rse_cpp::{PointerFrom, vtable};
+/// # use rse_cpp::{ptr_compat::PointerFrom, vtable};
 /// vtable! {
 ///     pub BaseVt {
 ///         pub fn do_thing();
