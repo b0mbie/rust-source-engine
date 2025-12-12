@@ -63,7 +63,7 @@ impl<'a> CStrWrite<'a> {
 
 	pub fn write(&mut self, data: &[u8]) -> usize {
 		let amt = data.len().min(self.len_without_nul());
-        let (dest, rest) = take(&mut self.bytes).split_at_mut(amt);
+		let (dest, rest) = take(&mut self.bytes).split_at_mut(amt);
 		dest.copy_from_slice(&data[..amt]);
 		self.bytes = rest;
 		amt
