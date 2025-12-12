@@ -26,6 +26,7 @@ use ::rse_convar::{
 use super::super::{
 	Suggestions, Invocation, GenericCommand,
 	DispatchPlainFn, DispatchWithFn, CompleteFn,
+	Partial,
 };
 
 pub(super) const fn dispatch_fn(f: DispatchPlainFn) -> CommandCallback {
@@ -105,6 +106,7 @@ where
 			SuggestionCount::ZERO
 		} else {
 			let f = unsafe { transmute::<CompletionCallbackFn, CompleteFn>(data.completion_callback.function) };
+			let partial = Partial::new(partial);
 			f(partial, suggestions);
 			suggestions.count()
 		}

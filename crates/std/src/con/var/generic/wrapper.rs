@@ -28,13 +28,13 @@ use ::rse_utl::{
 };
 
 use crate::{
-	c_buffer::CBuffer,
 	c_strings,
 	con::cvar::{
 		is_material_thread_set_allowed,
 		queue_material_thread_set,
 		call_global_change_callbacks,
 	},
+	ffi::CBuffer,
 	futex::Futex,
 };
 

@@ -3,7 +3,7 @@
 use ::core::ffi::CStr;
 use ::rse_server::VEngineServerImpl;
 
-use crate::c_buffer::CBuffer;
+use crate::ffi::CBuffer;
 
 pub use ::rse_server::{
 	Model, Decal, Generic,

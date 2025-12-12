@@ -29,7 +29,6 @@ macro_rules! cvar_value {
 }
 
 pub(crate) mod futex;
-pub(crate) mod c_buffer;
 pub(crate) mod c_strings;
 pub(crate) mod fmt_util;
 
