@@ -54,7 +54,7 @@ where
 /// that inherits from the C++ type that `Src` represents.
 /// 
 /// Due to some limitations in Rust,
-/// `PointerFrom<T> for T` is not implemented,
+/// `PointerFrom<Self> for T` is not implemented,
 /// as it would cause conflicting implementations.
 /// 
 /// # Safety
