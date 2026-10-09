@@ -22,7 +22,7 @@ use super::memory::{
 /// When the feature `tier0` is enabled, the default for `A` is `Tier0Memory<T>`.
 /// 
 /// # Layout
-/// This type has the exact same layout and ABI as [`UtlVector<T, A>`].
+/// This type has the exact same layout and ABI as [`CUtlVector<T, A>`].
 #[repr(transparent)]
 pub struct Vector<
 	T,
