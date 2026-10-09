@@ -8,7 +8,7 @@ use ::rse_tier0::{
 };
 
 use crate::{
-	cppdef::UtlMemory,
+	cppdef::CUtlMemory,
 	util::clamp_len_to_c_int,
 };
 
@@ -46,7 +46,7 @@ impl<T> Tier0Memory<T> {
 	pub const fn with_grow_size(token: Tier0AllocateToken<T>, grow_size: GrowSize) -> Self {
 		let _ = token;
 		Self {
-			memory: Memory::new(UtlMemory {
+			memory: Memory::new(CUtlMemory {
 				memory: null_mut(),
 				allocation_count: 0,
 				grow_size: grow_size.get(),
@@ -75,7 +75,7 @@ impl<T> Tier0Memory<T> {
 		let memory = unsafe { LinkedTier0Allocator.alloc((allocation_count as usize).checked_mul(size_of::<T>())?) };
 		if !memory.is_null() {
 			Some(Self {
-				memory: Memory::new(UtlMemory {
+				memory: Memory::new(CUtlMemory {
 					memory: memory as _,
 					allocation_count,
 					grow_size: grow_size.get(),

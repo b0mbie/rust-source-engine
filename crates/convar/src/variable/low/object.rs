@@ -8,31 +8,31 @@ use ::core::{
 	ptr::null_mut,
 };
 use ::rse_cpp::{
-	ptr_compat::PointerFrom,
+	ptr_compat::{
+		PointerFrom,
+		convert_ref, convert_mut,
+	},
 	c_str::{
 		opt_c_str_from_ptr, opt_c_str_as_ptr,
 	},
-	convert_vt_ref, convert_vt_mut,
 	new_vtable_self, vtable_methods, virtual_call,
-	this_to_self, this_to_pin_self,
-	AsObject, VtObject,
-	VtObjectPtr, RefMut,
+	this_to_self, this_to_pin_self, This,
+	RefMut,
 	TypeInfo,
 	VTablePtr,
 };
 
 use crate::{
 	cppdef::{
-		ConVar, ConVarVtExt, ConVarVtFull, ConVarVt,
-		ConVarIfaceVt,
-		ConVarExt as CConVarExt,
-		ConCommandBaseExt as CConCommandBaseExt,
-		ConCommandBaseVtBase,
+		ConVar, ConVarVtFull, ConVarVt,
+		Registrable, RegistrableVt, RegistrableData,
+		IConVar, IConVarVt,
+		ConVarData,
 		CvarDllIdentifier,
 		FnChangeCallback,
 	},
 	console_base::{
-		ConCommandBaseExt, CvarFlags,
+		RegistrableExt, CvarFlags,
 	},
 };
 
@@ -65,13 +65,13 @@ impl<'str, T> ConVarObject<'str, T> {
 		}
 	}
 
-	pub fn into_raw(self) -> (T, CConVarExt) {
+	pub fn into_raw(self) -> (T, ConVarData) {
 		let Self { con_var, inner, .. } = self;
 		(inner, con_var.data)
 	}
 
 	pub const fn name(&self) -> &'str CStr {
-		unsafe { CStr::from_ptr(self.con_var.data.base.name) }
+		unsafe { CStr::from_ptr(self.con_var.data.inherited_registrable.name) }
 	}
 	
 	pub const fn default(&self) -> &'str CStr {
@@ -79,14 +79,20 @@ impl<'str, T> ConVarObject<'str, T> {
 	}
 
 	pub const fn help(&self) -> Option<&'str CStr> {
-		unsafe { opt_c_str_from_ptr(self.con_var.data.base.help_string) }
+		unsafe { opt_c_str_from_ptr(self.con_var.data.inherited_registrable.help_string) }
 	}
 
-	pub const fn as_raw(&self) -> &ConVar {
+	/// # Safety
+	/// The object's parent must've been initialized with [`init_parent`](Self::init_parent) beforehand
+	/// to be able to use the returned object safely.
+	pub const unsafe fn as_raw(&self) -> &ConVar {
 		&self.con_var
 	}
 
 	/// # Safety
+	/// The object's parent must've been initialized with [`init_parent`](Self::init_parent) beforehand
+	/// to be able to use the returned object safely.
+	/// 
 	/// The returned [`ConVar`]'s public fields must not be mutated
 	/// such that they could cause Undefined Behavior when used in conjunction with `T`.
 	pub const unsafe fn as_mut_raw(&mut self) -> &mut ConVar {
@@ -96,37 +102,23 @@ impl<'str, T> ConVarObject<'str, T> {
 	/// # Safety
 	/// The object's parent must've been initialized with [`init_parent`](Self::init_parent) beforehand
 	/// to be able to use the returned object safely.
-	pub const unsafe fn as_object(&self) -> &VtObject<ConVarVt> {
-		self.con_var.as_object()
+	pub const unsafe fn as_base_object(&self) -> &Registrable {
+		convert_ref(unsafe { self.as_raw() })
 	}
 
 	/// # Safety
 	/// The object's parent must've been initialized with [`init_parent`](Self::init_parent) beforehand
 	/// to be able to use the returned object safely.
-	pub const unsafe fn as_mut_object(&mut self) -> &mut VtObject<ConVarVt> {
-		self.con_var.as_mut_object()
+	pub const unsafe fn as_mut_base_object(&mut self) -> &mut Registrable {
+		convert_mut(unsafe { self.as_mut_raw() })
 	}
 
-	/// # Safety
-	/// The object's parent must've been initialized with [`init_parent`](Self::init_parent) beforehand
-	/// to be able to use the returned object safely.
-	pub const unsafe fn as_base_object(&self) -> &VtObject<ConCommandBaseVtBase> {
-		convert_vt_ref(unsafe { self.as_object() })
+	pub const fn as_base(&self) -> &RegistrableExt {
+		unsafe { RegistrableExt::from_ref(&self.con_var.data.inherited_registrable) }
 	}
 
-	/// # Safety
-	/// The object's parent must've been initialized with [`init_parent`](Self::init_parent) beforehand
-	/// to be able to use the returned object safely.
-	pub const unsafe fn as_mut_base_object(&mut self) -> &mut VtObject<ConCommandBaseVtBase> {
-		convert_vt_mut(unsafe { self.as_mut_object() })
-	}
-
-	pub const fn as_base(&self) -> &ConCommandBaseExt {
-		unsafe { ConCommandBaseExt::from_ref(&self.con_var.data.base) }
-	}
-
-	pub const fn as_mut_base(&mut self) -> &mut ConCommandBaseExt {
-		unsafe { ConCommandBaseExt::from_mut(&mut self.con_var.data.base) }
+	pub const fn as_mut_base(&mut self) -> &mut RegistrableExt {
+		unsafe { RegistrableExt::from_mut(&mut self.con_var.data.inherited_registrable) }
 	}
 
 	/// # Safety
@@ -145,16 +137,12 @@ impl<'str, T> ConVarObject<'str, T> {
 		unsafe { ConVarExt::from_mut(&mut self.con_var.data) }
 	}
 
-	pub const fn as_iface(&self) -> &VtObject<ConVarIfaceVt> {
-		unsafe { VtObject::from_ptr_const(
-			VtObjectPtr::new_unchecked(&self.con_var.data.iface as *const _ as *mut _)
-		) }
+	pub const fn as_iface(&self) -> &IConVar {
+		&self.con_var.data.inherited_i_con_var
 	}
 
-	pub const fn as_mut_iface(&mut self) -> &mut VtObject<ConVarIfaceVt> {
-		unsafe { VtObject::from_ptr_mut(
-			VtObjectPtr::new_unchecked(&mut self.con_var.data.iface)
-		) }
+	pub const fn as_mut_iface(&mut self) -> &mut IConVar {
+		&mut self.con_var.data.inherited_i_con_var
 	}
 
 	/// # Safety
@@ -178,12 +166,12 @@ where
 {
 	/// # Safety
 	/// `ext` must be properly initialized.
-	pub const unsafe fn from_raw(inner: T, ext: CConVarExt) -> Self {
+	pub const unsafe fn from_raw(inner: T, data: ConVarData) -> Self {
 		Self {
-			con_var: ConVar::new(
-				VTablePtr::from_ref(&Self::CON_VAR_VT.base),
-				ext,
-			),
+			con_var: ConVar {
+				vtable: VTablePtr::from_ref(&Self::CON_VAR_VT.base),
+				data,
+			},
 			inner,
 			_strings: PhantomData,
 		}
@@ -193,15 +181,17 @@ where
 		let ConVarParams { name, help, default, min, max, comp_min, comp_max, flags } = params;
 		unsafe { Self::from_raw(
 			inner,
-			CConVarExt {
-				base: CConCommandBaseExt {
+			ConVarData {
+				inherited_registrable: RegistrableData {
 					next: null_mut(),
 					registered: false,
 					name: name.as_ptr(),
 					help_string: opt_c_str_as_ptr(help),
 					flags: flags.bits(),
 				},
-				iface: VTablePtr::from_ref(Self::IFACE_VT),
+				inherited_i_con_var: IConVar {
+					vtable: VTablePtr::from_ref(Self::IFACE_VT),
+				},
 
 				parent: null_mut(),
 				parent_pin: PhantomPinned,
@@ -230,7 +220,7 @@ where
 	const TYPE_INFO: &'static TypeInfo = &TypeInfo::new(c"6ConVar");
 
 	// TODO: Test if these implementations are okay.
-	const IFACE_VT: &'static ConVarIfaceVt = &ConVarIfaceVt {
+	const IFACE_VT: &'static IConVarVt = &IConVarVt {
 		set_value_string: Self::iface_set_value_string,
 		set_value_float: Self::iface_set_value_float,
 		set_value_int: Self::iface_set_value_int,
@@ -239,22 +229,19 @@ where
 	};
 
 	unsafe fn do_set_value_string(&mut self, value: *const c_char) {
-		let vt_object = self.parent_mut().as_object();
-		unsafe { virtual_call!(vt_object => ext.internal_set_value(value)) }
+		unsafe { virtual_call!(self.parent_mut() => internal_set_value(value)) }
 	}
 
 	unsafe fn do_set_value_float(&mut self, value: c_float) {
-		let vt_object = self.parent_mut().as_object();
-		unsafe { virtual_call!(vt_object => ext.internal_set_float_value(value)) }
+		unsafe { virtual_call!(self.parent_mut() => internal_set_float_value(value)) }
 	}
 
 	unsafe fn do_set_value_int(&mut self, value: c_int) {
-		let vt_object = self.parent_mut().as_object();
-		unsafe { virtual_call!(vt_object => ext.internal_set_int_value(value)) }
+		unsafe { virtual_call!(self.parent_mut() => internal_set_int_value(value)) }
 	}
 
 	vtable_methods! {
-		this: VtObjectPtr<ConVarIfaceVt>;
+		this: This<IConVar>;
 		fn iface_set_value_string(value: *const c_char) {
 			unsafe { this_to_self!(mut this).do_set_value_string(value) }
 		}
@@ -265,10 +252,10 @@ where
 			unsafe { this_to_self!(mut this).do_set_value_int(value) }
 		}
 		fn iface_get_name() -> *const c_char {
-			this_to_self!(ref this).con_var.data.base.name
+			unsafe { this_to_self!(ref this) }.con_var.data.inherited_registrable.name
 		}
 		fn iface_is_flag_set(flag: c_int) -> bool {
-			this_to_self!(ref this).as_base().are_flags_set(CvarFlags::from_bits_retain(flag))
+			unsafe { this_to_self!(ref this) }.as_base().are_flags_set(CvarFlags::from_bits_retain(flag))
 		}
 	}
 
@@ -276,42 +263,40 @@ where
 		offset_to_derived: 0,
 		type_info: Self::TYPE_INFO,
 		base: ConVarVt {
-			base: new_vtable_self!(ConCommandBaseVtBase {
+			inherited_registrable: new_vtable_self!(RegistrableVt {
 				destructor,
 				#[cfg(not(windows))]
 				destructor_2,
 				is_command,
 			}),
-			ext: new_vtable_self!(ConVarVtExt {
-				#[cfg(not(windows))]
-				is_flag_set,
-				add_flags,
-				#[cfg(not(windows))]
-				get_name,
-				get_help_text,
-				is_registered,
-				get_dll_identifier,
-				create_base,
-				init,
-				#[cfg(not(windows))]
-				set_value_string,
-				#[cfg(not(windows))]
-				set_value_float,
-				#[cfg(not(windows))]
-				set_value_int,
-				internal_set_value,
-				internal_set_float_value,
-				internal_set_int_value,
-				clamp_value,
-				change_string_value,
-				create_vtbl,
-				internal_set_float_value_2,
-			}),
+			#[cfg(not(windows))]
+			is_flag_set: Self::is_flag_set,
+			add_flags: Self::add_flags,
+			#[cfg(not(windows))]
+			get_name: Self::get_name,
+			get_help_text: Self::get_help_text,
+			is_registered: Self::is_registered,
+			get_dll_identifier: Self::get_dll_identifier,
+			create_base: Self::create_base,
+			init: Self::init,
+			#[cfg(not(windows))]
+			set_value_string: Self::set_value_string,
+			#[cfg(not(windows))]
+			set_value_float: Self::set_value_float,
+			#[cfg(not(windows))]
+			set_value_int: Self::set_value_int,
+			internal_set_value: Self::internal_set_value,
+			internal_set_float_value: Self::internal_set_float_value,
+			internal_set_int_value: Self::internal_set_int_value,
+			clamp_value: Self::clamp_value,
+			change_string_value: Self::change_string_value,
+			create_vtbl: Self::create_vtbl,
+			internal_set_float_value_2: Self::internal_set_float_value_2,
 		},
 	};
 
 	vtable_methods! {
-		this: VtObjectPtr<ConCommandBaseVtBase>;
+		this: This<Registrable>;
 		fn destructor() {
 			let _ = this;
 			// TODO: Destructor?
@@ -328,10 +313,10 @@ where
 	}
 
 	vtable_methods! {
-		this: VtObjectPtr<ConVarVt>;
+		this: This<ConVar>;
 		#[cfg(not(windows))]
 		fn is_flag_set(flag: c_int) -> bool {
-			this_to_self!(ref this).as_base().are_flags_set(CvarFlags::from_bits_retain(flag))
+			unsafe { this_to_self!(ref this) }.as_base().are_flags_set(CvarFlags::from_bits_retain(flag))
 		}
 		fn add_flags(flags: c_int) {
 			let this = unsafe { this_to_pin_self!(mut this) };
@@ -339,12 +324,12 @@ where
 		}
 		#[cfg(not(windows))]
 		fn get_name() -> *const c_char {
-			this_to_self!(ref this).con_var.data.base.name
+			unsafe { this_to_self!(ref this) }.con_var.data.inherited_registrable.name
 		}
 		fn get_help_text() -> *const c_char {
 			let this_pinned = unsafe { this_to_pin_self!(mut this) };
 			T::help(this_pinned);
-			this_to_self!(ref this).con_var.data.base.help_string
+			unsafe { this_to_self!(ref this) }.con_var.data.inherited_registrable.help_string
 		}
 		fn is_registered() -> bool {
 			let this = unsafe { this_to_pin_self!(mut this) };
@@ -428,8 +413,9 @@ where
 
 unsafe impl<T> PointerFrom<ConVarObject<'_, T>> for ConVar {}
 
-impl<T> AsObject<ConVarVt> for ConVarObject<'_, T> {
-	fn as_object(&self) -> &VtObject<ConVarVt> {
-		self.con_var.as_object()
-	}
-}
+// TODO: What do?
+// impl<T> AsObject<ConVarVt> for ConVarObject<'_, T> {
+// 	fn as_object(&self) -> &VtObject<ConVarVt> {
+// 		self.con_var.as_object()
+// 	}
+// }

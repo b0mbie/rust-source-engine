@@ -2,9 +2,7 @@ use ::core::ffi::{
 	CStr, c_float,
 };
 use ::rse_convar::{
-	cvar::{
-		CvarImpl, QueueMaterialThreadValue,
-	},
+	cvar::QueueMaterialThreadValue,
 	cppdef::ConVar,
 	console_base::RegistrableMut,
 };
@@ -16,7 +14,7 @@ use super::raw::{
 pub unsafe fn call_global_change_callbacks(registered: *mut ConVar, old_string: &CStr, old_float: c_float) {
 	let f = move |cvar: Option<&mut Cvar>| {
 		if let Some(cvar) = cvar {
-			unsafe { cvar.call_global_change_callbacks(registered, old_string, old_float) }
+			unsafe { cvar.as_v4().call_global_change_callbacks(registered, old_string, old_float) }
 		}
 	};
 	unsafe { raw::inspect(f) }
@@ -24,7 +22,7 @@ pub unsafe fn call_global_change_callbacks(registered: *mut ConVar, old_string: 
 
 pub fn is_material_thread_set_allowed() -> bool {
 	let f = move |cvar: Option<&Cvar>| {
-		cvar.map(move |cvar| cvar.is_material_thread_set_allowed()).unwrap_or(false)
+		cvar.map(move |cvar| cvar.as_v4().is_material_thread_set_allowed()).unwrap_or(false)
 	};
 	unsafe { raw::inspect_mt(f) }
 }
@@ -32,7 +30,7 @@ pub fn is_material_thread_set_allowed() -> bool {
 pub unsafe fn queue_material_thread_set<V: QueueMaterialThreadValue>(con_var: *mut ConVar, value: V) {
 	let f = move |cvar: Option<&mut Cvar>| {
 		if let Some(cvar) = cvar {
-			unsafe { cvar.queue_material_thread_set(con_var, value) }
+			unsafe { cvar.as_mut_v4().queue_material_thread_set(con_var, value) }
 		}
 	};
 	unsafe { raw::inspect_unchecked(f) }
@@ -41,7 +39,7 @@ pub unsafe fn queue_material_thread_set<V: QueueMaterialThreadValue>(con_var: *m
 pub unsafe fn register_raw(registrable: RegistrableMut) -> bool {
 	let f = move |cvar: Option<&mut Cvar>| {
 		if let Some(cvar) = cvar {
-			unsafe { cvar.register_raw(registrable) };
+			unsafe { cvar.as_mut_v4().register_raw(registrable) };
 			true
 		} else {
 			false

@@ -29,7 +29,7 @@ pub mod prelude {
 	pub use crate::{
 		linked::{
 			LinkedTier0,
-			cmd::command_line,
+			cmd,
 			spew::{
 				con, dev, dev_con,
 			},
@@ -42,7 +42,7 @@ pub mod prelude {
 		Tier0Errors,
 		Color,
 		Logger, LevelLogger, ColorLogger, ColorLevelLogger,
-		Tier0GetCommandLine, Tier0CommandLine,
+		Tier0WithCommandLine, Tier0CommandLine,
 		msg, warn, log, color_msg,
 		msgln, warnln, logln,
 	};

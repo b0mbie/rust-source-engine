@@ -1,9 +1,6 @@
 //! Source Engine client functionality.
 
 use ::core::ffi::CStr;
-use ::rse_client::interfaces::{
-	VEngineClientImpl, VEngineClient013Impl,
-};
 
 pub mod raw;
 
@@ -16,7 +13,7 @@ pub mod raw;
 /// Use [`execute_unrestricted`]
 /// to be able to execute any command.
 pub fn execute(command: &CStr) {
-	unsafe { raw::inspect_mt(move |cl| cl.client_cmd(command)) }
+	unsafe { raw::inspect_mt(move |cl| cl.as_v13().client_cmd(command)) }
 }
 
 /// Inserts `command` into the command buffer as if it was typed by the client to their console.
@@ -25,7 +22,7 @@ pub fn execute(command: &CStr) {
 /// Unlike [`execute`],
 /// this function can execute any command.
 pub fn execute_unrestricted(command: &CStr) {
-	unsafe { raw::inspect_mt(move |cl| cl.client_cmd_unrestricted(command)) }
+	unsafe { raw::inspect_mt(move |cl| cl.as_v13().client_cmd_unrestricted(command)) }
 }
 
 /// Returns the size of the area that the game is being rendered to.
@@ -34,7 +31,7 @@ pub fn screen_size() -> (usize, usize) {
 		raw::inspect_mt(move |cl| {
 			let mut width = 0;
 			let mut height = 0;
-			cl.screen_size(&mut width, &mut height);
+			cl.as_v13().screen_size(&mut width, &mut height);
 			(width.max(0) as _, height.max(0) as _)
 		})
 	}
@@ -44,7 +41,7 @@ pub fn screen_size() -> (usize, usize) {
 pub fn in_game() -> bool {
 	unsafe {
 		raw::inspect(move |cl| {
-			cl.map(move |cl| cl.is_in_game()).unwrap_or(false)
+			cl.map(move |cl| cl.as_v13().is_in_game()).unwrap_or(false)
 		})
 	}
 }
@@ -53,7 +50,7 @@ pub fn in_game() -> bool {
 pub fn connected() -> bool {
 	unsafe {
 		raw::inspect(move |cl| {
-			cl.map(move |cl| cl.is_connected()).unwrap_or(false)
+			cl.map(move |cl| cl.as_v13().is_connected()).unwrap_or(false)
 		})
 	}
 }
@@ -65,7 +62,7 @@ pub fn connected() -> bool {
 pub fn take_screenshot(path: &CStr, folder: Option<&CStr>) {
 	unsafe {
 		raw::inspect(move |cl| if let Some(cl) = cl {
-			cl.take_screenshot(path, folder)
+			cl.as_v13().take_screenshot(path, folder)
 		})
 	}
 }

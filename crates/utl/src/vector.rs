@@ -8,7 +8,7 @@ use ::core::{
 };
 
 use crate::{
-	cppdef::UtlVector,
+	cppdef::CUtlVector,
 	util::clamp_len_to_c_int,
 };
 
@@ -30,7 +30,7 @@ pub struct Vector<
 	A = super::memory::tier0::Tier0Memory<T>,
 	#[cfg(not(feature = "tier0"))]
 	A,
->(UtlVector<T, A>)
+>(CUtlVector<T, A>)
 where
 	A: UtlMemoryOfMut<T>;
 
@@ -58,7 +58,7 @@ where
 	where
 		A: UtlMemoryEmpty<T>,
 	{
-		Self(UtlVector {
+		Self(CUtlVector {
 			memory: A::EMPTY,
 			size: 0,
 			#[cfg(not(feature = "xbox360"))]
@@ -69,7 +69,7 @@ where
 	/// Returns a new vector with the given underlying `memory`.
 	pub fn new(memory: A) -> Self {
 		let elements = memory.allocations() as _;
-		Self(UtlVector {
+		Self(CUtlVector {
 			memory,
 			size: 0,
 			#[cfg(not(feature = "xbox360"))]
@@ -141,7 +141,7 @@ where
 		&mut self.0.memory
 	}
 
-	::rse_cpp::transparent_wrapper_impls!(Vector for UtlVector<T, A> as "UtlVector");
+	::rse_cpp::transparent_wrapper_impls!(Vector for CUtlVector<T, A> as "UtlVector");
 
 	#[doc(alias = "AddToTail")]
 	pub fn push(&mut self, value: T)

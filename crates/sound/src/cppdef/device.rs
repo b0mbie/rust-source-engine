@@ -1,9 +1,8 @@
 use ::core::ffi::{
 	c_char, c_int, c_float, c_uint, c_short,
 };
-use ::rse_cpp::VtObjectPtr;
 
-use super::AudioMixerVt;
+use super::CAudioMixer;
 
 #[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
 #[repr(C)]
@@ -16,22 +15,22 @@ pub struct channel_t {
 
 pub type FixedInt = c_uint;
 
-::rse_cpp::vtable! {
-	pub AudioDeviceVt {
-		pub fn destructor();
+::rse_cpp::class! {
+	pub IAudioDevice {
+		pub virtual fn destructor();
 		#[cfg(not(windows))]
-		pub fn destructor_2();
-		pub fn init() -> bool;
-		pub fn shutdown();
-		pub fn device_name() -> *const c_char;
-		pub fn device_channels() -> c_int;
-		pub fn device_sample_bits() -> c_int;
-		pub fn device_sample_bytes() -> c_int;
-		pub fn device_sample_rate() -> c_int;
-		pub fn device_sample_count() -> c_int;
-		pub fn mix_begin();
+		pub virtual fn destructor_2();
+		pub virtual fn init() -> bool;
+		pub virtual fn shutdown();
+		pub virtual fn device_name() -> *const c_char;
+		pub virtual fn device_channels() -> c_int;
+		pub virtual fn device_sample_bits() -> c_int;
+		pub virtual fn device_sample_bytes() -> c_int;
+		pub virtual fn device_sample_rate() -> c_int;
+		pub virtual fn device_sample_count() -> c_int;
+		pub virtual fn mix_begin();
 
-		pub fn mix_8_mono(
+		pub virtual fn mix_8_mono(
 			channel: *mut channel_t,
 			data: *mut c_char,
 			output_offset: c_int, input_offset: c_int,
@@ -40,7 +39,7 @@ pub type FixedInt = c_uint;
 			time_compress: c_int,
 			forward: bool,
 		);
-		pub fn mix_8_stereo(
+		pub virtual fn mix_8_stereo(
 			channel: *mut channel_t,
 			data: *mut c_char,
 			output_offset: c_int, input_offset: c_int,
@@ -49,7 +48,7 @@ pub type FixedInt = c_uint;
 			time_compress: c_int,
 			forward: bool,
 		);
-		pub fn mix_16_mono(
+		pub virtual fn mix_16_mono(
 			channel: *mut channel_t,
 			data: *mut c_short,
 			output_offset: c_int, input_offset: c_int,
@@ -58,7 +57,7 @@ pub type FixedInt = c_uint;
 			time_compress: c_int,
 			forward: bool,
 		);
-		pub fn mix_16_stereo(
+		pub virtual fn mix_16_stereo(
 			channel: *mut channel_t,
 			data: *mut c_short,
 			output_offset: c_int, input_offset: c_int,
@@ -68,12 +67,12 @@ pub type FixedInt = c_uint;
 			forward: bool,
 		);
 
-		pub fn paint_buffer_sample_count() -> c_int;
-		pub fn add_source(source: VtObjectPtr<AudioMixerVt>);
-		pub fn stop_sounds();
-		pub fn update();
-		pub fn flush();
+		pub virtual fn paint_buffer_sample_count() -> c_int;
+		pub virtual fn add_source(source: *mut CAudioMixer);
+		pub virtual fn stop_sounds();
+		pub virtual fn update();
+		pub virtual fn flush();
 
-		pub fn find_source_index(source: VtObjectPtr<AudioMixerVt>);
+		pub virtual fn find_source_index(source: *mut CAudioMixer);
 	}
 }

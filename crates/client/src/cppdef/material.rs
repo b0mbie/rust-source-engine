@@ -1,11 +1,11 @@
-use ::rse_cpp::vtable;
+use ::rse_cpp::class;
 
-vtable! {
+class! {
 	// TODO: `IMaterial`.
-	pub MaterialVt {}
+	pub IMaterial {}
 }
 
-vtable! {
+class! {
 	// TODO: `IMaterialSystem`.
-	pub MaterialSystemVt {}
+	pub IMaterialSystem {}
 }

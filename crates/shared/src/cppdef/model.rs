@@ -12,7 +12,7 @@ use ::rse_math::VectorAligned;
 // TODO: This is called `csurface_t` in code. Figure out why, and maybe rename.
 #[derive(Debug)]
 #[repr(C)]
-pub struct Surface {
+pub struct csurface_t {
 	pub name: *const c_char,
 	pub surface_props: c_short,
 	pub flags: c_ushort,
@@ -20,7 +20,7 @@ pub struct Surface {
 
 #[derive(Debug)]
 #[repr(C)]
-pub struct Ray {
+pub struct Ray_t {
 	pub start: VectorAligned,
 	pub delta: VectorAligned,
 	pub start_offset: VectorAligned,

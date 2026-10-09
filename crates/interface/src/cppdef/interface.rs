@@ -26,10 +26,10 @@ pub enum IfaceStatus {
 	Failed,
 }
 
-::rse_cpp::vtable! {
-	pub BaseInterfaceVt {
-		pub fn destructor();
+::rse_cpp::class! {
+	pub IBaseInterface {
+		pub virtual fn destructor();
 		#[cfg(not(windows))]
-		pub fn destructor_2();
+		pub virtual fn destructor_2();
 	}
 }

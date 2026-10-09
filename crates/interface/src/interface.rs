@@ -5,10 +5,7 @@ use crate::cppdef::{
 };
 
 /// Trait for interfaces that are identified by a C string.
-/// 
-/// # Safety
-/// `IDENTIFIER` must be valid to be used to query for a value of the implementing type.
-pub unsafe trait Interface {
+pub trait Interface {
 	const IDENTIFIER: &CStr;
 }
 
@@ -28,7 +25,7 @@ pub unsafe trait FromRawInterface: Interface {
 	fn convert_error(code: Self::Code) -> Self::Error;
 }
 
-pub trait ToRawInterface: Interface {
+pub trait ToRawInterface {
 	/// # Safety
 	/// The returned [`RawInterface`] is valid only for the duration specified by the implementing interface.
 	unsafe fn to_raw_interface(&mut self) -> RawInterface;

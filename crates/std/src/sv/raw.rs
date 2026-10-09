@@ -1,7 +1,4 @@
-use ::rse_cpp::{
-	AsObject, VtObject,
-};
-use ::rse_server::VEngineServer;
+use ::rse_server::OVEngineServer;
 
 use crate::{
 	plugin::PluginFactories,
@@ -9,8 +6,7 @@ use crate::{
 };
 
 pub use ::rse_server::{
-	cppdef::VEngineServerVt,
-	VEngineServerImpl,
+	VEngineServer,
 };
 
 /// Tries to initialize the `IVEngineServer` functions in this module.
@@ -79,18 +75,16 @@ pub struct Server {
 }
 
 impl Server {
-	pub fn as_v23(&self) -> &VtObject<VEngineServerVt> {
+	pub fn as_v23(&self) -> &VEngineServer {
 		match self.inner {
-			Inner::V23(ref sv) => sv.as_object(),
+			Inner::V23(ref sv) => sv,
 			_ => unsafe { ::core::hint::unreachable_unchecked() },
 		}
 	}
-
-	const fn from_mut(inner: &mut Inner) -> Option<&mut Self> {
-		match inner {
-			Inner::None => None,
-			// SAFETY: `Self` is a transparent wrapper for `Inner`.
-			inner => unsafe { Some(&mut *(inner as *mut Inner as *mut Self)) }
+	pub fn as_mut_v23(&mut self) -> &mut VEngineServer {
+		match self.inner {
+			Inner::V23(ref mut sv) => sv,
+			_ => unsafe { ::core::hint::unreachable_unchecked() },
 		}
 	}
 
@@ -101,17 +95,18 @@ impl Server {
 			inner => unsafe { Some(&*(inner as *const Inner as *const Self)) }
 		}
 	}
-}
-
-impl AsObject<VEngineServerVt> for Server {
-	fn as_object(&self) -> &VtObject<VEngineServerVt> {
-		self.as_v23()
+	const fn from_mut(inner: &mut Inner) -> Option<&mut Self> {
+		match inner {
+			Inner::None => None,
+			// SAFETY: `Self` is a transparent wrapper for `Inner`.
+			inner => unsafe { Some(&mut *(inner as *mut Inner as *mut Self)) }
+		}
 	}
 }
 
 enum Inner {
 	None,
-	V23(VEngineServer),
+	V23(OVEngineServer),
 }
 
 static SERVER: GlobalInterface<Inner> = GlobalInterface::new(Inner::None);

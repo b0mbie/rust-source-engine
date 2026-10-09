@@ -1,10 +1,7 @@
 use ::atomic::*;
 use ::rse_convar::{
-	cvar::Cvar as ICvar,
+	cvar::OCvar,
 	console_base::CvarDllIdentifier,
-};
-use ::rse_cpp::{
-	AsObject, VtObject,
 };
 
 use crate::{
@@ -13,12 +10,7 @@ use crate::{
 	thread::on_main_thread,
 };
 
-pub use ::rse_convar::{
-	cppdef::{
-		CvarVt, CvarVtBase,
-	},
-	cvar::CvarImpl,
-};
+pub use ::rse_convar::cvar::Cvar as ICvar;
 
 /// # Safety
 /// This function must be called from the main thread.
@@ -97,18 +89,16 @@ pub struct Cvar {
 }
 
 impl Cvar {
-	pub fn as_v4(&self) -> &VtObject<CvarVt> {
+	pub fn as_v4(&self) -> &ICvar {
 		match self.inner {
-			Inner::V4(ref sv) => sv.as_object(),
+			Inner::V4(ref sv) => sv,
 			_ => unsafe { ::core::hint::unreachable_unchecked() },
 		}
 	}
-
-	const fn from_mut(inner: &mut Inner) -> Option<&mut Self> {
-		match inner {
-			Inner::None => None,
-			// SAFETY: `Self` is a transparent wrapper for `Inner`.
-			inner => unsafe { Some(&mut *(inner as *mut Inner as *mut Self)) }
+	pub fn as_mut_v4(&mut self) -> &mut ICvar {
+		match self.inner {
+			Inner::V4(ref mut sv) => sv,
+			_ => unsafe { ::core::hint::unreachable_unchecked() },
 		}
 	}
 
@@ -119,17 +109,18 @@ impl Cvar {
 			inner => unsafe { Some(&*(inner as *const Inner as *const Self)) }
 		}
 	}
-}
-
-impl AsObject<CvarVt> for Cvar {
-	fn as_object(&self) -> &VtObject<CvarVt> {
-		self.as_v4()
+	const fn from_mut(inner: &mut Inner) -> Option<&mut Self> {
+		match inner {
+			Inner::None => None,
+			// SAFETY: `Self` is a transparent wrapper for `Inner`.
+			inner => unsafe { Some(&mut *(inner as *mut Inner as *mut Self)) }
+		}
 	}
 }
 
 enum Inner {
 	None,
-	V4(ICvar),
+	V4(OCvar),
 }
 
 static CVAR: UnsafeExclusive<Inner> = UnsafeExclusive::new(Inner::None);

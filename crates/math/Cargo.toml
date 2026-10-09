@@ -8,3 +8,4 @@ authors.workspace = true
 workspace = true
 
 [dependencies]
+rse-cpp.workspace = true

@@ -1,11 +1,8 @@
 use ::core::ffi::{
 	CStr, c_int,
 };
-use ::rse_game_interfaces::{
-	cppdef::{
-		FileSystemSeek, ValidFileHandle,
-	},
-	BaseFileSystemImpl,
+use ::rse_game_interfaces::cppdef::{
+	FileSystemSeek, ValidFileHandle,
 };
 use ::std::io::{
 	Seek as StdSeek, SeekFrom as StdSeekFrom,

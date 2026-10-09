@@ -1,6 +1,4 @@
-use ::rse_cpp::{
-	VtObject, virtual_call,
-};
+use ::rse_cpp::virtual_call;
 
 use crate::{
 	Tier0Alloc,
@@ -21,11 +19,8 @@ impl Tier0Alloc for LinkedTier0 {
 
 macro_rules! with_alloc {
 	($($arg:tt)*) => {
-		virtual_call!(mem_alloc() => $($arg)*)
+		virtual_call!(g_pMemAlloc.as_mut_unchecked() => $($arg)*)
 	};
-}
-fn mem_alloc() -> &'static VtObject<MemAllocVt> {
-	unsafe { VtObject::from_ptr_const(g_pMemAlloc) }
 }
 
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

@@ -6,7 +6,7 @@ use ::rse_cpp::{
 
 use crate::{
 	cppdef::{
-		GameEventListener2Vt, GameEventVt,
+		IGameEventListener2, IGameEvent,
 	},
 	GameEvent,
 };
@@ -78,7 +78,7 @@ where
 			unsafe { this.cast::<Self>().drop_in_place() }
 		}
 		fn fire_game_event(event: VtObjectMut<GameEventVt>) {
-			let event = unsafe { VtObject::from_ptr_const(event) };
+			let event = unsafe { VtObject::from_ptr(event) };
 			this_to_self!(mut this).inner.fire_game_event(event.into())
 		}
 	}

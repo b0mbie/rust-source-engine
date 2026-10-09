@@ -28,5 +28,5 @@ const _: () = {
 	where
 		To: PointerFrom<From>,
 	{}
-	assert_from_ptr_to::<crate::cppdef::ConCommand, Registrable>()
+	assert_from_ptr_to::<crate::cppdef::ConCommandBase, Registrable>()
 };

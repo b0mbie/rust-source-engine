@@ -1,19 +1,17 @@
 use ::core::ffi::{
 	CStr, c_float, c_int,
 };
-use ::rse_cpp::{
-	AsObject,
-	virtual_call,
-};
+use ::rse_cpp::virtual_call;
 use ::rse_game_interfaces::{
 	InterfaceOfFactory, AppSystemFactory,
 };
+use ::rse_interface::ptr_interface;
 
 use crate::{
 	cppdef::{
 		Registrable as CRegistrable,
 		ConVar as CConVar,
-		CVAR_INTERFACE_VERSION, CvarVt,
+		CVAR_INTERFACE_VERSION, ICvar,
 	},
 	console_base::{
 		CvarDllIdentifier,
@@ -25,11 +23,22 @@ use crate::{
 pub mod registered;
 use registered::*;
 
-pub trait CvarImpl: AsObject<CvarVt> {
+ptr_interface! {
+	pub struct OCvar(Cvar);
+	Pointee = ICvar;
+}
+impl ::rse_interface::Interface for OCvar {
+	const IDENTIFIER: &CStr = CVAR_INTERFACE_VERSION;
+}
+impl InterfaceOfFactory for OCvar {
+	type Factory = AppSystemFactory;
+}
+
+impl Cvar {
 	/// Returns a unique identifier that must be used for console variables and commands
 	/// that are registered with this interface.
-	fn allocate_dll_identifier(&mut self) -> CvarDllIdentifier {
-		unsafe { virtual_call!(self.as_object() => cvar.allocate_dll_identifier()) }
+	pub fn allocate_dll_identifier(&mut self) -> CvarDllIdentifier {
+		unsafe { virtual_call!(self.as_inner() => allocate_dll_identifier()) }
 	}
 
 	/// Returns `true` if ConVars that must be set on the material thread can be set now.
@@ -37,22 +46,22 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// Generally, this function will return `true`
 	/// if the material thread is the thread setting a ConVar.
 	/// If this function returns `false` while a ConVar is being set,
-	/// that ConVar should call [`queue_material_thread_set`](CvarImpl::queue_material_thread_set) on itself
+	/// that ConVar should call [`queue_material_thread_set`](Self::queue_material_thread_set) on itself
 	/// to queue the assignment to be done again on the material thread.
-	fn is_material_thread_set_allowed(&self) -> bool {
-		unsafe { virtual_call!(self.as_object() => cvar.is_material_thread_set_allowed()) }
+	pub fn is_material_thread_set_allowed(&self) -> bool {
+		unsafe { virtual_call!(self.as_inner() => is_material_thread_set_allowed()) }
 	}
 
 	/// Queues the given `con_var` to be set to `value` on the material thread.
 	/// 
 	/// This function should typically be called when
-	/// [`is_material_thread_set_allowed`](CvarImpl::is_material_thread_set_allowed) returns `false`,
+	/// [`is_material_thread_set_allowed`](Self::is_material_thread_set_allowed) returns `false`,
 	/// but doing otherwise should be sound.
 	/// It is advised against doing so, however.
 	/// 
 	/// # Safety
 	/// `con_var` must be valid when the material thread sets it.
-	unsafe fn queue_material_thread_set<V>(&mut self, con_var: *mut CConVar, value: V)
+	pub unsafe fn queue_material_thread_set<V>(&mut self, con_var: *mut CConVar, value: V)
 	where
 		V: QueueMaterialThreadValue,
 	{
@@ -66,9 +75,9 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// `registrable` *must* be registrable with the `ICvar` interface.
 	/// 
 	/// Registered console commands and variables *must* eventually be unregistered with
-	/// [`unregister_raw`](CvarImpl::unregister_raw) or [`unregister_all`](CvarImpl::unregister_all).
-	unsafe fn register_raw(&mut self, registrable: RegistrableMut) {
-		unsafe { virtual_call!(self.as_object() => cvar.register_con_command(registrable.as_ptr() as _)) }
+	/// [`unregister_raw`](Self::unregister_raw) or [`unregister_all`](Self::unregister_all).
+	pub unsafe fn register_raw(&mut self, registrable: RegistrableMut) {
+		unsafe { virtual_call!(self.as_mut_inner() => register_con_command(registrable.as_ptr() as _)) }
 	}
 
 	/// Unregister the console variable or command `registrable` with this interface,
@@ -76,17 +85,17 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// 
 	/// # Safety
 	/// `registrable` must have been registered with this interface.
-	unsafe fn unregister_raw(&mut self, registrable: RegistrableMut) {
-		unsafe { virtual_call!(self.as_object() => cvar.unregister_con_command(registrable.as_ptr() as _)) }
+	pub unsafe fn unregister_raw(&mut self, registrable: RegistrableMut) {
+		unsafe { virtual_call!(self.as_mut_inner() => unregister_con_command(registrable.as_ptr() as _)) }
 	}
 
 	/// Unregister all console variables and commands associated with the given `dll_identifier`.
 	/// 
 	/// # Safety
 	/// `dll_identifier` must be a [`CvarDllIdentifier`] that was returned by a call to
-	/// [`allocate_dll_identifier`](CvarImpl::allocate_dll_identifier).
-	unsafe fn unregister_all(&mut self, dll_identifier: CvarDllIdentifier) {
-		unsafe { virtual_call!(self.as_object() => cvar.unregister_con_commands(dll_identifier)) }
+	/// [`allocate_dll_identifier`](Self::allocate_dll_identifier).
+	pub unsafe fn unregister_all(&mut self, dll_identifier: CvarDllIdentifier) {
+		unsafe { virtual_call!(self.as_mut_inner() => unregister_con_commands(dll_identifier)) }
 	}
 
 	/// Finds a named console variable or command,
@@ -96,9 +105,9 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// The returned value
 	/// may be unregistered at any time on the main thread.
 	/// Therefore, this function *must* only be called on the main thread.
-	unsafe fn find(&self, name: &CStr) -> Option<&Registrable> {
+	pub unsafe fn find(&self, name: &CStr) -> Option<&Registrable> {
 		unsafe {
-			virtual_call!(self.as_object() => cvar.find_command_base_const(name.as_ptr()))
+			virtual_call!(self.as_inner() => find_command_base_const(name.as_ptr()))
 				.cast::<CRegistrable>()
 				.as_ref().map(move |ptr| Registrable::from_ref(ptr))
 		}
@@ -111,9 +120,9 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// The returned value
 	/// may be unregistered at any time on the main thread.
 	/// Therefore, this function *must* only be called on the main thread.
-	unsafe fn find_mut(&mut self, name: &CStr) -> Option<&mut Registrable> {
+	pub unsafe fn find_mut(&mut self, name: &CStr) -> Option<&mut Registrable> {
 		unsafe {
-			virtual_call!(self.as_object() => cvar.find_command_base(name.as_ptr()))
+			virtual_call!(self.as_mut_inner() => find_command_base(name.as_ptr()))
 				.cast::<CRegistrable>()
 				.as_mut().map(move |ptr| Registrable::from_mut(ptr))
 		}
@@ -126,9 +135,9 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// The returned value
 	/// may be unregistered at any time on the main thread.
 	/// Therefore, this function *must* only be called on the main thread.
-	unsafe fn find_var(&self, name: &CStr) -> Option<&ConVar> {
+	pub unsafe fn find_var(&self, name: &CStr) -> Option<&ConVar> {
 		unsafe {
-			virtual_call!(self.as_object() => cvar.find_var_const(name.as_ptr()))
+			virtual_call!(self.as_inner() => find_var_const(name.as_ptr()))
 				.as_ref().map(move |ptr| ConVar::from_ref(ptr))
 		}
 	}
@@ -140,9 +149,9 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// The returned value
 	/// may be unregistered at any time on the main thread.
 	/// Therefore, this function *must* only be called on the main thread.
-	unsafe fn find_var_mut(&mut self, name: &CStr) -> Option<&mut ConVar> {
+	pub unsafe fn find_var_mut(&mut self, name: &CStr) -> Option<&mut ConVar> {
 		unsafe {
-			virtual_call!(self.as_object() => cvar.find_var(name.as_ptr()))
+			virtual_call!(self.as_mut_inner() => find_var(name.as_ptr()))
 				.as_mut().map(move |ptr| ConVar::from_mut(ptr))
 		}
 	}
@@ -154,9 +163,9 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// The returned value
 	/// may be unregistered at any time on the main thread.
 	/// Therefore, this function *must* only be called on the main thread.
-	unsafe fn find_cmd(&self, name: &CStr) -> Option<&ConCommand> {
+	pub unsafe fn find_cmd(&self, name: &CStr) -> Option<&ConCommand> {
 		unsafe {
-			virtual_call!(self.as_object() => cvar.find_command_const(name.as_ptr()))
+			virtual_call!(self.as_inner() => find_command_const(name.as_ptr()))
 				.as_ref().map(move |ptr| ConCommand::from_ref(ptr))
 		}
 	}
@@ -168,9 +177,9 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// The returned value
 	/// may be unregistered at any time on the main thread.
 	/// Therefore, this function *must* only be called on the main thread.
-	unsafe fn find_cmd_mut(&mut self, name: &CStr) -> Option<&mut ConCommand> {
+	pub unsafe fn find_cmd_mut(&mut self, name: &CStr) -> Option<&mut ConCommand> {
 		unsafe {
-			virtual_call!(self.as_object() => cvar.find_command(name.as_ptr()))
+			virtual_call!(self.as_mut_inner() => find_command(name.as_ptr()))
 				.as_mut().map(move |ptr| ConCommand::from_mut(ptr))
 		}
 	}
@@ -182,9 +191,9 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// may be unregistered at any time on the main thread.
 	/// Therefore, this function *must* only be called on the main thread.
 	#[doc(alias = "GetCommands")]
-	unsafe fn registered(&self) -> RegisteredIter<'_> {
+	pub unsafe fn registered(&self) -> RegisteredIter<'_> {
 		unsafe {
-			let ptr = virtual_call!(self.as_object() => cvar.get_commands_const());
+			let ptr = virtual_call!(self.as_inner() => get_commands_const());
 			RegisteredIter::from_ptr(ptr as _)
 		}
 	}
@@ -197,9 +206,9 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// may be unregistered at any time on the main thread.
 	/// Therefore, this function *must* only be called on the main thread.
 	#[doc(alias = "GetCommands")]
-	unsafe fn registered_mut(&mut self) -> RegisteredIterMut<'_> {
+	pub unsafe fn registered_mut(&mut self) -> RegisteredIterMut<'_> {
 		unsafe {
-			let ptr = virtual_call!(self.as_object() => cvar.get_commands());
+			let ptr = virtual_call!(self.as_mut_inner() => get_commands());
 			RegisteredIterMut::from_ptr(ptr as _)
 		}
 	}
@@ -208,35 +217,29 @@ pub trait CvarImpl: AsObject<CvarVt> {
 	/// 
 	/// # Safety
 	/// `registered` must have been registered with this interface.
-	unsafe fn call_global_change_callbacks(&self, registered: *mut CConVar, old_string: &CStr, old_float: c_float) {
+	pub unsafe fn call_global_change_callbacks(&self, registered: *mut CConVar, old_string: &CStr, old_float: c_float) {
 		unsafe {
 			virtual_call!(
-				self.as_object() => cvar.call_global_change_callbacks(
+				self.as_inner() => call_global_change_callbacks(
 					registered,
 					old_string.as_ptr(), old_float,
 				))
 		}
 	}
 }
-impl<T: ?Sized + AsObject<CvarVt>> CvarImpl for T {}
 
 pub trait QueueMaterialThreadValue {
 	/// # Safety
 	/// `con_var` must be valid when the material thread sets it.
-	unsafe fn queue_material_thread_set<Cvar>(cvar: &mut Cvar, con_var: *mut CConVar, value: Self)
-	where
-		Cvar: ?Sized + CvarImpl;
+	unsafe fn queue_material_thread_set(cvar: &mut Cvar, con_var: *mut CConVar, value: Self);
 }
 
 impl QueueMaterialThreadValue for Option<&CStr> {
-	unsafe fn queue_material_thread_set<Cvar>(cvar: &mut Cvar, con_var: *mut CConVar, value: Self)
-	where
-		Cvar: ?Sized + CvarImpl,
-	{
+	unsafe fn queue_material_thread_set(cvar: &mut Cvar, con_var: *mut CConVar, value: Self) {
 		unsafe {
 			virtual_call!(
-				cvar.as_object()
-				=> cvar.queue_material_thread_set_value_string(
+				cvar.as_mut_inner()
+				=> queue_material_thread_set_value_string(
 					con_var, value.map(move |s| s.as_ptr()).unwrap_or_default(),
 				)
 			)
@@ -245,44 +248,25 @@ impl QueueMaterialThreadValue for Option<&CStr> {
 }
 
 impl QueueMaterialThreadValue for &CStr {
-	unsafe fn queue_material_thread_set<Cvar>(cvar: &mut Cvar, con_var: *mut CConVar, value: Self)
-	where
-		Cvar: ?Sized + CvarImpl,
-	{
+	unsafe fn queue_material_thread_set(cvar: &mut Cvar, con_var: *mut CConVar, value: Self) {
 		unsafe {
-			virtual_call!(cvar.as_object() => cvar.queue_material_thread_set_value_string(con_var, value.as_ptr()))
+			virtual_call!(cvar.as_mut_inner() => queue_material_thread_set_value_string(con_var, value.as_ptr()))
 		}
 	}
 }
 
 impl QueueMaterialThreadValue for c_float {
-	unsafe fn queue_material_thread_set<Cvar>(cvar: &mut Cvar, con_var: *mut CConVar, value: Self)
-	where
-		Cvar: ?Sized + CvarImpl,
-	{
+	unsafe fn queue_material_thread_set(cvar: &mut Cvar, con_var: *mut CConVar, value: Self) {
 		unsafe {
-			virtual_call!(cvar.as_object() => cvar.queue_material_thread_set_value_float(con_var, value))
+			virtual_call!(cvar.as_mut_inner() => queue_material_thread_set_value_float(con_var, value))
 		}
 	}
 }
 
 impl QueueMaterialThreadValue for c_int {
-	unsafe fn queue_material_thread_set<Cvar>(cvar: &mut Cvar, con_var: *mut CConVar, value: Self)
-	where
-		Cvar: ?Sized + CvarImpl,
-	{
+	unsafe fn queue_material_thread_set(cvar: &mut Cvar, con_var: *mut CConVar, value: Self) {
 		unsafe {
-			virtual_call!(cvar.as_object() => cvar.queue_material_thread_set_value_int(con_var, value))
+			virtual_call!(cvar.as_mut_inner() => queue_material_thread_set_value_int(con_var, value))
 		}
 	}
-}
-
-::rse_cpp::owned_vt_object_wrapper! {
-	pub struct Cvar for CvarVt;
-}
-unsafe impl ::rse_interface::Interface for Cvar {
-	const IDENTIFIER: &CStr = CVAR_INTERFACE_VERSION;
-}
-impl InterfaceOfFactory for Cvar {
-	type Factory = AppSystemFactory;
 }

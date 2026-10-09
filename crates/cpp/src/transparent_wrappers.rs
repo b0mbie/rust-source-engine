@@ -1,6 +1,6 @@
 #[macro_export]
 macro_rules! transparent_wrapper_impls {
-	($name:ident for $target:ty as $target_name:literal) => {
+	($name:ident for $target:ty as $target_name:expr) => {
 		$crate::transparent_ref_impls!($name for $target as $target_name);
 		$crate::transparent_from_ptr_impls!($name for $target as $target_name);
 		$crate::transparent_as_ptr_impls!($name for $target as $target_name);
@@ -10,7 +10,7 @@ macro_rules! transparent_wrapper_impls {
 
 #[macro_export]
 macro_rules! transparent_ref_impls {
-	($name:ident for $target:ty as $target_name:literal) => {
+	($name:ident for $target:ty as $target_name:expr) => {
 		/// Returns a mutable reference to a value of type
 		#[doc = concat!("[`", stringify!($name), "`]")]
 		/// given a reference to the inner type.
@@ -35,7 +35,7 @@ macro_rules! transparent_ref_impls {
 
 #[macro_export]
 macro_rules! transparent_from_ptr_impls {
-	($name:ident for $target:ty as $target_name:literal) => {
+	($name:ident for $target:ty as $target_name:expr) => {
 		/// Returns a mutable reference to a value of type
 		#[doc = concat!("[`", stringify!($name), "`]")]
 		/// given a raw pointer.
@@ -66,7 +66,7 @@ macro_rules! transparent_from_ptr_impls {
 
 #[macro_export]
 macro_rules! transparent_as_ptr_impls {
-	($name:ident for $target:ty as $target_name:literal) => {
+	($name:ident for $target:ty as $target_name:expr) => {
 		/// Returns the raw mutable pointer given a mutable reference to a value of type
 		#[doc = concat!("[`", stringify!($name), "`].")]
 		pub const fn as_mut_ptr(&mut self) -> *mut $target {
@@ -83,7 +83,7 @@ macro_rules! transparent_as_ptr_impls {
 
 #[macro_export]
 macro_rules! transparent_inner_impls {
-	($name:ident for $target:ty as $target_name:literal) => {
+	($name:ident for $target:ty as $target_name:expr) => {
 		/// Returns an immutable reference to the inner C++ structure
 		/// given an immutable reference to a value of type
 		#[doc = concat!("[`", stringify!($name), "`].")]
@@ -110,7 +110,7 @@ macro_rules! transparent_inner_impls {
 macro_rules! transparent_wrapper {
 	{
 		$(#[$attr:meta])*
-		$vis:vis struct $name:ident for $target:ty as $target_name:literal;
+		$vis:vis struct $name:ident for $target:ty as $target_name:expr;
 	} => {
 		#[repr(transparent)]
 		$(#[$attr])*

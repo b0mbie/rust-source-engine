@@ -9,7 +9,7 @@ use ::core::{
 
 use crate::{
 	cppdef::{
-		UtlMemory,
+		CUtlMemory,
 		EXTERNAL_BUFFER_MARKER, EXTERNAL_CONST_BUFFER_MARKER,
 	},
 	util::clamp_len_to_c_int,
@@ -45,7 +45,7 @@ impl<T, S> SliceMemory<T, S> {
 	/// Returns an empty slice-backed memory.
 	pub const fn empty() -> Self {
 		Self {
-			memory: Memory::new(UtlMemory {
+			memory: Memory::new(CUtlMemory {
 				memory: null_mut(),
 				allocation_count: 0,
 				grow_size: EXTERNAL_BUFFER_MARKER,
@@ -79,7 +79,7 @@ impl<'a, T> SliceMemory<T, &'a [MaybeUninit<T>]> {
 	/// Returns an immutable slice-backed memory backed by a slice of [`MaybeUninit<T>`].
 	pub const fn from_uninit_slice(slice: &'a [MaybeUninit<T>]) -> Self {
 		Self {
-			memory: Memory::new(UtlMemory {
+			memory: Memory::new(CUtlMemory {
 				memory: slice.as_ptr() as _,
 				allocation_count: clamp_len_to_c_int(slice.len()),
 				grow_size: EXTERNAL_CONST_BUFFER_MARKER,
@@ -104,7 +104,7 @@ impl<'a, T> SliceMemory<T, &'a mut [MaybeUninit<T>]> {
 	/// Returns a mutable slice-backed memory backed by a slice of [`MaybeUninit<T>`].
 	pub const fn from_uninit_slice_mut(slice: &'a mut [MaybeUninit<T>]) -> Self {
 		Self {
-			memory: Memory::new(UtlMemory {
+			memory: Memory::new(CUtlMemory {
 				memory: slice.as_mut_ptr(),
 				allocation_count: clamp_len_to_c_int(slice.len()),
 				grow_size: EXTERNAL_BUFFER_MARKER,

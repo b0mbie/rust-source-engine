@@ -4,6 +4,20 @@ use crate::{
 	Level, Color,
 };
 
+#[repr(transparent)]
+pub struct Tier0Logger<Tier0>(pub Tier0);
+impl<T, Tier0: Tier0Spew<T>> Logger<T> for Tier0Logger<Tier0> {
+	fn msg(&self, t: T) {
+		<Tier0 as Tier0Spew<T>>::msg(&self.0, t)
+	}
+	fn warning(&self, t: T) {
+		<Tier0 as Tier0Spew<T>>::warning(&self.0, t)
+	}
+	fn log(&self, t: T) {
+		<Tier0 as Tier0Spew<T>>::log(&self.0, t)
+	}
+}
+
 pub trait Tier0Spew<T> {
 	fn msg(&self, t: T);
 	fn msg_with(&self, group: &CStr, level: Level, t: T);

@@ -2,7 +2,7 @@ use ::core::ffi::{
 	CStr, c_char, c_int,
 };
 use ::rse_cpp::{
-	RefConst, VtObjectMut, vtable,
+	class, RefConst,
 };
 use ::rse_interface::CreateInterfaceFn;
 use ::rse_convar::cppdef::Command;
@@ -55,38 +55,38 @@ pub const INTERFACEVERSION_ISERVERPLUGINCALLBACKS: &CStr = c"ISERVERPLUGINCALLBA
 
 pub type ClientIndex = c_int;
 
-vtable! {
-	pub ServerPluginCallbacksVt {
-		pub fn load(interface_factory: CreateInterfaceFn, game_server_factory: CreateInterfaceFn) -> bool;
-		pub fn unload();
-		pub fn pause();
-		pub fn unpause();
-		pub fn get_plugin_description() -> *const c_char;
-		pub fn level_init(map_name: *const c_char);
-		pub fn server_activate(edict_list: *mut edict_t, edict_count: c_int, client_max: ClientIndex);
-		pub fn game_frame(simulating: bool);
-		pub fn level_shutdown();
-		pub fn client_active(entity: *mut edict_t);
-		pub fn client_disconnect(entity: *mut edict_t);
-		pub fn client_put_in_server(entity: *mut edict_t, player_name: *const c_char);
-		pub fn set_command_client(index: ClientIndex);
-		pub fn client_settings_changed(edict: *mut edict_t);
-		pub fn client_connect(
+class! {
+	pub IServerPluginCallbacks {
+		pub virtual fn load(interface_factory: CreateInterfaceFn, game_server_factory: CreateInterfaceFn) -> bool;
+		pub virtual fn unload();
+		pub virtual fn pause();
+		pub virtual fn unpause();
+		pub virtual fn get_plugin_description() -> *const c_char;
+		pub virtual fn level_init(map_name: *const c_char);
+		pub virtual fn server_activate(edict_list: *mut edict_t, edict_count: c_int, client_max: ClientIndex);
+		pub virtual fn game_frame(simulating: bool);
+		pub virtual fn level_shutdown();
+		pub virtual fn client_active(entity: *mut edict_t);
+		pub virtual fn client_disconnect(entity: *mut edict_t);
+		pub virtual fn client_put_in_server(entity: *mut edict_t, player_name: *const c_char);
+		pub virtual fn set_command_client(index: ClientIndex);
+		pub virtual fn client_settings_changed(edict: *mut edict_t);
+		pub virtual fn client_connect(
 			out_allow_connect: *mut bool,
 			entity: *mut edict_t,
 			name: *const c_char, address: *const c_char,
 			out_reject: *mut c_char, out_reject_len: c_int,
 		) -> PluginResult;
-		pub fn client_command(entity: *mut edict_t, args: RefConst<Command>) -> PluginResult;
-		pub fn network_id_validated(user_name: *const c_char, network_id: *const c_char) -> PluginResult;
-		pub fn on_query_cvar_value_finished(
+		pub virtual fn client_command(entity: *mut edict_t, args: RefConst<Command>) -> PluginResult;
+		pub virtual fn network_id_validated(user_name: *const c_char, network_id: *const c_char) -> PluginResult;
+		pub virtual fn on_query_cvar_value_finished(
 			cookie: QueryCvarCookie,
 			player_entity: *mut edict_t,
 			status: QueryCvarValueStatus,
 			cvar_name: *const c_char, cvar_value: *const c_char,
 		);
-		pub fn on_edict_allocated(edict: *mut edict_t);
-		pub fn on_edict_freed(edict: *const edict_t);
+		pub virtual fn on_edict_allocated(edict: *mut edict_t);
+		pub virtual fn on_edict_freed(edict: *const edict_t);
 	}
 }
 
@@ -107,14 +107,14 @@ pub enum DialogType {
 	AskConnect,
 }
 
-vtable! {
-	pub ServerPluginHelpersVt {
-		pub fn create_message(
+class! {
+	pub IServerPluginHelpers {
+		pub virtual fn create_message(
 			entity: *mut edict_t,
 			dialog_type: DialogType, data: *mut KeyValues,
-			plugin: VtObjectMut<ServerPluginCallbacksVt>,
+			plugin: *mut IServerPluginCallbacks,
 		);
-		pub fn client_command(entity: *mut edict_t, cmd: *const c_char);
-		pub fn start_query_cvar_value(entity: *mut edict_t, name: *const c_char) -> QueryCvarCookie;
+		pub virtual fn client_command(entity: *mut edict_t, cmd: *const c_char);
+		pub virtual fn start_query_cvar_value(entity: *mut edict_t, name: *const c_char) -> QueryCvarCookie;
 	}
 }

@@ -23,7 +23,7 @@ use ::rse_convar::{
 	},
 };
 use ::rse_utl::{
-	cppdef::UtlString,
+	cppdef::CUtlString,
 	CString,
 };
 
@@ -325,7 +325,7 @@ impl<'a, 's, T> StdCtx<'a, 's, T> {
 				// The string value pointer, by default, is assigned to be the default value pointer.
 				CString::from(ext.default()).into_inner()
 			} else {
-				UtlString {
+				CUtlString {
 					string: ptr,
 				}
 			}

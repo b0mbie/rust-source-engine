@@ -4,10 +4,10 @@ use ::rse_cpp::c_str::opt_c_str_from_ptr;
 use super::CvarFlags;
 
 ::rse_cpp::transparent_wrapper! {
-	pub struct ConCommandBaseExt for crate::cppdef::ConCommandBaseExt as "ConCommandBaseExt";
+	pub struct RegistrableExt for crate::cppdef::RegistrableData as "RegistrableData";
 }
 
-impl ConCommandBaseExt {
+impl RegistrableExt {
 	pub const fn flags(&self) -> CvarFlags {
 		CvarFlags::from_bits_retain(self.0.flags)
 	}

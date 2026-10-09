@@ -8,10 +8,10 @@ use ::core::{
 	ptr::addr_eq,
 };
 
-use crate::console_base::ConCommandBaseExt;
+use crate::console_base::RegistrableExt;
 
 ::rse_cpp::transparent_wrapper! {
-	pub struct ConVarExt for crate::cppdef::ConVarExt as "ConVarExt";
+	pub struct ConVarExt for crate::cppdef::ConVarData as "ConVarData";
 }
 
 macro_rules! limit_funcs {
@@ -47,14 +47,14 @@ macro_rules! limit_funcs {
 }
 
 impl ConVarExt {
-	/// Returns an immutable reference to the inner [`ConCommandBaseExt`].
-	pub const fn base(&self) -> &ConCommandBaseExt {
-		unsafe { ConCommandBaseExt::from_ref(&self.0.base) }
+	/// Returns an immutable reference to the inner [`RegistrableExt`].
+	pub const fn base(&self) -> &RegistrableExt {
+		unsafe { RegistrableExt::from_ref(&self.0.inherited_registrable) }
 	}
 
-	/// Returns a mutable reference to the inner [`ConCommandBaseExt`].
-	pub const fn base_mut(&mut self) -> &mut ConCommandBaseExt {
-		unsafe { ConCommandBaseExt::from_mut(&mut self.0.base) }
+	/// Returns a mutable reference to the inner [`RegistrableExt`].
+	pub const fn base_mut(&mut self) -> &mut RegistrableExt {
+		unsafe { RegistrableExt::from_mut(&mut self.0.inherited_registrable) }
 	}
 
 	/// Returns `true` if this ConVar is the root ConVar (its parent is `self`).
@@ -170,7 +170,7 @@ impl ConVarExt {
 }
 
 impl Deref for ConVarExt {
-	type Target = ConCommandBaseExt;
+	type Target = RegistrableExt;
 	fn deref(&self) -> &Self::Target {
 		self.base()
 	}

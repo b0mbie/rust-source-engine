@@ -1,10 +1,13 @@
-pub type ColorComponent = ::core::ffi::c_uchar;
+use ::rse_cpp::class;
 
-/// Source Engine Red-Green-Blue-Alpha color type.
-#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[repr(C)]
-pub struct Color {
-	pub rgba: [ColorComponent; 4],
+pub type ColorComponent = ::core::ffi::c_uchar; 
+
+class! {
+	/// Source Engine Red-Green-Blue-Alpha color type.
+	#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+	pub Color {
+		pub rgba: [ColorComponent; 4];
+	}
 }
 
 macro_rules! component_fns {

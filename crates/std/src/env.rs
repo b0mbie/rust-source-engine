@@ -1,31 +1,20 @@
-use ::core::{
-	ffi::{
-		CStr, c_int, c_float,
-	},
-	marker::PhantomData,
+use ::core::ffi::{
+	CStr, c_int, c_float,
 };
 use ::rse_tier0::{
 	linked::cmd::{
-		LinkedTier0CommandLine, command_line,
+		LinkedTier0CommandLine, with_command_line,
 	},
 	Tier0CommandLine,
 };
-use ::std::sync::OnceLock;
-
-static CMD: OnceLock<&'static LinkedTier0CommandLine> = OnceLock::new();
-
-fn cmd() -> &'static LinkedTier0CommandLine {
-	CMD.get_or_init(command_line)
-}
 
 #[repr(transparent)]
 pub struct Parms<'a> {
-	cmd: &'static LinkedTier0CommandLine,
-	_life: PhantomData<&'a ()>,
+	cmd: LinkedTier0CommandLine<'a>,
 }
 
 impl<'a> Parms<'a> {
-	pub fn str(&self, key: &CStr) -> Option<&'a CStr> {
+	pub fn str(&'a self, key: &CStr) -> Option<&'a CStr> {
 		self.cmd.parm_str(key)
 	}
 
@@ -43,14 +32,15 @@ impl<'a> Parms<'a> {
 }
 
 pub fn with_parms<F: FnOnce(Parms<'_>) -> R, R>(f: F) -> R {
-	f(Parms {
-		cmd: cmd(),
-		_life: PhantomData,
-	})
+	unsafe {
+		with_command_line(move |cmd| f(Parms {
+			cmd,
+		}))
+	}
 }
 
 /// Returns `true` if the command line contains `parm`.
 pub fn has_parm(parm: &CStr) -> bool {
-	cmd().has_parm(parm)
+	unsafe { with_command_line(move |c| c.has_parm(parm)) }
 }
 

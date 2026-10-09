@@ -3,7 +3,7 @@ use ::core::{
 	hint::assert_unchecked,
 };
 use ::rse_utl::{
-	cppdef::UtlString,
+	cppdef::CUtlString,
 	Vector, CString,
 };
 
@@ -11,9 +11,9 @@ use crate::cppdef::COMMAND_COMPLETION_MAX_ITEMS;
 
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct Suggestions(Vector<UtlString>);
+pub struct Suggestions(Vector<CUtlString>);
 impl Suggestions {
-	::rse_cpp::transparent_ref_impls!(Suggestions for Vector<UtlString> as "Vector<UtlString>");
+	::rse_cpp::transparent_ref_impls!(Suggestions for Vector<CUtlString> as "Vector<CUtlString>");
 
 	pub const fn has_capacity(&self) -> bool {
 		self.0.len() < COMMAND_COMPLETION_MAX_ITEMS

@@ -8,7 +8,7 @@ use crate::{
 		Registrable as CRegistrable,
 		ConVar as CConVar, ConCommand as CConCommand,
 	},
-	console_base::ConCommandBaseExt,
+	console_base::RegistrableExt,
 	variable::ConVarExt,
 };
 
@@ -17,18 +17,16 @@ transparent_wrapper! {
 }
 
 impl Registrable {
-	pub const fn ext(&self) -> &ConCommandBaseExt {
-		unsafe { ConCommandBaseExt::from_ref(&self.0.data) }
+	pub const fn ext(&self) -> &RegistrableExt {
+		unsafe { RegistrableExt::from_ref(&self.0.data) }
 	}
 
-	pub const fn ext_mut(&mut self) -> &mut ConCommandBaseExt {
-		unsafe { ConCommandBaseExt::from_mut(&mut self.0.data) }
+	pub const fn ext_mut(&mut self) -> &mut RegistrableExt {
+		unsafe { RegistrableExt::from_mut(&mut self.0.data) }
 	}
 
 	pub fn is_command(&self) -> bool {
-		let object = self.0.as_object();
-		let this = object.as_ptr().cast();
-		unsafe { (object.vtable().is_command)(this) }
+		unsafe { ::rse_cpp::virtual_call!(&self.0 => is_command()) }
 	}
 
 	pub fn kind(&self) -> Kind<'_> {
@@ -77,7 +75,7 @@ impl Registrable {
 }
 
 impl Deref for Registrable {
-	type Target = ConCommandBaseExt;
+	type Target = RegistrableExt;
 	fn deref(&self) -> &Self::Target {
 		self.ext()
 	}
@@ -131,17 +129,17 @@ transparent_wrapper! {
 }
 
 impl ConCommand {
-	pub const fn base(&self) -> &ConCommandBaseExt {
-		unsafe { ConCommandBaseExt::from_ref(&self.0.data.base) }
+	pub const fn base(&self) -> &RegistrableExt {
+		unsafe { RegistrableExt::from_ref(&self.0.data.inherited_con_command_base.inherited_registrable) }
 	}
 
-	pub const fn base_mut(&mut self) -> &mut ConCommandBaseExt {
-		unsafe { ConCommandBaseExt::from_mut(&mut self.0.data.base) }
+	pub const fn base_mut(&mut self) -> &mut RegistrableExt {
+		unsafe { RegistrableExt::from_mut(&mut self.0.data.inherited_con_command_base.inherited_registrable) }
 	}
 }
 
 impl Deref for ConCommand {
-	type Target = ConCommandBaseExt;
+	type Target = RegistrableExt;
 	fn deref(&self) -> &Self::Target {
 		self.base()
 	}

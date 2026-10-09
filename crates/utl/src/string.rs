@@ -17,7 +17,7 @@ use ::rse_tier0::{
 	Tier0Allocator,
 };
 
-use crate::cppdef::UtlString;
+use crate::cppdef::CUtlString;
 
 /// Transparent wrapper for `CUtlString`.
 /// Not to be confused with Rust's [`CString`](::alloc::ffi::CString) type.
@@ -27,9 +27,9 @@ use crate::cppdef::UtlString;
 /// It emulates the C++ `CUtlString` type for interacting with C++ code.
 /// 
 /// # Layout
-/// This type has the exact same layout and ABI as [`UtlString`].
+/// This type has the exact same layout and ABI as [`CUtlString`].
 #[repr(transparent)]
-pub struct CString(UtlString);
+pub struct CString(CUtlString);
 
 // SAFETY: `CString` always contains a *unique* pointer to a C string.
 unsafe impl Send for CString {}
@@ -38,7 +38,7 @@ unsafe impl Sync for CString {}
 impl CString {
 	/// Returns an empty [`CString`].
 	pub const fn new() -> Self {
-		Self(UtlString {
+		Self(CUtlString {
 			string: null_mut(),
 		})
 	}
@@ -46,16 +46,16 @@ impl CString {
 	/// Returns a [`CString`].
 	/// 
 	/// # Safety
-	/// [`inner.string`](UtlString::string) must point to
+	/// [`inner.string`](CUtlString::string) must point to
 	/// a valid, mutable C string
 	/// allocated with the [`LinkedTier0Allocator`].
-	pub const unsafe fn from_inner(inner: UtlString) -> Self {
+	pub const unsafe fn from_inner(inner: CUtlString) -> Self {
 		Self(inner)
 	}
 
-	/// Consumes a [`CString`], returning the inner [`UtlString`].
-	pub const fn into_inner(self) -> UtlString {
-		let inner = UtlString {
+	/// Consumes a [`CString`], returning the inner [`CUtlString`].
+	pub const fn into_inner(self) -> CUtlString {
+		let inner = CUtlString {
 			string: self.0.string,
 		};
 		forget(self);
@@ -65,21 +65,21 @@ impl CString {
 	/// Returns a mutable reference to a [`CString`] given a reference to the inner type.
 	/// 
 	/// # Safety
-	/// [`inner.string`](UtlString::string) must point to
+	/// [`inner.string`](CUtlString::string) must point to
 	/// a valid, mutable C string
 	/// allocated with the [`LinkedTier0Allocator`].
-	pub const unsafe fn from_mut(inner: &mut UtlString) -> &mut Self {
-		unsafe { &mut *(inner as *mut UtlString as *mut Self) }
+	pub const unsafe fn from_mut(inner: &mut CUtlString) -> &mut Self {
+		unsafe { &mut *(inner as *mut CUtlString as *mut Self) }
 	}
 
 	/// Returns an immutable reference to a [`CString`] given a reference to the inner type.
 	/// 
 	/// # Safety
-	/// [`inner.string`](UtlString::string) must point to
+	/// [`inner.string`](CUtlString::string) must point to
 	/// a valid, immutable C string
 	/// allocated with the [`LinkedTier0Allocator`].
-	pub const unsafe fn from_ref(inner: &UtlString) -> &Self {
-		unsafe { &*(inner as *const UtlString as *const Self) }
+	pub const unsafe fn from_ref(inner: &CUtlString) -> &Self {
+		unsafe { &*(inner as *const CUtlString as *const Self) }
 	}
 
 	/// Returns a mutable reference to a [`CString`] given a raw pointer.
@@ -87,12 +87,12 @@ impl CString {
 	/// See also [`from_mut`](Self::from_mut).
 	/// 
 	/// # Safety
-	/// `ptr` must point to a valid, mutable [`UtlString`].
+	/// `ptr` must point to a valid, mutable [`CUtlString`].
 	/// Moreover,
-	/// [`(*ptr).string`](UtlString::string) must point to
+	/// [`(*ptr).string`](CUtlString::string) must point to
 	/// a valid, mutable C string
 	/// allocated with the [`LinkedTier0Allocator`].
-	pub const unsafe fn from_mut_ptr<'a>(ptr: *mut UtlString) -> &'a mut Self {
+	pub const unsafe fn from_mut_ptr<'a>(ptr: *mut CUtlString) -> &'a mut Self {
 		unsafe { &mut *(ptr as *mut Self) }
 	}
 
@@ -101,17 +101,17 @@ impl CString {
 	/// See also [`from_ref`](Self::from_ref).
 	/// 
 	/// # Safety
-	/// `ptr` must point to a valid, immutable [`UtlString`].
+	/// `ptr` must point to a valid, immutable [`CUtlString`].
 	/// Moreover,
-	/// [`(*ptr).string`](UtlString::string) must point to
+	/// [`(*ptr).string`](CUtlString::string) must point to
 	/// a valid, immutable C string
 	/// allocated with the [`LinkedTier0Allocator`].
-	pub const unsafe fn from_ptr<'a>(ptr: *const UtlString) -> &'a Self {
+	pub const unsafe fn from_ptr<'a>(ptr: *const CUtlString) -> &'a Self {
 		unsafe { &*(ptr as *const Self) }
 	}
 
-	::rse_cpp::transparent_as_ptr_impls!(CString for UtlString as "UtlString");
-	::rse_cpp::transparent_inner_impls!(CString for UtlString as "UtlString");
+	::rse_cpp::transparent_as_ptr_impls!(CString for CUtlString as "UtlString");
+	::rse_cpp::transparent_inner_impls!(CString for CUtlString as "UtlString");
 
 	/// Returns the [`CStr`] stored inside of this value,
 	/// returning a static, immutable string for empty strings.
@@ -282,7 +282,7 @@ impl CString {
 	/// a valid pointer to a C string that was allocated with [`LinkedTier0Allocator`]
 	/// otherwise.
 	pub const unsafe fn from_raw(ptr: *mut c_char) -> Self {
-		Self(UtlString {
+		Self(CUtlString {
 			string: ptr,
 		})
 	}

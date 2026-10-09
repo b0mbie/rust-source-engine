@@ -3,7 +3,7 @@
 use ::core::ptr::NonNull;
 
 pub use ::bitflags::bitflags;
-pub use ::cppdvt::*;
+pub use ::cpp_class::*;
 
 mod flag_utils;
 mod opaque_type;
@@ -15,28 +15,8 @@ pub mod ptr_compat;
 
 mod type_info;
 pub use type_info::*;
-mod vt_object_convert;
-pub use vt_object_convert::*;
-mod vt_object_wrapper;
-pub use vt_object_wrapper::*;
-mod with_vtable;
-pub use with_vtable::*;
-
-/// Type of pointers to immutable C++ objects with v-tables (`const IObject *`).
-pub type VtObjectRef<VTable> = VtObjectPtr<VTable>;
-/// Type of pointers to mutable C++ objects with v-tables (`IObject *`).
-pub type VtObjectMut<VTable> = VtObjectPtr<VTable>;
 
 /// Type of immutable C++ references (`const int &`).
 pub type RefConst<T> = NonNull<T>;
 /// Type of mutable C++ references (`int &`).
 pub type RefMut<T> = NonNull<T>;
-
-pub trait AsObject<VTable> {
-	fn as_object(&self) -> &VtObject<VTable>;
-}
-impl<VTable> AsObject<VTable> for VtObject<VTable> {
-	fn as_object(&self) -> &Self {
-		self
-	}
-}

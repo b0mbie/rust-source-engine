@@ -1,5 +1,4 @@
 use ::core::ffi::CStr;
-use ::rse_convar::cvar::CvarImpl;
 
 use crate::futex::Futex;
 
@@ -41,12 +40,12 @@ macro_rules! cvar_find_fns {
 	} => {
 		$(#[$attr])*
 		pub fn $find(&self, name: &CStr) -> Option<&$result> {
-			unsafe { self.0.$find(name) }
+			unsafe { self.0.as_v4().$find(name) }
 		}
 
 		$(#[$attr])*
 		pub fn $find_mut(&mut self, name: &CStr) -> Option<&mut $result> {
-			unsafe { self.0.$find_mut(name) }
+			unsafe { self.0.as_mut_v4().$find_mut(name) }
 		}
 	};
 }
@@ -78,12 +77,12 @@ impl<'a> Cvars<'a> {
 
 	/// Returns an iterator over all registered console variables and commands.
 	pub fn registered(&self) -> RegisteredIter<'_> {
-		unsafe { self.0.registered() }
+		unsafe { self.0.as_v4().registered() }
 	}
 
 	/// Returns an iterator over all registered console variables and commands,
 	/// allowing mutable access to them.
 	pub fn registered_mut(&mut self) -> RegisteredIterMut<'_> {
-		unsafe { self.0.registered_mut() }
+		unsafe { self.0.as_mut_v4().registered_mut() }
 	}
 }

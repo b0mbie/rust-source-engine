@@ -1,7 +1,8 @@
 use super::vec_t;
 
-#[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
-#[repr(C)]
-pub struct VMatrix {
-	pub m: [[vec_t; 4]; 4],
+::rse_cpp::class! {
+	#[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
+	pub VMatrix {
+		pub m: [[vec_t; 4]; 4];
+	}
 }

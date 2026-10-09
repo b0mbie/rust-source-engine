@@ -1,30 +1,36 @@
 use ::core::ffi::{
 	c_char, c_float, c_int, c_ulong, c_uchar,
 };
-use ::rse_cpp::RefConst;
+use ::rse_cpp::{
+	class,
+	RefConst,
+};
 use ::rse_math::{
 	QAngle, Vector, Vector2D,
 };
-use ::rse_utl::cppdef::UtlVector;
+use ::rse_utl::cppdef::CUtlVector;
 
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
-#[repr(C)]
-pub struct CspColor {
-	pub color: Vector,
-	pub alpha: c_float,
+class! {
+	#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+	pub CSPColor {
+		pub color: Vector;
+		pub alpha: c_float;
+	}
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
-#[repr(C)]
-pub struct CspVert {
-	pub pos: Vector,
-	pub color: CspColor,
+class! {
+	#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+	pub CSPVert {
+		pub pos: Vector;
+		pub color: CSPColor;
+	}
 }
 
-#[derive(Debug)]
-#[repr(C)]
-pub struct CspVertList {
-	pub verts: UtlVector<CspVert>,
+class! {
+	#[derive(Debug)]
+	pub CSPVertList {
+		pub verts: CUtlVector<CSPVert>;
+	}
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -76,38 +82,38 @@ pub struct TextParams {
 }
 
 // TODO: `IScratchPad3D`.
-::rse_cpp::vtable! {
-	pub ScratchPad3DVt {
-		pub fn destructor();
+class! {
+	pub IScratchPad3D {
+		pub virtual fn destructor();
 		#[cfg(not(windows))]
-		pub fn destructor_2();
-		pub fn release();
-		pub fn set_mapping(
+		pub virtual fn destructor_2();
+		pub virtual fn release();
+		pub virtual fn set_mapping(
 			input_min: RefConst<Vector>,
 			input_max: RefConst<Vector>,
 			output_min: RefConst<Vector>,
 			output_max: RefConst<Vector>,
 		);
-		pub fn get_auto_flush() -> bool;
-		pub fn set_auto_flush(auto_flush: bool);
-		pub fn draw_point(v: RefConst<CspVert>, point_size: c_float);
-		pub fn draw_line(v1: RefConst<CspVert>, v2: RefConst<CspVert>);
-		pub fn draw_polygon(verts: RefConst<CspVertList>);
-		pub fn draw_rect_yz(x_pos: c_float, min: RefConst<Vector2D>, max: RefConst<Vector2D>, color: RefConst<CspColor>);
-		pub fn draw_rect_xz(y_pos: c_float, min: RefConst<Vector2D>, max: RefConst<Vector2D>, color: RefConst<CspColor>);
-		pub fn draw_rect_xy(z_pos: c_float, min: RefConst<Vector2D>, max: RefConst<Vector2D>, color: RefConst<CspColor>);
-		pub fn draw_wireframe_box(min: RefConst<Vector>, max: RefConst<Vector>, color: RefConst<Vector>);
-		pub fn draw_text(str: *const c_char, params: RefConst<TextParams>);
-		pub fn set_render_state(state: RenderState, val: c_ulong);
-		pub fn clear();
-		pub fn flush();
-		pub fn draw_image_bw(
+		pub virtual fn get_auto_flush() -> bool;
+		pub virtual fn set_auto_flush(auto_flush: bool);
+		pub virtual fn draw_point(v: RefConst<CSPVert>, point_size: c_float);
+		pub virtual fn draw_line(v1: RefConst<CSPVert>, v2: RefConst<CSPVert>);
+		pub virtual fn draw_polygon(verts: RefConst<CSPVertList>);
+		pub virtual fn draw_rect_yz(x_pos: c_float, min: RefConst<Vector2D>, max: RefConst<Vector2D>, color: RefConst<CSPColor>);
+		pub virtual fn draw_rect_xz(y_pos: c_float, min: RefConst<Vector2D>, max: RefConst<Vector2D>, color: RefConst<CSPColor>);
+		pub virtual fn draw_rect_xy(z_pos: c_float, min: RefConst<Vector2D>, max: RefConst<Vector2D>, color: RefConst<CSPColor>);
+		pub virtual fn draw_wireframe_box(min: RefConst<Vector>, max: RefConst<Vector>, color: RefConst<Vector>);
+		pub virtual fn draw_text(str: *const c_char, params: RefConst<TextParams>);
+		pub virtual fn set_render_state(state: RenderState, val: c_ulong);
+		pub virtual fn clear();
+		pub virtual fn flush();
+		pub virtual fn draw_image_bw(
 			data: *const c_uchar,
 			width: c_int, height: c_int, pitch_in_bytes: c_int,
 			outline_pixels: bool, outline_image: bool,
 			corners_bl_tl_tr_br_or_default: *const Vector,
 		);
-		pub fn draw_image_rgba(
+		pub virtual fn draw_image_rgba(
 			data: *const SpRgba,
 			width: c_int, height: c_int, pitch_in_bytes: c_int,
 			outline_pixels: bool, outline_image: bool,

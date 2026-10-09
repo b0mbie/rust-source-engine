@@ -1,4 +1,4 @@
-::rse_cpp::vtable! {
+::rse_cpp::class! {
 	// TODO: `INetChannelInfo`.
-	pub NetChannelInfoVt {}
+	pub INetChannelInfo {}
 }

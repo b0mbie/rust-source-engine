@@ -5,7 +5,8 @@ use super::Vector;
 // TODO: In code, this is named `cplane_t`, but is called `plane_t` in the comment above it. Figure out why.
 #[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
 #[repr(C)]
-pub struct Plane {
+#[allow(non_camel_case_types)]
+pub struct cplane_t {
 	pub normal: Vector,
 	pub distance: c_float,
 	pub ty: u8,

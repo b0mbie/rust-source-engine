@@ -101,7 +101,7 @@ where
 	}
 
 	pub fn as_registrable(&self) -> RegistrableMut {
-		unsafe { (*self.con_command.get()).as_registrable() }
+		unsafe { (*self.con_command.get()).to_registrable_mut() }
 	}
 }
 

@@ -1,13 +1,14 @@
 use super::vec_t;
 
-/// Vector that represents three-dimensional extrinsic Tait-Bryan rotations following the right-hand rule,
-/// offset from the cardinal Z axis.
-#[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
-#[repr(C)]
-pub struct QAngle {
-	pub x: vec_t,
-	pub y: vec_t,
-	pub z: vec_t,
+::rse_cpp::class! {
+	/// Vector that represents three-dimensional extrinsic Tait-Bryan rotations following the right-hand rule,
+	/// offset from the cardinal Z axis.
+	#[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
+	pub QAngle {
+		pub x: vec_t;
+		pub y: vec_t;
+		pub z: vec_t;
+	}
 }
 
 impl QAngle {

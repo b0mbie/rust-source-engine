@@ -1,8 +1,5 @@
 use ::rse_client::interfaces::{
-	VEngineClient, VEngineClient013,
-};
-use ::rse_cpp::{
-	AsObject, VtObject,
+	OVEngineClient, OVEngineClient013,
 };
 
 use crate::{
@@ -10,13 +7,8 @@ use crate::{
 	raw::global_interface::GlobalInterface,
 };
 
-pub use ::rse_client::{
-	cppdef::engine_client::{
-		VEngineClientVt, VEngineClient013Vt,
-	},
-	interfaces::{
-		VEngineClientImpl, VEngineClient013Impl,
-	},
+pub use ::rse_client::interfaces::{
+	VEngineClient, VEngineClient013,
 };
 
 /// Tries to initialize the `IVEngineClient` functions in this module.
@@ -89,17 +81,17 @@ pub struct Client {
 }
 
 impl Client {
-	pub fn to_v14(&self) -> Option<&VtObject<VEngineClientVt>> {
+	pub fn to_v14(&self) -> Option<&VEngineClient> {
 		match self.inner {
-			Inner::V14(ref cl) => Some(cl.as_object()),
+			Inner::V14(ref cl) => Some(cl),
 			_ => None,
 		}
 	}
 
-	pub fn as_v13(&self) -> &VtObject<VEngineClient013Vt> {
+	pub fn as_v13(&self) -> &VEngineClient013 {
 		match self.inner {
 			Inner::V14(ref cl) => cl.as_v013(),
-			Inner::V13(ref cl) => cl.as_object(),
+			Inner::V13(ref cl) => cl,
 			_ => unsafe { ::core::hint::unreachable_unchecked() },
 		}
 	}
@@ -121,16 +113,10 @@ impl Client {
 	}
 }
 
-impl AsObject<VEngineClient013Vt> for Client {
-	fn as_object(&self) -> &VtObject<VEngineClient013Vt> {
-		self.as_v13()
-	}
-}
-
 enum Inner {
 	None,
-	V14(VEngineClient),
-	V13(VEngineClient013),
+	V14(OVEngineClient),
+	V13(OVEngineClient013),
 }
 
 static CLIENT: GlobalInterface<Inner> = GlobalInterface::new(Inner::None);

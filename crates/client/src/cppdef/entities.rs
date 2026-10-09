@@ -1,6 +1,6 @@
-use ::rse_cpp::vtable;
+use ::rse_cpp::class;
 
 // TODO: `IClientUnknown`?
-vtable! {
-	pub ClientUnknownVt {}
+class! {
+	pub IClientUnknown {}
 }

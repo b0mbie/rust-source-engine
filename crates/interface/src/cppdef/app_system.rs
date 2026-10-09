@@ -1,7 +1,7 @@
 use ::core::ffi::{
 	c_char, c_void,
 };
-use ::rse_cpp::vtable;
+use ::rse_cpp::class;
 
 use super::CreateInterfaceFn;
 
@@ -12,14 +12,14 @@ pub enum InitStatus {
 	Ok,
 }
 
-vtable! {
-	pub AppSystemVt {
-		pub fn connect(factory: CreateInterfaceFn) -> bool;
-		pub fn disconnect();
+class! {
+	pub IAppSystem {
+		pub virtual fn connect(factory: CreateInterfaceFn) -> bool;
+		pub virtual fn disconnect();
 
-		pub fn query_interface(name: *const c_char) -> *mut c_void;
+		pub virtual fn query_interface(name: *const c_char) -> *mut c_void;
 
-		pub fn init() -> InitStatus;
-		pub fn shutdown();
+		pub virtual fn init() -> InitStatus;
+		pub virtual fn shutdown();
 	}
 }

@@ -1,55 +1,39 @@
 use ::core::ffi::{
 	c_char, c_int,
 };
-use ::rse_cpp::{
-	ptr_compat::PointerFrom,
-	VtObjectPtr, WithVTable,
-	vtable,
-};
+use ::rse_cpp::class;
 
 use super::CvarDllIdentifier;
 
-pub type Registrable = WithVTable<ConCommandBaseVtBase, ConCommandBaseExt>;
-pub type ConCommandBase = WithVTable<ConCommandBaseVt, ConCommandBaseExt>;
-
-#[derive(Debug)]
-#[repr(C)]
-pub struct ConCommandBaseExt {
-	pub next: *mut Registrable,
-	pub registered: bool,
-	pub name: *const c_char,
-	pub help_string: *const c_char,
-	pub flags: RawCvarFlags,
-}
-
 pub type RawCvarFlags = c_int;
 
-#[repr(C)]
-pub struct ConCommandBaseVt {
-	pub base: ConCommandBaseVtBase,
-	pub ext: ConCommandBaseVtExt,
-}
-unsafe impl PointerFrom<ConCommandBaseVt> for ConCommandBaseVtBase {}
-
-vtable! {
-	/// Part of the VTable for [`ConCommandBase`] that is compatible with both `ConVar` and `ConCommand`.
-	pub ConCommandBaseVtBase {
-		pub fn destructor();
-		#[cfg(not(windows))]
-		pub fn destructor_2();
-		pub fn is_command() -> bool;
+class! {
+	pub ConCommandBase: pub virtual Registrable {
+		pub virtual fn is_flag_set(flag: c_int) -> bool;
+		pub virtual fn add_flags(flags: c_int);
+		pub virtual fn get_name() -> *const c_char;
+		pub virtual fn get_help_text() -> *const c_char;
+		pub virtual fn is_registered() -> bool;
+		pub virtual fn get_dll_identifier() -> CvarDllIdentifier;
+		pub virtual fn create_base(name: *const c_char, help_string: *const c_char, flags: c_int);
+		pub virtual fn init();
 	}
 }
 
-vtable! {
-	pub ConCommandBaseVtExt for VtObjectPtr<ConCommandBaseVt> {
-		pub fn is_flag_set(flag: c_int) -> bool;
-		pub fn add_flags(flags: c_int);
-		pub fn get_name() -> *const c_char;
-		pub fn get_help_text() -> *const c_char;
-		pub fn is_registered() -> bool;
-		pub fn get_dll_identifier() -> CvarDllIdentifier;
-		pub fn create_base(name: *const c_char, help_string: *const c_char, flags: c_int);
-		pub fn init();
+class! {
+	/// Part of [`ConCommandBase`] that is compatible with both `ConVar` and `ConCommand`.
+	// For whatever reason, the VTable for `ConVar` on `windows` doesn't include some functions from `ConCommandBase`.
+	// So, we can't use that class!
+	pub Registrable {
+		pub virtual fn destructor();
+		#[cfg(not(windows))]
+		pub virtual fn destructor_2();
+		pub virtual fn is_command() -> bool;
+
+		pub next: *mut Registrable;
+		pub registered: bool;
+		pub name: *const c_char;
+		pub help_string: *const c_char;
+		pub flags: RawCvarFlags;
 	}
 }

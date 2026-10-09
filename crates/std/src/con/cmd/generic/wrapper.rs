@@ -119,10 +119,10 @@ unsafe impl<'str, T> RawConsoleBase<ConCommandObject<'str, Self>> for StdCommand
 		// unsafe { object.as_mut_base().as_mut_inner().help_string = crate::util::c_str_ptr(T::HELP) }
 	}
 	fn add_flags(object: Pin<&mut ConCommandObject<'str, Self>>, flags: CvarFlags) {
-		unsafe { object.get_unchecked_mut().as_mut_base().add_flags(flags) }
+		unsafe { object.get_unchecked_mut().as_mut_registrable().add_flags(flags) }
 	}
 	fn is_registered(object: Pin<&mut ConCommandObject<'str, Self>>) -> bool {
-		object.as_base().is_registered()
+		object.as_registrable().is_registered()
 	}
 	fn dll_identifier(object: Pin<&mut ConCommandObject<'str, Self>>) -> CvarDllIdentifier {
 		let _ = object;

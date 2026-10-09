@@ -3,20 +3,19 @@ use ::core::ffi::{
 };
 
 use crate::{
-	vtable, VtObjectPtr,
-	virtual_fn,
+	class, virtual_fn,
 };
 
-vtable! {
-	GccTypeInfoVt {
-		pub fn destructor();
-		pub fn destructor_2();
-		pub fn __do_upcast() -> bool;
-		pub fn __do_catch() -> bool;
-		pub fn __do_upcast_2() -> bool;
-		pub fn __find_public_src() -> SubKind;
-		pub fn __do_dyncast() -> bool;
-		pub fn __do_find_public_src() -> SubKind;
+class! {
+	pub GccTypeInfo {
+		pub virtual fn destructor();
+		pub virtual fn destructor_2();
+		pub virtual fn __do_upcast() -> bool;
+		pub virtual fn __do_catch() -> bool;
+		pub virtual fn __do_upcast_2() -> bool;
+		pub virtual fn __find_public_src() -> SubKind;
+		pub virtual fn __do_dyncast() -> bool;
+		pub virtual fn __do_find_public_src() -> SubKind;
 	}
 }
 
@@ -31,7 +30,7 @@ pub struct TypeInfo {
 	name: *const c_char,
 }
 
-type This = VtObjectPtr<GccTypeInfoVt>;
+type This = crate::This<GccTypeInfo>;
 
 virtual_fn! {
 	fn noop(_: This) {}

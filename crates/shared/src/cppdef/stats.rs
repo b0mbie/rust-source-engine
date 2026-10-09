@@ -1,11 +1,12 @@
-use ::rse_cpp::vtable;
+use ::rse_cpp::class;
 
-vtable! {
+class! {
 	// TODO: `IAchievementMgr`.
-	pub AchievementMgrVt {}
+	pub IAchievementMgr {}
 }
 
-// TODO: `GamestatsData`.
-#[derive(Debug)]
-#[repr(C)]
-pub struct GamestatsData {}
+class! {
+	// TODO: `CGamestatsData`.
+	#[derive(Debug)]
+	pub CGamestatsData {}
+}

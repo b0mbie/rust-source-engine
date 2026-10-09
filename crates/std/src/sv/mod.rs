@@ -1,7 +1,6 @@
 //! Source Engine server functionality.
 
 use ::core::ffi::CStr;
-use ::rse_server::VEngineServerImpl;
 
 use crate::ffi::CBuffer;
 
@@ -13,19 +12,19 @@ pub mod raw;
 
 /// Returns the current system time.
 pub fn system_time() -> f32 {
-	unsafe { raw::inspect_mt(move |sv| sv.system_time()) }
+	unsafe { raw::inspect_mt(move |sv| sv.as_v23().system_time()) }
 }
 
 /// Returns `true` if the running server is a dedicated server.
 pub fn is_dedicated() -> bool {
-	unsafe { raw::inspect_mt(move |sv| sv.is_dedicated_server()) }
+	unsafe { raw::inspect_mt(move |sv| sv.as_v23().is_dedicated_server()) }
 }
 
 /// Returns the current server time.
 pub fn server_time() -> f32 {
 	unsafe {
 		raw::inspect(move |sv| if let Some(sv) = sv {
-			sv.server_time() as _
+			sv.as_v23().server_time() as _
 		} else {
 			0.0
 		})
@@ -36,7 +35,7 @@ pub fn server_time() -> f32 {
 pub fn is_paused() -> bool {
 	unsafe {
 		raw::inspect(move |sv| if let Some(sv) = sv {
-			sv.is_paused()
+			sv.as_v23().is_paused()
 		} else {
 			false
 		})
@@ -47,7 +46,7 @@ pub fn is_paused() -> bool {
 pub fn is_map_valid(map: &CStr) -> bool {
 	unsafe {
 		raw::inspect(move |sv| if let Some(sv) = sv {
-			sv.is_map_valid(map)
+			sv.as_v23().is_map_valid(map)
 		} else {
 			false
 		})
@@ -56,7 +55,7 @@ pub fn is_map_valid(map: &CStr) -> bool {
 
 /// Inserts `command` at the end of the command buffer.
 pub fn execute(command: &CStr) {
-	unsafe { raw::inspect_mt(move |sv| sv.push_command_back(command)) }
+	unsafe { raw::inspect_mt(move |sv| sv.as_v23().push_command_back(command)) }
 }
 
 /// Precaches a model.
@@ -65,7 +64,7 @@ pub fn execute(command: &CStr) {
 pub fn precache_model(path: &CStr, preload: bool) -> Option<Model> {
 	unsafe {
 		raw::inspect(move |sv| if let Some(sv) = sv {
-			sv.precache_model(path, preload)
+			sv.as_mut_v23().precache_model(path, preload)
 		} else {
 			None
 		})
@@ -78,7 +77,7 @@ pub fn precache_model(path: &CStr, preload: bool) -> Option<Model> {
 pub fn precache_sentence_file(path: &CStr, preload: bool) {
 	unsafe {
 		raw::inspect(move |sv| if let Some(sv) = sv {
-			sv.precache_sentence_file(path, preload)
+			sv.as_mut_v23().precache_sentence_file(path, preload)
 		})
 	}
 }
@@ -89,7 +88,7 @@ pub fn precache_sentence_file(path: &CStr, preload: bool) {
 pub fn precache_decal(path: &CStr, preload: bool) -> Decal {
 	unsafe {
 		raw::inspect(move |sv| if let Some(sv) = sv {
-			sv.precache_decal(path, preload)
+			sv.as_mut_v23().precache_decal(path, preload)
 		} else {
 			0
 		})
@@ -102,7 +101,7 @@ pub fn precache_decal(path: &CStr, preload: bool) -> Decal {
 pub fn precache_generic(path: &CStr, preload: bool) -> Generic {
 	unsafe {
 		raw::inspect(move |sv| if let Some(sv) = sv {
-			sv.precache_generic(path, preload)
+			sv.as_mut_v23().precache_generic(path, preload)
 		} else {
 			0
 		})
@@ -115,7 +114,7 @@ const DEFAULT_PRECACHED: bool = false; // Nah.
 pub fn is_model_precached(path: &CStr) -> bool {
 	unsafe {
 		raw::inspect(move |sv| if let Some(sv) = sv {
-			sv.is_model_precached(path)
+			sv.as_v23().is_model_precached(path)
 		} else {
 			DEFAULT_PRECACHED
 		})
@@ -126,7 +125,7 @@ pub fn is_model_precached(path: &CStr) -> bool {
 pub fn is_decal_precached(path: &CStr) -> bool {
 	unsafe {
 		raw::inspect(move |sv| if let Some(sv) = sv {
-			sv.is_decal_precached(path)
+			sv.as_v23().is_decal_precached(path)
 		} else {
 			DEFAULT_PRECACHED
 		})
@@ -137,7 +136,7 @@ pub fn is_decal_precached(path: &CStr) -> bool {
 pub fn is_generic_precached(path: &CStr) -> bool {
 	unsafe {
 		raw::inspect(move |sv| if let Some(sv) = sv {
-			sv.is_generic_precached(path)
+			sv.as_v23().is_generic_precached(path)
 		} else {
 			DEFAULT_PRECACHED
 		})
@@ -149,7 +148,7 @@ pub fn game_dir() -> GameDir {
 	unsafe {
 		raw::inspect_mt(move |sv| {
 			let mut dir = GameDir::new();
-			sv.game_dir(dir.buffer.bytes_mut());
+			sv.as_v23().game_dir(dir.buffer.bytes_mut());
 			dir
 		})
 	}
@@ -157,7 +156,7 @@ pub fn game_dir() -> GameDir {
 
 /// Writes the path to the game directory into the given [`GameDir`] buffer.
 pub fn game_dir_into(dir: &mut GameDir) {
-	unsafe { raw::inspect_mt(move |sv| sv.game_dir(dir.buffer.bytes_mut())) }
+	unsafe { raw::inspect_mt(move |sv| sv.as_v23().game_dir(dir.buffer.bytes_mut())) }
 }
 
 /// Buffer that holds the path to the game directory as a C string.

@@ -1,6 +1,6 @@
 use ::core::ffi::CStr;
 use ::rse_game_interfaces::{
-	BaseFileSystem, BaseFileSystemImpl,
+	OBaseFileSystem, BaseFileSystem,
 };
 use ::std::sync::OnceLock;
 
@@ -13,7 +13,7 @@ pub fn size_of_file(path: &CStr, path_id: &CStr) -> usize {
 	with_fs(move |fs| fs.size_at(path, path_id)) as _
 }
 
-static FS: OnceLock<BaseFileSystem> = OnceLock::new();
+static FS: OnceLock<OBaseFileSystem> = OnceLock::new();
 
 pub(crate) fn attach(factories: PluginFactories) -> bool {
 	match factories.create_interface() {

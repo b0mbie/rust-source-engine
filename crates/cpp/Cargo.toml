@@ -12,4 +12,4 @@ gcc = []
 
 [dependencies]
 bitflags.workspace = true
-cppdvt.workspace = true
+cpp-class.workspace = true

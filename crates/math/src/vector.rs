@@ -1,21 +1,24 @@
 use ::core::ffi::c_float;
+use ::rse_cpp::class;
 
-/// Source Engine 2D vector type.
-#[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
-#[repr(C)]
-pub struct Vector2D {
-	pub x: vec_t,
-	pub y: vec_t,
+class! {
+	/// Source Engine 2D vector type.
+	#[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
+	pub Vector2D {
+		pub x: vec_t;
+		pub y: vec_t;
+	}
 }
 
-/// Source Engine 3D vector type.
-// Cross-referenced with `vector.h` in `mathlib`.
-#[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
-#[repr(C)]
-pub struct Vector {
-	pub x: vec_t,
-	pub y: vec_t,
-	pub z: vec_t,
+class! {
+	/// Source Engine 3D vector type.
+	// Cross-referenced with `vector.h` in `mathlib`.
+	#[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
+	pub Vector {
+		pub x: vec_t;
+		pub y: vec_t;
+		pub z: vec_t;
+	}
 }
 
 impl Vector {

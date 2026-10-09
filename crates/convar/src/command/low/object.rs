@@ -8,19 +8,17 @@ use ::core::{
 use ::rse_cpp::{
 	ptr_compat::{
 		PointerFrom,
-		convert_ref, convert_mut,
+		convert_mut,
 	},
-	convert_vt_ref, convert_vt_mut,
 	new_vtable_self, vtable_methods,
+	This,
 	this_to_self, this_to_pin_self,
-	VtObjectPtr,
 	RefConst, RefMut,
-	AsObject, VtObject,
 	VTablePtr,
 };
 use ::rse_utl::{
 	cppdef::{
-		UtlVector, UtlString,
+		CUtlVector, CUtlString,
 	},
 	memory::tier0::Tier0Memory,
 	Vector,
@@ -28,19 +26,17 @@ use ::rse_utl::{
 
 use crate::{
 	cppdef::{
-		ConCommand, ConCommandVt, ConCommandExt,
-		ConCommandBase as CConCommandBase,
-		ConCommandBaseVt, ConCommandBaseVtBase, ConCommandBaseVtExt,
-		ConCommandVtBase,
-		ConCommandBaseExt as CConCommandBaseExt,
+		ConCommand, ConCommandVt, ConCommandData,
+		ConCommandBase as CConCommandBase, ConCommandBaseVt, ConCommandBaseData,
 		ConCommandBits,
+		Registrable, RegistrableVt, RegistrableData,
 		CommandCallback, CompletionCallback,
 		Command as CCommand,
 		CvarDllIdentifier,
 	},
 	console_base::{
 		CvarFlags,
-		ConCommandBaseExt,
+		RegistrableExt,
 		RegistrableMut, registrable_mut,
 	},
 };
@@ -73,22 +69,22 @@ impl<'str, T> ConCommandObject<'str, T> {
 		&mut self.con_command
 	}
 
-	pub const fn as_base(&self) -> &ConCommandBaseExt {
-		unsafe { ConCommandBaseExt::from_ref(&self.con_command.data.base) }
+	pub const fn as_registrable(&self) -> &RegistrableExt {
+		unsafe { RegistrableExt::from_ref(&self.con_command.data.inherited_con_command_base.inherited_registrable) }
 	}
 
-	pub const fn as_mut_base(&mut self) -> &mut ConCommandBaseExt {
-		unsafe { ConCommandBaseExt::from_mut(&mut self.con_command.data.base) }
+	pub const fn as_mut_registrable(&mut self) -> &mut RegistrableExt {
+		unsafe { RegistrableExt::from_mut(&mut self.con_command.data.inherited_con_command_base.inherited_registrable) }
 	}
 
-	pub const fn as_base_object(&mut self) -> &mut VtObject<ConCommandBaseVt> {
-		convert_vt_mut(
-			convert_mut::<_, VtObject<ConCommandVt>>(&mut self.con_command)
+	pub const fn to_registrable_mut(&mut self) -> RegistrableMut {
+		registrable_mut::<CConCommandBase>(
+			convert_mut(&mut self.con_command)
 		)
 	}
 
-	pub const fn as_registrable(&mut self) -> RegistrableMut {
-		registrable_mut(&mut self.con_command)
+	pub const fn as_mut_base(&mut self) -> &mut CConCommandBase {
+		convert_mut(&mut self.con_command)
 	}
 }
 
@@ -98,12 +94,12 @@ where
 {
 	/// # Safety
 	/// `ext` must be properly initialized.
-	pub const unsafe fn from_raw(inner: T, ext: ConCommandExt) -> Self {
+	pub const unsafe fn from_raw(inner: T, data: ConCommandData) -> Self {
 		Self {
-			con_command: ConCommand::new(
-				VTablePtr::from_ref(Self::VTABLE),
-				ext,
-			),
+			con_command: ConCommand {
+				vtable: VTablePtr::from_ref(Self::VTABLE),
+				data,
+			},
 			inner,
 			_strings: PhantomData,
 		}
@@ -122,13 +118,15 @@ where
 	) -> Self {
 		unsafe { Self::from_raw(
 			inner,
-			ConCommandExt {
-				base: CConCommandBaseExt {
-					next: null_mut(),
-					registered: false,
-					name: name.as_ptr(),
-					help_string: ::rse_cpp::c_str::opt_c_str_as_ptr(help),
-					flags: flags.bits(),
+			ConCommandData {
+				inherited_con_command_base: ConCommandBaseData {
+					inherited_registrable: RegistrableData {
+						next: null_mut(),
+						registered: false,
+						name: name.as_ptr(),
+						help_string: ::rse_cpp::c_str::opt_c_str_as_ptr(help),
+						flags: flags.bits(),
+					},
 				},
 				command_callback,
 				completion_callback,
@@ -138,33 +136,29 @@ where
 	}
 
 	const VTABLE: &'static ConCommandVt = &ConCommandVt {
-		base: ConCommandBaseVt {
-			base: new_vtable_self!(ConCommandBaseVtBase {
+		inherited_con_command_base: ConCommandBaseVt {
+			inherited_registrable: new_vtable_self!(RegistrableVt {
 				destructor,
 				#[cfg(not(windows))]
 				destructor_2,
 				is_command
 			}),
-			ext: new_vtable_self!(ConCommandBaseVtExt {
-				is_flag_set,
-				add_flags,
-				get_name,
-				get_help_text,
-				is_registered,
-				get_dll_identifier,
-				create_base,
-				init
-			}),
+			is_flag_set: Self::is_flag_set,
+			add_flags: Self::add_flags,
+			get_name: Self::get_name,
+			get_help_text: Self::get_help_text,
+			is_registered: Self::is_registered,
+			get_dll_identifier: Self::get_dll_identifier,
+			create_base: Self::create_base,
+			init: Self::init,
 		},
-		con_command: new_vtable_self!(ConCommandVtBase {
-			auto_complete_suggest,
-			can_auto_complete,
-			dispatch
-		}),
+		auto_complete_suggest: Self::auto_complete_suggest,
+		can_auto_complete: Self::can_auto_complete,
+		dispatch: Self::dispatch,
 	};
 
 	vtable_methods! {
-		this: VtObjectPtr<ConCommandBaseVtBase>;
+		this: This<Registrable>;
 		fn destructor() {
 			let _ = this;
 			// TODO: Destructor?
@@ -181,7 +175,7 @@ where
 	}
 
 	vtable_methods! {
-		this: VtObjectPtr<ConCommandBaseVt>;
+		this: This<CConCommandBase>;
 		fn is_flag_set(flag: c_int) -> bool {
 			let this = unsafe { this_to_pin_self!(mut this) };
 			T::are_flags_set(this, CvarFlags::from_bits_retain(flag))
@@ -193,12 +187,18 @@ where
 		fn get_name() -> *const c_char {
 			let this_pinned = unsafe { this_to_pin_self!(mut this) };
 			T::name(this_pinned);
-			this_to_self!(ref this).con_command.data.base.name
+			unsafe { this_to_self!(ref this) }
+				.con_command.data
+				.inherited_con_command_base.inherited_registrable
+				.name
 		}
 		fn get_help_text() -> *const c_char {
 			let this_pinned = unsafe { this_to_pin_self!(mut this) };
 			T::help(this_pinned);
-			this_to_self!(ref this).con_command.data.base.help_string
+			unsafe { this_to_self!(ref this) }
+				.con_command.data
+				.inherited_con_command_base.inherited_registrable
+				.help_string
 		}
 		fn is_registered() -> bool {
 			let this = unsafe { this_to_pin_self!(mut this) };
@@ -222,12 +222,12 @@ where
 	}
 
 	vtable_methods! {
-		this: VtObjectPtr<ConCommandVt>;
-		fn auto_complete_suggest(partial: *const c_char, commands: RefMut<UtlVector<UtlString>>) -> c_int {
+		this: This<ConCommand>;
+		fn auto_complete_suggest(partial: *const c_char, commands: RefMut<CUtlVector<CUtlString>>) -> c_int {
 			let partial = unsafe { CStr::from_ptr(partial) };
 			let suggestions = unsafe {
-				Vector::<UtlString, Tier0Memory<UtlString>>::from_mut_ptr(
-					commands.cast::<UtlVector<UtlString, Tier0Memory<UtlString>>>().as_ptr()
+				Vector::<CUtlString, Tier0Memory<CUtlString>>::from_mut_ptr(
+					commands.cast::<CUtlVector<CUtlString, Tier0Memory<CUtlString>>>().as_ptr()
 				)
 			};
 			let suggestions = unsafe { Suggestions::from_mut(suggestions) };
@@ -248,17 +248,3 @@ where
 
 unsafe impl<T> PointerFrom<ConCommandObject<'_, T>> for ConCommand {}
 unsafe impl<T> PointerFrom<ConCommandObject<'_, T>> for CConCommandBase {}
-
-impl<T> AsObject<ConCommandVt> for ConCommandObject<'_, T> {
-	fn as_object(&self) -> &VtObject<ConCommandVt> {
-		convert_ref(&self.con_command)
-	}
-}
-
-impl<T> AsObject<ConCommandBaseVt> for ConCommandObject<'_, T> {
-	fn as_object(&self) -> &VtObject<ConCommandBaseVt> {
-		convert_vt_ref(
-			convert_ref::<_, VtObject<ConCommandVt>>(&self.con_command)
-		)
-	}
-}

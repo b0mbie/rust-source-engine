@@ -38,6 +38,6 @@ where
 	) -> SuggestionCount;
 
 	fn are_flags_set(object: Pin<&mut ConCommandObject<'a, Self>>, flag: CvarFlags) -> bool {
-		object.as_base().are_flags_set(flag)
+		object.as_registrable().are_flags_set(flag)
 	}
 }

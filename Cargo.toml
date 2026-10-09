@@ -54,9 +54,9 @@ rse-std = { path = "./crates/std" }
 rse-tier0 = { path = "./crates/tier0" }
 rse-utl = { path = "./crates/utl" }
 
-[workspace.dependencies.cppdvt]
-git = "https://github.com/b0mbie/cppdvt.git"
-version = "0.7.0"
+[workspace.dependencies.cpp-class]
+git = "https://github.com/b0mbie/cpp-class.git"
+version = "0.1.2"
 
 [workspace.dependencies.libc]
 version = "0.2.177"

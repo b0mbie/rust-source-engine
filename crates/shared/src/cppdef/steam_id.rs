@@ -1,10 +1,11 @@
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[repr(C)]
-pub struct SteamId {
-	pub bits: u64,
+::rse_cpp::class! {
+	#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+	pub CSteamID {
+		pub bits: u64;
+	}
 }
 
-impl SteamId {
+impl CSteamID {
 	const ACCOUNT_ID_BITS: u32 = 32;
 	const INSTANCE_ID_BITS: u32 = 20;
 	const ACCOUNT_TYPE_BITS: u32 = 4;

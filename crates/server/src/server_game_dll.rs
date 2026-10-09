@@ -1,7 +1,5 @@
 use ::core::ffi::CStr;
-use ::rse_cpp::{
-	AsObject, virtual_call, owned_vt_object_wrapper,
-};
+use ::rse_cpp::virtual_call;
 use ::rse_game_interfaces::{
 	InterfaceOfFactory, GameServerFactory,
 };
@@ -10,36 +8,36 @@ use ::rse_shared::{
 };
 
 use crate::cppdef::{
-	ServerGameDllVt, INTERFACEVERSION_SERVERGAMEDLL,
+	IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL,
 	TickInterval,
 };
 
-pub trait ServerGameDllImpl: AsObject<ServerGameDllVt> {
-	fn tick_interval(&self) -> TickInterval {
-		unsafe { virtual_call!(self.as_object() => get_tick_interval()) } 
-	}
-	fn server_classes(&self) -> ServerClasses<'_> {
-		let head = unsafe { ServerClass::from_ptr(virtual_call!(self.as_object() => get_all_server_classes())) };
-		ServerClasses::new(head)
-	}
-	fn server_classes_mut(&mut self) -> ServerClassesMut<'_> {
-		let head = unsafe { ServerClass::from_mut_ptr(virtual_call!(self.as_object() => get_all_server_classes())) };
-		ServerClassesMut::new(head)
-	}
-	fn game_description(&self) -> &CStr {
-		unsafe { CStr::from_ptr(virtual_call!(self.as_object() => get_game_description())) }
-	}
-
-	// TODO: More functions from `ServerGameDllVt`.
+::rse_interface::ptr_interface! {
+	pub struct OServerGameDll(ServerGameDll);
+	Pointee = IServerGameDLL;
 }
-impl<T: ?Sized + AsObject<ServerGameDllVt>> ServerGameDllImpl for T {}
-
-owned_vt_object_wrapper! {
-	pub struct ServerGameDll for ServerGameDllVt;
-}
-unsafe impl ::rse_interface::Interface for ServerGameDll {
+impl ::rse_interface::Interface for OServerGameDll {
 	const IDENTIFIER: &CStr = INTERFACEVERSION_SERVERGAMEDLL;
 }
-impl InterfaceOfFactory for ServerGameDll {
+impl InterfaceOfFactory for OServerGameDll {
 	type Factory = GameServerFactory;
+}
+
+impl ServerGameDll {
+	pub fn tick_interval(&self) -> TickInterval {
+		unsafe { virtual_call!(self.as_inner() => get_tick_interval()) } 
+	}
+	pub fn server_classes(&self) -> ServerClasses<'_> {
+		let head = unsafe { ServerClass::from_ptr(virtual_call!(self.as_inner() => get_all_server_classes())) };
+		ServerClasses::new(head)
+	}
+	pub fn server_classes_mut(&mut self) -> ServerClassesMut<'_> {
+		let head = unsafe { ServerClass::from_mut_ptr(virtual_call!(self.as_mut_inner() => get_all_server_classes())) };
+		ServerClassesMut::new(head)
+	}
+	pub fn game_description(&self) -> &CStr {
+		unsafe { CStr::from_ptr(virtual_call!(self.as_inner() => get_game_description())) }
+	}
+
+	// TODO: More functions from `IServerGameDLL`.
 }

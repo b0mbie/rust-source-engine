@@ -5,9 +5,9 @@ use ::core::{
 	num::NonZero,
 };
 
-pub trait Tier0GetCommandLine {
+pub trait Tier0WithCommandLine {
 	type CommandLine<'a>: Tier0CommandLine where Self: 'a;
-	fn command_line(&self) -> Self::CommandLine<'_>;
+	unsafe fn with_command_line<R, F: FnOnce(Self::CommandLine<'_>) -> R>(&self, f: F) -> R;
 }
 
 // TODO: Thread safety?

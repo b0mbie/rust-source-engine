@@ -5,13 +5,13 @@ use ::rse_cpp::{
 
 use crate::{
 	cppdef::{
-		GameEventManager2Vt, INTERFACEVERSION_GAMEEVENTSMANAGER2,
+		IGameEventManager2, INTERFACEVERSION_GAMEEVENTSMANAGER2,
 	},
 	InterfaceOfFactory, AppSystemFactory,
 };
 
-pub trait GameEventManager2Impl: AsObject<GameEventManager2Vt> {}
-impl<T: ?Sized + AsObject<GameEventManager2Vt>> GameEventManager2Impl for T {}
+pub trait GameEventManager2Impl: AsRef<IGameEventManager2> {}
+impl<T: ?Sized + AsRef<IGameEventManager2>> GameEventManager2Impl for T {}
 
 owned_vt_object_wrapper! {
 	pub struct GameEventManager2 for GameEventManager2Vt;

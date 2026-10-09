@@ -5,33 +5,31 @@ use ::core::{
 	fmt,
 };
 use ::rse_cpp::{
-	ptr_compat::PointerFrom,
-	RefConst, RefMut, VtObjectPtr, vtable,
+	class,
+	RefConst, RefMut,
 	test_bits, with_bits,
-	WithVTable,
 };
 use ::rse_utl::cppdef::{
-	UtlVector, UtlString,
+	CUtlVector, CUtlString,
 };
 
 use super::{
-	ConCommandBaseVt,
-	ConCommandBaseVtBase,
-	ConCommandBaseExt,
+	ConCommandBase,
 	Command,
 };
 
-pub type ConCommand = WithVTable<ConCommandVt, ConCommandExt>;
+class! {
+	pub ConCommand: pub virtual ConCommandBase {
+		pub virtual fn auto_complete_suggest(partial: *const c_char, commands: RefMut<CUtlVector<CUtlString>>) -> c_int;
+		pub virtual fn can_auto_complete() -> bool;
+		pub virtual fn dispatch(command: RefConst<Command>);
 
-#[derive(Debug)]
-#[repr(C)]
-pub struct ConCommandExt {
-	pub base: ConCommandBaseExt,
-	pub command_callback: CommandCallback,
-	pub completion_callback: CompletionCallback,
-	pub bits: ConCommandBits,
+		pub command_callback: CommandCallback;
+		pub completion_callback: CompletionCallback;
+		pub bits: ConCommandBits;
+	}
 }
-unsafe impl PointerFrom<ConCommandExt> for ConCommandBaseExt {}
+// impl_virtual_cast!(ConCommand => ConCommandBase => super::Registrable);
 
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
@@ -71,22 +69,6 @@ impl ConCommandBits {
 	}
 }
 
-#[repr(C)]
-pub struct ConCommandVt {
-	pub base: ConCommandBaseVt,
-	pub con_command: ConCommandVtBase,
-}
-unsafe impl PointerFrom<ConCommandVt> for ConCommandBaseVtBase {}
-unsafe impl PointerFrom<ConCommandVt> for ConCommandBaseVt {}
-
-vtable! {
-	pub ConCommandVtBase for VtObjectPtr<ConCommandVt> {
-		pub fn auto_complete_suggest(partial: *const c_char, commands: RefMut<UtlVector<UtlString>>) -> c_int;
-		pub fn can_auto_complete() -> bool;
-		pub fn dispatch(command: RefConst<Command>);
-	}
-}
-
 pub type CommandCallbackFnV1 = unsafe extern "C" fn();
 pub type CommandCallbackFn = unsafe extern "C" fn(command: RefConst<Command>);
 
@@ -94,7 +76,7 @@ pub type CommandCallbackFn = unsafe extern "C" fn(command: RefConst<Command>);
 pub union CommandCallback {
 	pub v1: CommandCallbackFnV1,
 	pub new: CommandCallbackFn,
-	pub interface: VtObjectPtr<CommandCallbackVt>,
+	pub interface: *mut ICommandCallback,
 	pub not_used: (),
 }
 
@@ -125,7 +107,7 @@ pub type CompletionCallbackFn = unsafe extern "C" fn(
 #[repr(C)]
 pub union CompletionCallback {
 	pub function: CompletionCallbackFn,
-	pub interface: Option<VtObjectPtr<CommandCompletionCallbackVt>>,
+	pub interface: *mut ICommandCompletionCallback,
 	pub not_used: (),
 }
 
@@ -135,14 +117,14 @@ impl fmt::Debug for CompletionCallback {
 	}
 }
 
-vtable! {
-	pub CommandCallbackVt {
-		pub fn command_callback(command: RefConst<Command>);
+class! {
+	pub ICommandCallback {
+		pub virtual fn command_callback(command: RefConst<Command>);
 	}
 }
 
-vtable! {
-	pub CommandCompletionCallbackVt {
-		pub fn command_completion_callback(partial: *const c_char, commands: RefMut<UtlVector<UtlString>>) -> c_int;
+class! {
+	pub ICommandCompletionCallback {
+		pub virtual fn command_completion_callback(partial: *const c_char, commands: RefMut<CUtlVector<CUtlString>>) -> c_int;
 	}
 }

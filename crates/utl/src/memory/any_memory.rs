@@ -5,7 +5,7 @@ use ::core::{
 	},
 };
 
-use crate::cppdef::UtlMemory;
+use crate::cppdef::CUtlMemory;
 
 use super::{
 	UtlMemoryOf, GrowSize,
@@ -15,13 +15,13 @@ use super::{
 /// Transparent wrapper for `CUtlMemory<T>`.
 /// 
 /// # Layout
-/// This type has the exact same layout and ABI as [`UtlMemory<T>`].
+/// This type has the exact same layout and ABI as [`CUtlMemory<T>`].
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct Memory<T>(UtlMemory<T>);
+pub struct Memory<T>(CUtlMemory<T>);
 impl<T> Memory<T> {
-	/// Wraps an owned [`UtlMemory<T>`].
-	pub const fn new(inner: UtlMemory<T>) -> Self {
+	/// Wraps an owned [`CUtlMemory<T>`].
+	pub const fn new(inner: CUtlMemory<T>) -> Self {
 		Self(inner)
 	}
 
@@ -83,7 +83,7 @@ impl<T> Memory<T> {
 		}
 	}
 
-	::rse_cpp::transparent_wrapper_impls!(Memory for UtlMemory<T> as "UtlMemory");
+	::rse_cpp::transparent_wrapper_impls!(Memory for CUtlMemory<T> as "UtlMemory");
 }
 
 unsafe impl<T> UtlMemoryOf<T> for Memory<T> {

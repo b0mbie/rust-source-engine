@@ -72,8 +72,6 @@ where
 ///   `size_of::<Self>() <= size_of::<Src>()`.
 /// 
 /// Besides these, however, there are other cases where some type may be pointer-from-compatible with `Src`.
-/// Notably, [`WithVTable<VTable, T>`](crate::WithVTable) is pointer-from-compatible with `WithVTable<VTable2, U>`
-/// if both `VTable` and `Src` are *pointer-from-compatible* with `VTable2` and `U` respectively.
 /// Translating to C++ semantics,
 /// different C++ types *can* be pointer-from-compatible
 /// *if* the implementing C++ type *inherits* from the `Src` C++ type.
@@ -90,29 +88,11 @@ where
 /// // SAFETY: `ForeignWrapper` is `repr(transparent)` over `ForeignType`, and so it has the exact same layout and ABI.
 /// unsafe impl PointerFrom<ForeignWrapper> for ForeignType {}
 /// ```
-/// 
-/// For C++ types, the following is typically valid:
-/// ```
-/// # use rse_cpp::{ptr_compat::PointerFrom, vtable};
-/// vtable! {
-///     pub BaseVt {
-///         pub fn do_thing();
-///     }
-/// }
-/// 
-/// vtable! {
-///     pub InheritedVtBase {
-///         pub fn do_inherited_thing();
-///     }
-/// }
-/// 
-/// #[repr(C)]
-/// pub struct InheritedVt {
-///     pub base: BaseVt,
-///     pub inherited: InheritedVtBase,
-/// }
-/// 
-/// // SAFETY: `InheritedVt`, which is `repr(C)`, inherits from `BaseVt`, having it as the first field.
-/// unsafe impl PointerFrom<InheritedVt> for BaseVt {}
-/// ```
+#[diagnostic::on_unimplemented(message = "`{Self}` is not pointer-compatible with `{Src}`")]
 pub unsafe trait PointerFrom<Src: ?Sized> {}
+
+#[diagnostic::do_not_recommend]
+unsafe impl<T, Base> PointerFrom<T> for Base
+where
+	T: cpp_class::Inherits<Base>,
+{}
