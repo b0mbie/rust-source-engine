@@ -8,6 +8,7 @@ authors.workspace = true
 workspace = true
 
 [dependencies]
+rse-convar.workspace = true
 rse-cpp.workspace = true
 rse-game-interfaces.workspace = true
 rse-interface.workspace = true
