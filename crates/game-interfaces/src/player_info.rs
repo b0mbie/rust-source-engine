@@ -2,14 +2,16 @@ use ::core::ffi::{
 	CStr, c_int,
 };
 use ::rse_cpp::{
-	AsObject, virtual_call, vt_object_wrapper, owned_vt_object_wrapper,
-	VtObject, VtObjectWrapper,
+	transparent_wrapper,
+	virtual_call,
 };
 use ::rse_shared::{
-	cppdef::GlobalVars,
+	cppdef::CGlobalVars,
 	ServerEdict,
 };
-use ::rse_interface::Interface;
+use ::rse_interface::{
+	Interface, ptr_interface,
+};
 use ::rse_math::{
 	Vector, QAngle,
 };
@@ -18,222 +20,174 @@ use crate::{
 	cppdef::{
 		IPlayerInfoManager, IPlayerInfo, IPlayerInfo_V2,
 		INTERFACEVERSION_PLAYERINFOMANAGER,
-		IBotManager, IBotController,
-		INTERFACEVERSION_PLAYERBOTMANAGER,
 	},
 	InterfaceOfFactory, GameServerFactory,
 };
 
 pub use crate::cppdef::CBotCmd;
 
-pub trait PlayerInfoManagerImpl: AsRef<IPlayerInfoManager> {
-	fn player_info_mut<'a>(&self, edict: &'a mut ServerEdict) -> Option<&'a mut IPlayerInfo> {
+ptr_interface! {
+	pub struct OPlayerInfoManager(PlayerInfoManager);
+	Pointee = IPlayerInfoManager;
+}
+unsafe impl Send for OPlayerInfoManager {}
+unsafe impl Sync for OPlayerInfoManager {}
+impl Interface for OPlayerInfoManager {
+	const IDENTIFIER: &CStr = INTERFACEVERSION_PLAYERINFOMANAGER;
+}
+impl InterfaceOfFactory for OPlayerInfoManager {
+	type Factory = GameServerFactory;
+}
+
+impl PlayerInfoManager {
+	pub fn player_info_mut<'a>(&mut self, edict: &'a mut ServerEdict) -> Option<&'a mut PlayerInfo> {
 		unsafe {
-			let ptr = virtual_call!(self.as_ref() => get_player_info(edict.as_mut_ptr()))?;
-			Some(PlayerInfo2::from_object_mut(VtObject::from_ptr_mut(ptr)))
+			let ptr = virtual_call!(self.as_mut_inner() => get_player_info(edict.as_mut_ptr()));
+			Some(PlayerInfo::from_mut(ptr.as_mut()?))
 		}
 	}
-	fn player_info<'a>(&self, edict: &'a ServerEdict) -> Option<&'a PlayerInfo2> {
+	pub fn player_info<'a>(&self, edict: &'a ServerEdict) -> Option<&'a PlayerInfo> {
 		unsafe {
-			let ptr = virtual_call!(self.as_ref() => get_player_info(edict.as_ptr() as _))?;
-			Some(PlayerInfo2::from_object_const(VtObject::from_ptr(ptr)))
+			let ptr = virtual_call!(self.as_inner() => get_player_info(edict.as_ptr() as _));
+			Some(PlayerInfo::from_ref(ptr.as_ref()?))
 		}
 	}
-	fn global_vars(&self) -> *mut GlobalVars {
-		unsafe { virtual_call!(self.as_ref() => get_global_vars()) }
+	pub fn global_vars(&self) -> *mut CGlobalVars {
+		unsafe { virtual_call!(self.as_inner() => get_global_vars()) }
 	}
 }
-impl<T: ?Sized + AsObject<PlayerInfoManagerVt>> PlayerInfoManagerImpl for T {}
 
-pub trait PlayerInfoImpl: AsRef<IPlayerInfo> {
+transparent_wrapper! {
+	pub struct PlayerInfo for IPlayerInfo as "IPlayerInfo";
+}
+
+impl PlayerInfo {
 	/// Returns the UTF-8 encoded name of the player.
-	fn name(&self) -> &CStr {
-		unsafe { CStr::from_ptr(virtual_call!(self.as_ref() => get_name())) }
+	pub fn name(&self) -> &CStr {
+		unsafe { CStr::from_ptr(virtual_call!(self.as_inner() => get_name())) }
 	}
 	/// Returns the user ID (slot number).
-	fn user_id(&self) -> UserId {
-		unsafe { virtual_call!(self.as_ref() => get_user_id()) }
+	pub fn user_id(&self) -> UserId {
+		unsafe { virtual_call!(self.as_inner() => get_user_id()) }
 	}
 	/// Returns the string of the player's network (i.e. Steam) ID.
-	fn network_id(&self) -> &CStr {
-		unsafe { CStr::from_ptr(virtual_call!(self.as_ref() => get_network_id_string())) }
+	pub fn network_id(&self) -> &CStr {
+		unsafe { CStr::from_ptr(virtual_call!(self.as_inner() => get_network_id_string())) }
 	}
 	/// Returns the team the player is on.
-	fn team_index(&self) -> c_int {
-		unsafe { virtual_call!(self.as_ref() => get_team_index()) }
+	pub fn team_index(&self) -> c_int {
+		unsafe { virtual_call!(self.as_inner() => get_team_index()) }
 	}
 	/// Changes the player to a new team, if the game DLL logic allows it.
-	fn change_team(&self, team_num: c_int) {
-		unsafe { virtual_call!(self.as_ref() => change_team(team_num)) }
+	pub fn change_team(&mut self, team_num: c_int) {
+		unsafe { virtual_call!(self.as_mut_inner() => change_team(team_num)) }
 	}
 	/// Returns the number of kills this player has.
 	/// 
 	/// The exact meaning of the value is mod-dependent.
-	fn frags(&self) -> c_int {
-		unsafe { virtual_call!(self.as_ref() => get_frag_count()) }
+	pub fn frags(&self) -> c_int {
+		unsafe { virtual_call!(self.as_inner() => get_frag_count()) }
 	}
 	/// Returns the number of kills this player has.
 	/// 
 	/// The exact meaning of the value is mod-dependent.
-	fn deaths(&self) -> c_int {
-		unsafe { virtual_call!(self.as_ref() => get_frag_count()) }
+	pub fn deaths(&self) -> c_int {
+		unsafe { virtual_call!(self.as_inner() => get_frag_count()) }
 	}
 	/// Returns `true` if the player slot is actually valid.
-	fn is_connected(&self) -> bool {
-		unsafe { virtual_call!(self.as_ref() => is_connected()) }
+	pub fn is_connected(&self) -> bool {
+		unsafe { virtual_call!(self.as_inner() => is_connected()) }
 	}
 	/// Returns the armor/health of the player.
 	/// 
 	/// The exact meaning of the value is mod-dependent.
-	fn armor(&self) -> c_int {
-		unsafe { virtual_call!(self.as_ref() => get_armor_value()) }
+	pub fn armor(&self) -> c_int {
+		unsafe { virtual_call!(self.as_inner() => get_armor_value()) }
 	}
 }
-impl<T: ?Sized + AsRef<IPlayerInfo>> PlayerInfoImpl for T {}
 
-macro_rules! v2_call {
-	($object:expr => $field:ident($($arg:tt)*)) => {{
-		let object = $object;
-		(object.vtable().v2.$field)(object.as_ptr().cast(), $($arg)*)
-	}};
+transparent_wrapper! {
+	pub struct PlayerInfo2 for IPlayerInfo_V2 as "IPlayerInfo_V2";
 }
 
-pub trait PlayerInfo2Impl: AsRef<IPlayerInfo_V2> {
+impl PlayerInfo2 {
 	/// Returns `true` if the player is an HLTV spectator.
 	// TODO: Clarify what this means.
-	fn is_hltv(&self) -> bool {
-		unsafe { v2_call!(self.as_ref() => is_hltv()) }
+	pub fn is_hltv(&self) -> bool {
+		unsafe { virtual_call!(self.as_inner() => is_hltv()) }
 	}
 	/// Returns `true` if the player is a player.
-	fn is_player(&self) -> bool {
-		unsafe { v2_call!(self.as_ref() => is_player()) }
+	pub fn is_player(&self) -> bool {
+		unsafe { virtual_call!(self.as_inner() => is_player()) }
 	}
 	/// Returns `true` if the player is a fake client.
-	fn is_fake_client(&self) -> bool {
-		unsafe { v2_call!(self.as_ref() => is_fake_client()) }
+	pub fn is_fake_client(&self) -> bool {
+		unsafe { virtual_call!(self.as_inner() => is_fake_client()) }
 	}
 	/// Returns `true` if the player is dead.
-	fn is_dead(&self) -> bool {
-		unsafe { v2_call!(self.as_ref() => is_dead()) }
+	pub fn is_dead(&self) -> bool {
+		unsafe { virtual_call!(self.as_inner() => is_dead()) }
 	}
 	/// Returns `true` if the player is in a vehicle.
-	fn is_in_a_vehicle(&self) -> bool {
-		unsafe { v2_call!(self.as_ref() => is_in_a_vehicle()) }
+	pub fn is_in_a_vehicle(&self) -> bool {
+		unsafe { virtual_call!(self.as_inner() => is_in_a_vehicle()) }
 	}
 	/// Returns `true` if the player is an observer.
 	// TODO: Clarify what this means.
-	fn is_observer(&self) -> bool {
-		unsafe { v2_call!(self.as_ref() => is_hltv()) }
+	pub fn is_observer(&self) -> bool {
+		unsafe { virtual_call!(self.as_inner() => is_observer()) }
 	}
 	/// Returns `true` if the player is a replay spectator.
 	// TODO: Clarify what this means.
-	fn is_replay(&self) -> bool {
-		unsafe { v2_call!(self.as_ref() => is_replay()) }
+	pub fn is_replay(&self) -> bool {
+		unsafe { virtual_call!(self.as_inner() => is_replay()) }
 	}
 
 	/// Returns the player's absolute origin (position).
-	fn abs_origin(&self) -> Vector {
-		unsafe { v2_call!(self.as_ref() => get_abs_origin()) }
+	pub fn abs_origin(&self) -> Vector {
+		unsafe { virtual_call!(self.as_inner() => get_abs_origin()) }
 	}
 	/// Returns the player's absolute angles (orientation).
-	fn abs_angles(&self) -> QAngle {
-		unsafe { v2_call!(self.as_ref() => get_abs_angles()) }
+	pub fn abs_angles(&self) -> QAngle {
+		unsafe { virtual_call!(self.as_inner() => get_abs_angles()) }
 	}
 	/// Returns the lowest corner of the player's collision bounding box.
-	fn mins(&self) -> Vector {
-		unsafe { v2_call!(self.as_ref() => get_abs_origin()) }
+	pub fn mins(&self) -> Vector {
+		unsafe { virtual_call!(self.as_inner() => get_player_mins()) }
 	}
 	/// Returns the highest corner of the player's collision bounding box.
-	fn maxs(&self) -> Vector {
-		unsafe { v2_call!(self.as_ref() => get_abs_origin()) }
+	pub fn maxs(&self) -> Vector {
+		unsafe { virtual_call!(self.as_inner() => get_player_maxs()) }
 	}
 
 	/// Returns the name of the weapon currently being carried.
-	fn weapon_name(&self) -> &CStr {
-		unsafe { CStr::from_ptr(v2_call!(self.as_ref() => get_weapon_name())) }
+	pub fn weapon_name(&self) -> &CStr {
+		unsafe {
+			let ptr = virtual_call!(self.as_inner() => get_weapon_name());
+			CStr::from_ptr(ptr)
+		}
 	}
 	/// Returns the name of the player model in use.
-	fn model_name(&self) -> &CStr {
-		unsafe { CStr::from_ptr(v2_call!(self.as_ref() => get_model_name())) }
+	pub fn model_name(&self) -> &CStr {
+		unsafe {
+			let ptr = virtual_call!(self.as_inner() => get_model_name());
+			CStr::from_ptr(ptr)
+		}
 	}
 	
 	/// Returns the current health of the player.
-	fn health(&self) -> c_int {
-		unsafe { v2_call!(self.as_ref() => get_health()) }
+	pub fn health(&self) -> c_int {
+		unsafe { virtual_call!(self.as_inner() => get_health()) }
 	}
 	/// Returns the maximum health of the player.
-	fn health_max(&self) -> c_int {
-		unsafe { v2_call!(self.as_ref() => get_health()) }
+	pub fn health_max(&self) -> c_int {
+		unsafe { virtual_call!(self.as_inner() => get_max_health()) }
 	}
 
 	/// Returns the last user input from this player.
-	fn last_user_command(&self) -> CBotCmd {
-		unsafe { v2_call!(self.as_ref() => get_last_user_command()) }
+	pub fn last_user_command(&self) -> CBotCmd {
+		unsafe { virtual_call!(self.as_inner() => get_last_user_command()) }
 	}
 }
-impl<T: ?Sized + AsRef<IPlayerInfo_V2>> PlayerInfo2Impl for T {}
 
 pub type UserId = c_int;
-
-pub trait BotManagerImpl: AsRef<IBotManager> {
-	// TODO: Is it possible to make it so that `create_bot` can be used with `bot_controller_for` with `mut`?
-	fn bot_controller_for<'a>(&self, edict: &'a ServerEdict) -> Option<&'a BotController> {
-		unsafe {
-			let ptr = virtual_call!(self.as_ref() => get_bot_controller(edict.as_ptr() as _))?;
-			Some(BotController::from_object_mut(VtObject::from_ptr_mut(ptr)))
-		}
-	}
-	fn create_bot(&self, name: &CStr) -> Option<&ServerEdict> {
-		unsafe {
-			let ptr = virtual_call!(self.as_ref() => create_bot(name.as_ptr()));
-			if !ptr.is_null() {
-				Some(ServerEdict::from_c_edict(&*ptr))
-			} else {
-				None
-			}
-		}
-	}
-	fn bot(&self, name: &CStr) -> Option<&BotController> {
-		let edict = self.create_bot(name)?;
-		self.bot_controller_for(edict)
-	}
-}
-impl<T: ?Sized + AsRef<IBotManager>> BotManagerImpl for T {}
-
-pub trait BotControllerImpl: AsRef<IBotController> {
-	// TODO: `IBotController` methods.
-}
-impl<T: ?Sized + AsRef<IBotController>> BotControllerImpl for T {}
-
-owned_vt_object_wrapper! {
-	pub struct PlayerInfoManager for PlayerInfoManagerVt;
-}
-unsafe impl Interface for PlayerInfoManager {
-	const IDENTIFIER: &CStr = INTERFACEVERSION_PLAYERINFOMANAGER;
-}
-impl InterfaceOfFactory for PlayerInfoManager {
-	type Factory = GameServerFactory;
-}
-
-vt_object_wrapper! {
-	pub struct PlayerInfo2 for PlayerInfo2Vt;
-}
-impl AsObject<PlayerInfoVt> for PlayerInfo2 {
-	fn as_object(&self) -> &VtObject<PlayerInfoVt> {
-		unsafe { VtObject::from_ptr(self.object.as_ptr().cast()) }
-	}
-}
-
-owned_vt_object_wrapper! {
-	pub struct BotManager for IBotManager;
-}
-unsafe impl Interface for BotManager {
-	const IDENTIFIER: &CStr = INTERFACEVERSION_PLAYERBOTMANAGER;
-}
-impl InterfaceOfFactory for BotManager {
-	type Factory = GameServerFactory;
-}
-
-vt_object_wrapper! {
-	pub struct BotController for IBotController;
-}
