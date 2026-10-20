@@ -78,9 +78,9 @@ pub trait Plugin: Sized {
 		let _ = reject_reason;
 		ClientConnect::Allow
 	}
-	fn client_command(&mut self, entity: &mut ServerEdict, invocation: &Invocation) -> PluginResult {
+	fn client_command(&mut self, entity: &mut ServerEdict, cmd: &Invocation) -> PluginResult {
 		let _ = entity;
-		let _ = invocation;
+		let _ = cmd;
 		PluginResult::Continue
 	}
 	fn network_id_validated(&mut self, user_name: &CStr, network_id: &CStr) -> PluginResult {
