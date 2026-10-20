@@ -11,6 +11,14 @@ pub use file::*;
 mod find;
 pub use find::*;
 
+pub fn find(wildcard: &CStr) -> Option<Find> {
+	Find::open(wildcard)
+}
+
+pub fn find_in(wildcard: &CStr, path_id: &CStr) -> Option<Find> {
+	Find::open_in(wildcard, path_id)
+}
+
 pub fn size_of_file(path: &CStr, path_id: &CStr) -> usize {
 	with_fs(move |fs| fs.as_base().size_at(path, path_id)) as _
 }
