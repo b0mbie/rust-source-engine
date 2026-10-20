@@ -9,7 +9,7 @@ pub const COMMAND_MAX_ARGC: usize = 64;
 pub const COMMAND_MAX_LENGTH: usize = 512;
 
 ::rse_cpp::class! {
-	pub Command {
+	pub CCommand {
 		pub argc: c_int;
 		pub argv0_size: c_int;
 		// INVARIANT: The inner buffer contains a valid C string.

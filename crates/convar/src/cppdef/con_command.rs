@@ -15,14 +15,14 @@ use ::rse_utl::cppdef::{
 
 use super::{
 	ConCommandBase,
-	Command,
+	CCommand,
 };
 
 class! {
 	pub ConCommand: pub virtual ConCommandBase {
 		pub virtual fn auto_complete_suggest(partial: *const c_char, commands: RefMut<CUtlVector<CUtlString>>) -> c_int;
 		pub virtual fn can_auto_complete() -> bool;
-		pub virtual fn dispatch(command: RefConst<Command>);
+		pub virtual fn dispatch(command: RefConst<CCommand>);
 
 		pub command_callback: CommandCallback;
 		pub completion_callback: CompletionCallback;
@@ -70,7 +70,7 @@ impl ConCommandBits {
 }
 
 pub type CommandCallbackFnV1 = unsafe extern "C" fn();
-pub type CommandCallbackFn = unsafe extern "C" fn(command: RefConst<Command>);
+pub type CommandCallbackFn = unsafe extern "C" fn(command: RefConst<CCommand>);
 
 #[repr(C)]
 pub union CommandCallback {
@@ -119,7 +119,7 @@ impl fmt::Debug for CompletionCallback {
 
 class! {
 	pub ICommandCallback {
-		pub virtual fn command_callback(command: RefConst<Command>);
+		pub virtual fn command_callback(command: RefConst<CCommand>);
 	}
 }
 

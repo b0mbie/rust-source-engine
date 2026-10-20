@@ -5,7 +5,7 @@ use ::rse_cpp::{
 	class, RefConst,
 };
 use ::rse_interface::CreateInterfaceFn;
-use ::rse_convar::cppdef::Command;
+use ::rse_convar::cppdef::CCommand;
 use ::rse_shared::cppdef::{
 	entities::edict_t,
 	KeyValues,
@@ -77,7 +77,7 @@ class! {
 			name: *const c_char, address: *const c_char,
 			out_reject: *mut c_char, out_reject_len: c_int,
 		) -> PluginResult;
-		pub virtual fn client_command(entity: *mut edict_t, args: RefConst<Command>) -> PluginResult;
+		pub virtual fn client_command(entity: *mut edict_t, args: RefConst<CCommand>) -> PluginResult;
 		pub virtual fn network_id_validated(user_name: *const c_char, network_id: *const c_char) -> PluginResult;
 		pub virtual fn on_query_cvar_value_finished(
 			cookie: QueryCvarCookie,

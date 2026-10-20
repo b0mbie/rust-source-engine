@@ -10,22 +10,23 @@ use ::core::{
 };
 
 use crate::cppdef::{
-	Command, COMMAND_MAX_LENGTH,
+	CCommand, COMMAND_MAX_LENGTH, COMMAND_MAX_ARGC,
 };
 
 ::rse_cpp::transparent_wrapper! {
 	/// Transparent wrapper for a parsed command invocation (`CCommand`).
 	/// 
 	/// # Layout
-	/// This type has the exact same layout and ABI as [`Command`].
-	pub struct Invocation for Command as "Command";
+	/// This type has the exact same layout and ABI as [`CCommand`].
+	pub struct Invocation for CCommand as "CCommand";
 }
 
 impl Invocation {
 	pub const MAX_COMMAND_LENGTH: usize = COMMAND_MAX_LENGTH - 1;
+	pub const MAX_ARGUMENT_COUNT: usize = COMMAND_MAX_ARGC - 1;
 	
-	/// Returns the number of arguments.
-	pub const fn n_args(&self) -> usize {
+	/// Returns the number of pieces.
+	pub const fn n_pieces(&self) -> usize {
 		self.0.argc as _
 	}
 
@@ -59,7 +60,7 @@ impl Invocation {
 	/// with the first argument, if any, being the command name.
 	pub const fn pieces(&self) -> &[Arg] {
 		unsafe {
-			from_raw_parts(self.0.argv.as_ptr() as *const Arg, self.n_args())
+			from_raw_parts(self.0.argv.as_ptr() as *const Arg, self.n_pieces())
 		}
 	}
 
@@ -67,7 +68,7 @@ impl Invocation {
 	/// with the first argument, if any, being the command name.
 	pub const fn pieces_mut(&mut self) -> &mut [Arg] {
 		unsafe {
-			from_raw_parts_mut(self.0.argv.as_mut_ptr() as *mut Arg, self.n_args())
+			from_raw_parts_mut(self.0.argv.as_mut_ptr() as *mut Arg, self.n_pieces())
 		}
 	}
 

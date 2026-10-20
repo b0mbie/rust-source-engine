@@ -11,7 +11,7 @@ use ::rse_cpp::{
 	VTablePtr,
 };
 use ::rse_convar::{
-	cppdef::Command as CCommand,
+	cppdef::CCommand,
 	command::Invocation,
 };
 use ::rse_shared::{

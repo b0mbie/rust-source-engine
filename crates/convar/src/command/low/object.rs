@@ -31,7 +31,7 @@ use crate::{
 		ConCommandBits,
 		Registrable, RegistrableVt, RegistrableData,
 		CommandCallback, CompletionCallback,
-		Command as CCommand,
+		CCommand,
 		CvarDllIdentifier,
 	},
 	console_base::{
@@ -106,11 +106,14 @@ where
 	}
 
 	/// # Safety
+	/// `name` must point to a valid C string that lives for `'str`.
+	/// `help` must either be null, or point to a valid C string that lives for `'str`.
+	/// 
 	/// `command_callback`, `completion_callback` and `bits`
 	/// must be properly initialized for `T`.
-	pub const unsafe fn new(
+	pub const unsafe fn with_raw_strings(
 		inner: T,
-		name: &'str CStr, help: Option<&'str CStr>,
+		name: *const c_char, help: *const c_char,
 		flags: CvarFlags,
 		command_callback: CommandCallback,
 		completion_callback: CompletionCallback,
@@ -123,8 +126,8 @@ where
 					inherited_registrable: RegistrableData {
 						next: null_mut(),
 						registered: false,
-						name: name.as_ptr(),
-						help_string: ::rse_cpp::c_str::opt_c_str_as_ptr(help),
+						name,
+						help_string: help,
 						flags: flags.bits(),
 					},
 				},
@@ -132,6 +135,27 @@ where
 				completion_callback,
 				bits,
 			},
+		) }
+	}
+
+	/// # Safety
+	/// `command_callback`, `completion_callback` and `bits`
+	/// must be properly initialized for `T`.
+	pub const unsafe fn new(
+		inner: T,
+		name: &'str CStr, help: Option<&'str CStr>,
+		flags: CvarFlags,
+		command_callback: CommandCallback,
+		completion_callback: CompletionCallback,
+		bits: ConCommandBits,
+	) -> Self {
+		unsafe { Self::with_raw_strings(
+			inner,
+			name.as_ptr(),
+			::rse_cpp::c_str::opt_c_str_as_ptr(help),
+			flags,
+			command_callback, completion_callback,
+			bits,
 		) }
 	}
 
