@@ -1,14 +1,21 @@
-use ::core::ffi::{
-	CStr, c_int, c_uint,
+use ::core::{
+	ffi::{
+		CStr, c_char, c_int, c_uint,
+	},
+	ptr::NonNull,
 };
 use ::rse_cpp::virtual_call;
-use ::rse_interface::ptr_interface;
+use ::rse_interface::{
+	Interface, ptr_interface,
+};
 
 use crate::{
 	cppdef::{
 		IBaseFileSystem, BASEFILESYSTEM_INTERFACE_VERSION,
+		IFileSystem, FILESYSTEM_INTERFACE_VERSION,
 		ValidFileHandle,
 		FileSystemSeek,
+		FileFindHandle_t,
 	},
 	InterfaceOfFactory, AppSystemFactory,
 };
@@ -19,14 +26,13 @@ ptr_interface! {
 }
 unsafe impl Send for OBaseFileSystem {}
 unsafe impl Sync for OBaseFileSystem {}
-impl ::rse_interface::Interface for OBaseFileSystem {
+impl Interface for OBaseFileSystem {
 	const IDENTIFIER: &CStr = BASEFILESYSTEM_INTERFACE_VERSION;
 }
 impl InterfaceOfFactory for OBaseFileSystem {
 	type Factory = AppSystemFactory;
 }
 
-/// Safe interface to `IBaseFileSystem`.
 impl BaseFileSystem {
 	pub fn open(&self, path: &CStr, options: &CStr, path_id: &CStr) -> Option<ValidFileHandle> {
 		unsafe {
@@ -94,6 +100,57 @@ impl BaseFileSystem {
 
 	// TODO: Read/write methods.
 	// TODO: File metadata methods.
+}
+
+ptr_interface! {
+	pub struct OFileSystem(FileSystem);
+	Pointee = IFileSystem;
+}
+unsafe impl Send for OFileSystem {}
+unsafe impl Sync for OFileSystem {}
+impl Interface for OFileSystem {
+	const IDENTIFIER: &CStr = FILESYSTEM_INTERFACE_VERSION;
+}
+impl InterfaceOfFactory for OFileSystem {
+	type Factory = AppSystemFactory;
+}
+
+impl FileSystem {
+	pub const fn as_base(&self) -> &BaseFileSystem {
+		unsafe { BaseFileSystem::from_ref(&self.as_inner().data.inherited_i_base_file_system) }
+	}
+
+	pub unsafe fn find_first_ex(&self, wildcard: &CStr, path_id: &CStr) -> Option<(FileFindHandle_t, NonNull<c_char>)> {
+		let mut handle = 0;
+		unsafe {
+			let filename = virtual_call!(
+				self.as_inner() => find_first_ex(wildcard.as_ptr(), path_id.as_ptr(), &mut handle)
+			);
+			NonNull::new(filename.cast_mut()).map(move |p| (handle, p))
+		}
+	}
+
+	pub unsafe fn find_first(&self, wildcard: &CStr) -> Option<(FileFindHandle_t, NonNull<c_char>)> {
+		let mut handle = 0;
+		unsafe {
+			let filename = virtual_call!(
+				self.as_inner() => find_first(wildcard.as_ptr(), &mut handle)
+			);
+			NonNull::new(filename.cast_mut()).map(move |p| (handle, p))
+		}
+	}
+
+	pub unsafe fn find_next(&self, handle: FileFindHandle_t) -> Option<NonNull<c_char>> {
+		NonNull::new(unsafe { virtual_call!(self.as_inner() => find_next(handle)) }.cast_mut())
+	}
+
+	pub unsafe fn find_is_directory(&self, handle: FileFindHandle_t) -> bool {
+		unsafe { virtual_call!(self.as_inner() => find_is_directory(handle)) }
+	}
+
+	pub unsafe fn find_close(&self, handle: FileFindHandle_t) {
+		unsafe { virtual_call!(self.as_inner() => find_close(handle)) }
+	}
 }
 
 const fn slice_len_c_int(len: usize) -> c_int {

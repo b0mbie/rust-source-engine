@@ -17,9 +17,12 @@ use ::rse_utl::cppdef::FileNameHandle;
 
 pub type ValidFileHandle = NonNull<c_void>;
 
-pub type FileHandle = *mut c_void;
-pub const FILESYSTEM_INVALID_HANDLE: FileHandle = null_mut();
-pub type FileFindHandle = c_int;
+#[allow(non_camel_case_types)]
+pub type FileHandle_t = *mut c_void;
+pub const FILESYSTEM_INVALID_HANDLE: FileHandle_t = null_mut();
+
+#[allow(non_camel_case_types)]
+pub type FileFindHandle_t = c_int;
 
 // TODO: `CUtlBuffer`.
 type UtlBuffer = c_void;
@@ -49,27 +52,27 @@ class! {
 		pub virtual fn create_dir_hierarchy(path: *const c_char, path_id: *const c_char);
 		pub virtual fn is_directory(filename: *const c_char, path_id: *const c_char) -> bool;
 		pub virtual fn file_time_to_string(out_strip: *mut c_char, max_chars_incl_terminator: c_int, file_time: c_long);
-		pub virtual fn set_buffer_size(file: FileHandle, bytes: c_uint);
-		pub virtual fn is_ok(file: FileHandle) -> bool;
-		pub virtual fn end_of_file(file: FileHandle) -> bool;
-		pub virtual fn read_line(output: *mut c_char, max_chars: c_int, file: FileHandle) -> *mut c_char;
-		pub virtual fn fprintf(file: FileHandle, format: *const c_char, ...) -> c_int;
+		pub virtual fn set_buffer_size(file: FileHandle_t, bytes: c_uint);
+		pub virtual fn is_ok(file: FileHandle_t) -> bool;
+		pub virtual fn end_of_file(file: FileHandle_t) -> bool;
+		pub virtual fn read_line(output: *mut c_char, max_chars: c_int, file: FileHandle_t) -> *mut c_char;
+		pub virtual fn fprintf(file: FileHandle_t, format: *const c_char, ...) -> c_int;
 		
 		pub virtual fn load_module(
 			filename: *const c_char, path_id: *const c_char,
 			validated_dll_only: bool,
-		) -> *mut SysModule;
-		pub virtual fn unload_module(module: *mut SysModule);
+		) -> *mut CSysModule;
+		pub virtual fn unload_module(module: *mut CSysModule);
 
-		pub virtual fn find_first(wildcard: *const c_char, out_handle: *mut FileFindHandle) -> *const c_char;
-		pub virtual fn find_next(handle: FileFindHandle) -> *const c_char;
-		pub virtual fn find_is_directory(handle: FileFindHandle) -> bool;
-		pub virtual fn find_close(handle: FileFindHandle);
+		pub virtual fn find_first(wildcard: *const c_char, out_handle: *mut FileFindHandle_t) -> *const c_char;
+		pub virtual fn find_next(handle: FileFindHandle_t) -> *const c_char;
+		pub virtual fn find_is_directory(handle: FileFindHandle_t) -> bool;
+		pub virtual fn find_close(handle: FileFindHandle_t);
 
 		pub virtual fn find_first_ex(
 			wildcard: *const c_char, path_id: *const c_char,
-			out_handle: *mut FileFindHandle,
-		);
+			out_handle: *mut FileFindHandle_t,
+		) -> *const c_char;
 
 		pub virtual fn get_local_path(filename: *const c_char, out_dest: *mut c_char, max_len_in_chars: c_int) -> *const c_char;
 		pub virtual fn full_path_to_relative_path(
@@ -89,7 +92,7 @@ class! {
 pub const FILESYSTEM_INTERFACE_VERSION: &CStr = c"VFileSystem022";
 
 // TODO: `CSysModule`.
-type SysModule = c_void;
+type CSysModule = c_void;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(C)]
@@ -130,18 +133,18 @@ pub type PathTypeQuery = u32;
 
 class! {
 	pub IBaseFileSystem {
-		pub virtual fn read(output: *mut c_void, size: c_int, file: FileHandle) -> c_int;
-		pub virtual fn write(input: *const c_void, size: c_int, file: FileHandle) -> c_int;
+		pub virtual fn read(output: *mut c_void, size: c_int, file: FileHandle_t) -> c_int;
+		pub virtual fn write(input: *const c_void, size: c_int, file: FileHandle_t) -> c_int;
 
-		pub virtual fn open(filename: *const c_char, options: *const c_char, path_id: *const c_char) -> FileHandle;
-		pub virtual fn close(file: FileHandle);
+		pub virtual fn open(filename: *const c_char, options: *const c_char, path_id: *const c_char) -> FileHandle_t;
+		pub virtual fn close(file: FileHandle_t);
 
-		pub virtual fn seek(file: FileHandle, pos: c_int, seek_type: FileSystemSeek);
-		pub virtual fn tell(file: FileHandle) -> c_uint;
-		pub virtual fn size(file: FileHandle) -> c_uint;
+		pub virtual fn seek(file: FileHandle_t, pos: c_int, seek_type: FileSystemSeek);
+		pub virtual fn tell(file: FileHandle_t) -> c_uint;
+		pub virtual fn size(file: FileHandle_t) -> c_uint;
 		pub virtual fn size_at(filename: *const c_char, path_id: *const c_char) -> c_uint;
 
-		pub virtual fn flush(file: FileHandle);
+		pub virtual fn flush(file: FileHandle_t);
 		pub virtual fn precache(filename: *const c_char, path_id: *const c_char) -> bool;
 
 		pub virtual fn file_exists(filename: *const c_char, path_id: *const c_char) -> bool;
