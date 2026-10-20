@@ -1,6 +1,6 @@
 use ::core::ffi::CStr;
 use ::rse_game_interfaces::{
-	OBaseFileSystem, BaseFileSystem,
+	OFileSystem, FileSystem,
 };
 use ::std::sync::OnceLock;
 
@@ -8,12 +8,14 @@ use crate::plugin::PluginFactories;
 
 mod file;
 pub use file::*;
+mod find;
+pub use find::*;
 
 pub fn size_of_file(path: &CStr, path_id: &CStr) -> usize {
-	with_fs(move |fs| fs.size_at(path, path_id)) as _
+	with_fs(move |fs| fs.as_base().size_at(path, path_id)) as _
 }
 
-static FS: OnceLock<OBaseFileSystem> = OnceLock::new();
+static FS: OnceLock<OFileSystem> = OnceLock::new();
 
 pub(crate) fn attach(factories: PluginFactories) -> bool {
 	match factories.create_interface() {
@@ -28,7 +30,7 @@ pub(crate) fn attach(factories: PluginFactories) -> bool {
 	}
 }
 
-fn with_fs<F: FnOnce(&BaseFileSystem) -> R, R>(f: F) -> R {
+fn with_fs<F: FnOnce(&FileSystem) -> R, R>(f: F) -> R {
 	#[cold]
 	const fn not_init() -> ! {
 		panic!("filesystem interface used without being initialized")

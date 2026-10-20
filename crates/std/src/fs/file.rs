@@ -26,7 +26,7 @@ pub struct File {
 
 impl File {
 	/// # Safety
-	/// `handle` must've come from the global `IFileSystem` interface.
+	/// `raw` must've come from the global `IFileSystem` interface.
 	pub const unsafe fn from_raw(raw: ValidFileHandle) -> Self {
 		Self {
 			raw,
@@ -35,7 +35,7 @@ impl File {
 
 	pub fn open(path: &CStr, options: &CStr, path_id: &CStr) -> Option<Self> {
 		with_fs(move |fs| unsafe {
-			let raw = fs.open(path, options, path_id)?;
+			let raw = fs.as_base().open(path, options, path_id)?;
 			Some(Self::from_raw(raw))
 		})
 	}
@@ -47,37 +47,37 @@ impl File {
 				Seek::Cur(pos) => (pos as _, FileSystemSeek::Current),
 				Seek::Tail(pos) => (pos as _, FileSystemSeek::Tail),
 			};
-			fs.seek(self.raw, pos, method)
+			fs.as_base().seek(self.raw, pos, method)
 		})
 	}
 
 	pub fn tell(&self) -> u64 {
 		with_fs(move |fs| unsafe {
-			fs.tell(self.raw) as _
+			fs.as_base().tell(self.raw) as _
 		})
 	}
 
 	pub fn size(&self) -> usize {
 		with_fs(move |fs| unsafe {
-			fs.size(self.raw) as _
+			fs.as_base().size(self.raw) as _
 		})
 	}
 
 	pub fn flush(&mut self) {
 		with_fs(move |fs| unsafe {
-			fs.flush(self.raw)
+			fs.as_base().flush(self.raw)
 		})
 	}
 
 	pub fn read(&mut self, buffer: &mut [u8]) -> Option<usize> {
 		with_fs(move |fs| unsafe {
-			fs_result_to_n(fs.read(self.raw, buffer))
+			fs_result_to_n(fs.as_base().read(self.raw, buffer))
 		})
 	}
 
 	pub fn write(&mut self, data: &[u8]) -> Option<usize> {
 		with_fs(move |fs| unsafe {
-			fs_result_to_n(fs.write(self.raw, data))
+			fs_result_to_n(fs.as_base().write(self.raw, data))
 		})
 	}
 }
@@ -92,7 +92,7 @@ const fn fs_result_to_n(result: c_int) -> Option<usize> {
 
 impl Drop for File {
 	fn drop(&mut self) {
-		with_fs(move |fs| unsafe { fs.close(self.raw) })
+		with_fs(move |fs| unsafe { fs.as_base().close(self.raw) })
 	}
 }
 
