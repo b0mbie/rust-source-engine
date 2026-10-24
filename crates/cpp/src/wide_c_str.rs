@@ -101,6 +101,7 @@ impl<const LEN: usize> WCStrBuf<LEN> {
 	}
 }
 
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
 pub struct WCStr {
 	wchars_with_nul: [wchar_t],
