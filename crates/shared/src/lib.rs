@@ -2,6 +2,8 @@
 
 pub mod cppdef;
 
+mod buffer;
+pub use buffer::*;
 mod datatable;
 pub use datatable::*;
 mod keyvalues;
