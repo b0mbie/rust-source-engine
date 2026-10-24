@@ -117,15 +117,15 @@ impl WCStr {
 
 	pub unsafe fn from_ptr<'a>(ptr: *const wchar_t) -> &'a WCStr {
 		unsafe {
-			let len = wcslen(ptr);
-			Self::from_wchars_with_nul_unchecked(from_raw_parts(ptr, len))
+			let len_without_nul = wcslen(ptr);
+			Self::from_wchars_with_nul_unchecked(from_raw_parts(ptr, len_without_nul.saturating_add(1)))
 		}
 	}
 
 	pub unsafe fn from_mut_ptr<'a>(ptr: *mut wchar_t) -> &'a mut WCStr {
 		unsafe {
-			let len = wcslen(ptr);
-			Self::from_mut_wchars_with_nul_unchecked(from_raw_parts_mut(ptr, len))
+			let len_without_nul = wcslen(ptr);
+			Self::from_mut_wchars_with_nul_unchecked(from_raw_parts_mut(ptr, len_without_nul.saturating_add(1)))
 		}
 	}
 
