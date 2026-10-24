@@ -2,15 +2,13 @@ use ::core::{
 	num::NonZeroUsize,
 	ptr::null_mut,
 };
+use ::rse_cpp::util::clamp_len_to_c_int;
 use ::rse_tier0::{
 	linked::mem::LinkedTier0Allocator,
 	Tier0Allocator,
 };
 
-use crate::{
-	cppdef::CUtlMemory,
-	util::clamp_len_to_c_int,
-};
+use crate::cppdef::CUtlMemory;
 
 use super::{
 	super::{

@@ -6,13 +6,11 @@ use ::core::{
 		from_raw_parts, from_raw_parts_mut,
 	},
 };
+use ::rse_cpp::util::clamp_len_to_c_int;
 
-use crate::{
-	cppdef::{
-		CUtlMemory,
-		EXTERNAL_BUFFER_MARKER, EXTERNAL_CONST_BUFFER_MARKER,
-	},
-	util::clamp_len_to_c_int,
+use crate::cppdef::{
+	CUtlMemory,
+	EXTERNAL_BUFFER_MARKER, EXTERNAL_CONST_BUFFER_MARKER,
 };
 
 use super::{

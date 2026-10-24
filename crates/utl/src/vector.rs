@@ -6,11 +6,9 @@ use ::core::{
 		from_raw_parts, from_raw_parts_mut,
 	},
 };
+use ::rse_cpp::util::clamp_len_to_c_int;
 
-use crate::{
-	cppdef::CUtlVector,
-	util::clamp_len_to_c_int,
-};
+use crate::cppdef::CUtlVector;
 
 use super::memory::{
 	UtlMemoryEmpty, UtlMemoryOfMut, UtlMemoryGrowable,

@@ -12,6 +12,7 @@ mod vtable_macros;
 
 pub mod c_str;
 pub mod ptr_compat;
+pub mod util;
 
 mod type_info;
 pub use type_info::*;

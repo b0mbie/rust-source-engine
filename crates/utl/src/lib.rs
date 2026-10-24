@@ -4,8 +4,6 @@ extern crate alloc;
 
 pub mod cppdef;
 
-mod util;
-
 pub mod vector;
 pub use vector::Vector;
 
