@@ -149,7 +149,7 @@ class! {
 
 		pub virtual fn file_exists(filename: *const c_char, path_id: *const c_char) -> bool;
 		pub virtual fn is_file_writable(filename: *const c_char, path_id: *const c_char) -> bool;
-		pub virtual fn set_file_writable(filename: *const c_char,writable: bool, path_id: *const c_char) -> bool;
+		pub virtual fn set_file_writable(filename: *const c_char, writable: bool, path_id: *const c_char) -> bool;
 
 		pub virtual fn get_file_time(filename: *const c_char, path_id: *const c_char) -> c_long;
 
