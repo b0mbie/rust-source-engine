@@ -72,7 +72,7 @@ class! {
 		pub virtual fn set_w_string(key_name: *const c_char, value: *const wchar_t);
 		pub virtual fn set_ptr(key_name: *const c_char, value: *const c_void);
 		pub virtual fn get_data_keys() -> *mut KeyValues;
-		pub virtual fn for_event_data(visitor: *mut IGameEventVisitor2);
+		pub virtual fn for_event_data(visitor: *mut IGameEventVisitor2) -> bool;
 	}
 }
 
