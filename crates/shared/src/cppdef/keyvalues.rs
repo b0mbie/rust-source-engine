@@ -1,8 +1,7 @@
 use ::core::ffi::{
 	c_char, c_float, c_int, c_uchar, c_void,
 };
-
-use super::wchar_t;
+use ::rse_cpp::wide_c_str::wchar_t;
 
 ::rse_cpp::class! {
 	pub KeyValues {

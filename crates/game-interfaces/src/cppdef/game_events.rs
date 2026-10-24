@@ -1,11 +1,13 @@
 use ::core::ffi::{
 	CStr, c_char, c_int, c_float, c_void,
 };
-use ::rse_cpp::class;
+use ::rse_cpp::{
+	wide_c_str::wchar_t,
+	class,
+};
 use ::rse_shared::cppdef::{
 	KeyValues,
 	bf_read, bf_write,
-	wchar_t,
 };
 use ::rse_interface::cppdef::IBaseInterface;
 

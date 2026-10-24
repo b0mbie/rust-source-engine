@@ -13,3 +13,4 @@ gcc = []
 [dependencies]
 bitflags.workspace = true
 cpp-class.workspace = true
+libc.workspace = true

@@ -1,7 +1,3 @@
-// TODO: `wchar_t`.
-#[allow(non_camel_case_types)]
-pub type wchar_t = u16;
-
 mod buffer;
 pub use buffer::*;
 mod client_textmessage;
