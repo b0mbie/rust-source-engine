@@ -412,10 +412,3 @@ where
 }
 
 unsafe impl<T> PointerFrom<ConVarObject<'_, T>> for ConVar {}
-
-// TODO: What do?
-// impl<T> AsObject<ConVarVt> for ConVarObject<'_, T> {
-// 	fn as_object(&self) -> &VtObject<ConVarVt> {
-// 		self.con_var.as_object()
-// 	}
-// }
