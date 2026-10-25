@@ -19,6 +19,7 @@ use ::rse_shared::cppdef::{
 	SoundLevel,
 	IAchievementMgr, CGamestatsData,
 	bbox_t,
+	IRecipientFilter,
 };
 use ::rse_math::{
 	Vector, VPlane,
@@ -27,11 +28,6 @@ use ::rse_scratch_pad::cppdef::IScratchPad3D;
 
 // TODO: `CBitVec`.
 pub type BitVec = c_void;
-
-// TODO: `IRecipientFilter`.
-class! {
-	pub IRecipientFilter {}
-}
 
 // TODO: `ISpatialPartition`.
 class! {

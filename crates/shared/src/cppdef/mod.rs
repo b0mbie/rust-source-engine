@@ -20,6 +20,8 @@ mod net_channel_info;
 pub use net_channel_info::*;
 mod player_info;
 pub use player_info::*;
+mod recipient_filter;
+pub use recipient_filter::*;
 mod sound_level;
 pub use sound_level::*;
 mod stats;
