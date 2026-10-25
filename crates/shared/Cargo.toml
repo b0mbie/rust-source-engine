@@ -16,4 +16,5 @@ datatable-supports-int64 = []
 rse-cpp.workspace = true
 rse-interface.workspace = true
 rse-math.workspace = true
+rse-tier0.workspace = true
 rse-utl.workspace = true
