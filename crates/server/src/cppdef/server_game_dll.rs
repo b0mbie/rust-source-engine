@@ -1,5 +1,5 @@
 use ::core::ffi::{
-	CStr, c_char, c_float, c_int, c_uchar,
+	CStr, c_char, c_float, c_int, c_uchar, c_void,
 };
 use ::rse_convar::cppdef::CCommand;
 use ::rse_cpp::{
@@ -12,9 +12,11 @@ use ::rse_shared::cppdef::{
 	entities::{
 		edict_t, ServerClass,
 	},
+	save_restore::CSaveRestoreData,
 	CGlobalVars,
 	KeyValues,
 	bf_read,
+	datamap_t, typedescription_t,
 };
 
 pub const INTERFACEVERSION_SERVERGAMEDLL_VERSION_8: &CStr = c"ServerGameDLL008";
@@ -50,7 +52,45 @@ class! {
 		pub virtual fn get_game_description() -> *const c_char;
 		pub virtual fn create_network_string_tables();
 		
-		// TODO: `SaveInit` and everything else after it.
+		pub virtual fn save_init() -> *mut CSaveRestoreData;
+		pub virtual fn save_write_fields(
+			d: *mut CSaveRestoreData,
+			f: *const c_char, p: *mut c_void,
+			datamap: *mut datamap_t,
+			td: *mut typedescription_t,
+			n: c_int,
+		);
+		pub virtual fn save_read_fields(
+			d: *mut CSaveRestoreData,
+			f: *const c_char, p: *mut c_void,
+			datamap: *mut datamap_t,
+			td: *mut typedescription_t,
+			n: c_int,
+		);
+		pub virtual fn save_global_state(d: *mut CSaveRestoreData);
+		pub virtual fn restore_global_state(d: *mut CSaveRestoreData);
+		pub virtual fn pre_save(d: *mut CSaveRestoreData);
+		pub virtual fn save(d: *mut CSaveRestoreData);
+		pub virtual fn get_save_comment(
+			comment: *mut c_char, max_length: c_int,
+			minutes: c_float, seconds: c_float,
+			no_time: bool,
+		);
+		pub virtual fn write_save_headers(d: *mut CSaveRestoreData);
+		pub virtual fn read_restore_headers(d: *mut CSaveRestoreData);
+		pub virtual fn restore(d: *mut CSaveRestoreData, b: bool);
+		pub virtual fn is_restoring() -> bool;
+
+		pub virtual fn create_entity_transition_list(d: *mut CSaveRestoreData, n: c_int) -> c_int;
+		pub virtual fn build_adjacent_map_list();
+
+		pub virtual fn get_user_message_info(
+			msg_type: c_int,
+			name: *mut c_char, max_length: c_int,
+			size: RefMut<c_int>,
+		);
+
+		// TODO: `GetStandardSendProxies` and everything else after it.
 
 		// TODO: Figure out what the difference is between different `ServerGameDLL` versions.
 	}
