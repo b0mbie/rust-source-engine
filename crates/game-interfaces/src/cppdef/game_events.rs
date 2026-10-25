@@ -23,6 +23,13 @@ pub const MAX_EVENT_BYTES: usize = 1024;
 pub const INTERFACEVERSION_GAMEEVENTSMANAGER2: &CStr = c"GAMEEVENTSMANAGER002";
 
 class! {
+	pub CGameEventListener: pub virtual IGameEventListener2 {
+		pub virtual fn fire_game_event(event: *mut IGameEvent);
+		pub registered_for_events: bool;
+	}
+}
+
+class! {
 	pub IGameEventManager2: pub virtual IBaseInterface {
 		pub virtual fn load_events_from_file(filename: *const c_char) -> c_int;
 		pub virtual fn reset();
