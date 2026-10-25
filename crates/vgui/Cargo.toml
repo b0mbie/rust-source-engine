@@ -1,0 +1,18 @@
+[package]
+name = "rse-vgui"
+version = "0.1.0"
+edition = "2024"
+authors.workspace = true
+
+[lints]
+workspace = true
+
+[features]
+
+[dependencies]
+rse-cpp.workspace = true
+rse-interface.workspace = true
+rse-math.workspace = true
+rse-shared.workspace = true
+rse-tier0.workspace = true
+rse-utl.workspace = true

@@ -16,6 +16,7 @@ members = [
 	"crates/scratch-pad",
 	"crates/tier0",
 	"crates/plugin",
+	"crates/vgui",
 
 	"crates/std",
 	"crates/std-macros",
@@ -53,6 +54,7 @@ rse-sound = { path = "./crates/sound" }
 rse-std = { path = "./crates/std" }
 rse-tier0 = { path = "./crates/tier0" }
 rse-utl = { path = "./crates/utl" }
+rse-vgui = { path = "./crates/vgui" }
 
 [workspace.dependencies.cpp-class]
 git = "https://github.com/b0mbie/cpp-class.git"
