@@ -8,7 +8,10 @@ pub const EXTERNAL_CONST_BUFFER_MARKER: c_int = -2;
 
 ::rse_cpp::class! {
 	#[derive(Debug)]
-	pub CUtlMemory<T> {
+	pub CUtlMemory<
+		T,
+		/* `I` omitted as it is only used in the C++ method implementations */
+	> {
 		/// Pointer to the possibly-uninitialized, possibly-unaligned allocations of `T`.
 		/// 
 		/// The number of allocations is determined by `allocation_count`.
