@@ -88,7 +88,7 @@ class! {
 			msg_type: c_int,
 			name: *mut c_char, max_length: c_int,
 			size: RefMut<c_int>,
-		);
+		) -> bool;
 
 		// TODO: `GetStandardSendProxies` and everything else after it.
 
