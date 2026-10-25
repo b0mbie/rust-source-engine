@@ -29,6 +29,7 @@ members = [
 	"examples/multithreaded",
 	"examples/autoregister",
 	"examples/cvar-modifier",
+	"examples/list-user-messages",
 ]
 
 [workspace.lints.clippy]

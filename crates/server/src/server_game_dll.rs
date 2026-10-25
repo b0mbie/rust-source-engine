@@ -1,5 +1,11 @@
-use ::core::ffi::CStr;
-use ::rse_cpp::virtual_call;
+use ::core::ffi::{
+	CStr, c_int,
+};
+use ::rse_cpp::{
+	util::clamp_len_to_c_int,
+	RefMut,
+	virtual_call,
+};
 use ::rse_game_interfaces::{
 	InterfaceOfFactory, GameServerFactory,
 };
@@ -39,5 +45,34 @@ impl ServerGameDll {
 		unsafe { CStr::from_ptr(virtual_call!(self.as_inner() => get_game_description())) }
 	}
 
+	pub fn get_user_message_info(&self, index: c_int, name: &mut [u8]) -> Option<UserMessageInfo> {
+		let mut size = 0;
+		if self.get_user_message_info_raw(index, name, &mut size) {
+			Some(UserMessageInfo {
+				size: if size != -1 {
+					Some(size as _)
+				} else {
+					None
+				}
+			})
+		} else {
+			None
+		}
+	}
+
+	pub fn get_user_message_info_raw(&self, index: c_int, name: &mut [u8], size: &mut c_int) -> bool {
+		unsafe { virtual_call!(self.as_inner() => get_user_message_info(
+			index,
+			name.as_mut_ptr().cast(), clamp_len_to_c_int(name.len()),
+			RefMut::from_mut(size),
+		)) }
+	}
+
 	// TODO: More functions from `IServerGameDLL`.
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct UserMessageInfo {
+	/// Size of the user message, or `None` if it is dynamically-sized.
+	pub size: Option<usize>,
 }
