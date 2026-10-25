@@ -6,7 +6,10 @@ use ::core::{
 };
 use ::rse_cpp::class;
 
-use super::string_t;
+use super::{
+	save_restore::CSaveRestoreData,
+	string_t,
+};
 
 class! {
 	#[derive(Default, Debug)]
@@ -136,6 +139,3 @@ impl CGlobalVarsBase {
 		self.timestamp_networking_base * ((tick - entity_mod) / self.timestamp_networking_base)
 	}
 }
-
-// TODO: `CSaveRestoreData`.
-pub type CSaveRestoreData = ::core::ffi::c_void;

@@ -33,6 +33,7 @@ pub use trace::*;
 
 pub mod datatable;
 pub mod entities;
+pub mod save_restore;
 
 /// Representation of the bounding volume of an object.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
