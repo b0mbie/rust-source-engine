@@ -2,6 +2,8 @@ use ::rse_cpp::RefConst;
 
 mod dictionary;
 pub use dictionary::*;
+mod hash;
+pub use hash::*;
 mod map;
 pub use map::*;
 mod memory;
