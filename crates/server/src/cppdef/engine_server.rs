@@ -18,6 +18,7 @@ use ::rse_shared::cppdef::{
 	bf_write,
 	SoundLevel,
 	IAchievementMgr, CGamestatsData,
+	bbox_t,
 };
 use ::rse_math::{
 	Vector, VPlane,
@@ -46,13 +47,6 @@ pub type SharedEdictChangeInfo = c_void;
 // TODO: `IChangeInfoAccessor`.
 class! {
 	pub IChangeInfoAccessor {}
-}
-
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct bbox_t {
-	pub mins: Vector,
-	pub maxs: Vector,
 }
 
 // TODO: `IServer`.

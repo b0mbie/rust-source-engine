@@ -8,6 +8,8 @@ mod crc32;
 pub use crc32::*;
 mod datamap;
 pub use datamap::*;
+mod eiface;
+pub use eiface::*;
 mod global_vars;
 pub use global_vars::*;
 mod keyvalues;
