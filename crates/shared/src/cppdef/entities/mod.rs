@@ -140,8 +140,16 @@ class! {
 	}
 }
 
-// TODO: `CBaseEntity`.
-pub type CBaseEntity = c_void;
+class! {
+	// TODO: `CBaseEntity`.
+	pub CBaseEntity {}
+}
+
+class! {
+	pub CHandle<T>: pub CBaseHandle {
+		pub use T as _t;
+	}
+}
 
 class! {
 	#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
