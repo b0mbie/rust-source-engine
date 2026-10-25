@@ -231,3 +231,13 @@ pub enum ButtonCode {
 
 	// TODO: Helpers for Xbox360 and Steam Controller.
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[repr(C)]
+pub enum GameActionSet_t {
+	None = -1,
+	MenuControls = 0,
+	FpsControls,
+	InGameHud,
+	Spectator,
+}
