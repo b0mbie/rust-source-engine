@@ -20,3 +20,5 @@ pub use dependent::intp;
 
 /// Unsigned integer that can accomodate a pointer.
 pub use dependent::uintp;
+
+pub const MAX_PATH: usize = 260;
