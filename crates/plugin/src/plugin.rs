@@ -81,7 +81,7 @@ pub trait Plugin {
 		let _ = network_id;
 		PluginResult::Continue
 	}
-	fn on_query_cvar_value_finished(
+	fn query_cvar_value_finished(
 		&mut self,
 		cookie: QueryCvarCookie,
 		player_entity: &mut ServerEdict,
@@ -94,10 +94,10 @@ pub trait Plugin {
 		let _ = cvar_name;
 		let _ = cvar_value;
 	}
-	fn on_edict_allocated(&mut self, edict: &mut ServerEdict) {
+	fn edict_allocated(&mut self, edict: &mut ServerEdict) {
 		let _ = edict;
 	}
-	fn on_edict_freed(&mut self, edict: &ServerEdict) {
+	fn edict_freed(&mut self, edict: &ServerEdict) {
 		let _ = edict;
 	}
 }

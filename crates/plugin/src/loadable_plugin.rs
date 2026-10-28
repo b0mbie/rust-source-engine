@@ -164,15 +164,15 @@ impl<P: Plugin> Plugin for PluginLoader<P> {
 		) -> ClientConnect;
 		fn client_command(&mut self, entity: &mut ServerEdict, invocation: &Invocation) -> PluginResult;
 		fn network_id_validated(&mut self, user_name: &CStr, network_id: &CStr) -> PluginResult;
-		fn on_query_cvar_value_finished(
+		fn query_cvar_value_finished(
 			&mut self,
 			cookie: QueryCvarCookie,
 			player_entity: &mut ServerEdict,
 			status: QueryCvarValueStatus,
 			cvar_name: &CStr, cvar_value: &CStr,
 		);
-		fn on_edict_allocated(&mut self, edict: &mut ServerEdict);
-		fn on_edict_freed(&mut self, edict: &ServerEdict);
+		fn edict_allocated(&mut self, edict: &mut ServerEdict);
+		fn edict_freed(&mut self, edict: &ServerEdict);
 	}
 }
 
