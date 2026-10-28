@@ -12,4 +12,6 @@ phoneme-editor = []
 
 [dependencies]
 rse-cpp.workspace = true
+rse-game-interfaces.workspace = true
+rse-interface.workspace = true
 rse-utl.workspace = true
