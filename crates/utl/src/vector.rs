@@ -1,8 +1,12 @@
 use ::core::{
 	alloc::Layout,
 	fmt,
+	ops::{
+		Deref, DerefMut,
+	},
 	ptr::null_mut,
 	slice::{
+		Iter, IterMut,
 		from_raw_parts, from_raw_parts_mut,
 	},
 };
@@ -29,6 +33,7 @@ pub struct Vector<
 	#[cfg(not(feature = "tier0"))]
 	A,
 >(CUtlVector<T, A>)
+// FIXME: Relax this bound with a separate wrapper!
 where
 	A: UtlMemoryOfMut<T>;
 
@@ -249,6 +254,46 @@ where
 {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		fmt::Debug::fmt(self.as_slice(), f)
+	}
+}
+
+impl<T, A> Deref for Vector<T, A>
+where
+	A: UtlMemoryOfMut<T>,
+{
+	type Target = [T];
+	fn deref(&self) -> &Self::Target {
+		self.as_slice()
+	}
+}
+impl<T, A> DerefMut for Vector<T, A>
+where
+	A: UtlMemoryOfMut<T>,
+{
+	fn deref_mut(&mut self) -> &mut Self::Target {
+		self.as_mut_slice()
+	}
+}
+
+impl<'a, T, A> IntoIterator for &'a Vector<T, A>
+where
+	A: UtlMemoryOfMut<T>,
+{
+	type Item = &'a T;
+	type IntoIter = Iter<'a, T>;
+	fn into_iter(self) -> Self::IntoIter {
+		self.as_slice().iter()
+	}
+}
+
+impl<'a, T, A> IntoIterator for &'a mut Vector<T, A>
+where
+	A: UtlMemoryOfMut<T>,
+{
+	type Item = &'a mut T;
+	type IntoIter = IterMut<'a, T>;
+	fn into_iter(self) -> Self::IntoIter {
+		self.as_mut_slice().iter_mut()
 	}
 }
 
