@@ -24,7 +24,7 @@ pub const INTERFACEVERSION_GAMEEVENTSMANAGER2: &CStr = c"GAMEEVENTSMANAGER002";
 
 class! {
 	pub CGameEventListener: pub virtual IGameEventListener2 {
-		pub virtual fn fire_game_event(event: *mut IGameEvent);
+		// pub virtual fn fire_game_event(event: *mut IGameEvent);
 		pub registered_for_events: bool;
 	}
 }
