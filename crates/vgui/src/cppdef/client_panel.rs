@@ -51,7 +51,7 @@ use super::{
 	}
 }
 
-// TODO: Is this not sujpposed to be an `enum`?
+// TODO: Is this not supposed to be an `enum`?
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(C)]
 pub enum EInterfaceID {

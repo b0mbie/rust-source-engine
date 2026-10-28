@@ -11,6 +11,7 @@ workspace = true
 
 [dependencies]
 rse-cpp.workspace = true
+rse-game-interfaces.workspace = true
 rse-interface.workspace = true
 rse-math.workspace = true
 rse-shared.workspace = true
