@@ -11,7 +11,7 @@ use ::rse_interface::{
 	ptr_interface,
 };
 
-use crate::cppdef::engine_client::{
+use crate::cppdef::{
 	IVEngineClient013, VENGINE_CLIENT_INTERFACE_VERSION_13,
 	IVEngineClient, VENGINE_CLIENT_INTERFACE_VERSION,
 };

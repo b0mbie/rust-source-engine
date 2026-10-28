@@ -3,7 +3,8 @@ use ::core::ffi::{
 };
 use ::rse_cpp::class;
 use ::rse_game_interfaces::cppdef::{
-	CGameEventListener, IGameEvent,
+	CGameEventListener,
+	IGameEvent,
 };
 use ::rse_math::Color;
 use ::rse_utl::cppdef::{
@@ -44,9 +45,9 @@ class! {
 class! {
 	pub CHudElement: pub virtual CGameEventListener {
 		// DECLARE_CLASS_NOBASE( CHudElement );
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		// pub virtual fn destructor();
+		// #[cfg(not(windows))]
+		// pub virtual fn destructor_2();
 		pub virtual fn init();
 		pub virtual fn vid_init();
 		pub virtual fn level_init();
@@ -60,7 +61,7 @@ class! {
 		pub virtual fn get_preferred_action_set() -> GameActionSet_t;
 		pub virtual fn set_hidden_bits(bits: c_int);
 		pub virtual fn get_render_group_priority() -> c_int;
-		pub virtual fn fire_game_event(event: *mut IGameEvent);
+		// pub virtual fn fire_game_event(event: *mut IGameEvent);
 		pub active: bool;
 		pub hidden_bits: c_int;
 		pub element_name: *const c_char;

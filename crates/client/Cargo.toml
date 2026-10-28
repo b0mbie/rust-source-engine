@@ -22,5 +22,6 @@ rse-interface.workspace = true
 rse-shared.workspace = true
 rse-math.workspace = true
 rse-sound.workspace = true
+rse-tier0.workspace = true
 rse-utl.workspace = true
 rse-vgui.workspace = true

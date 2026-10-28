@@ -1,7 +1,9 @@
-pub mod engine_client;
-
 pub mod entities;
 
+mod dll;
+pub use dll::*;
+mod engine_client;
+pub use engine_client::*;
 mod hud;
 pub use hud::*;
 mod input;
