@@ -2,6 +2,8 @@ use ::rse_tier0::uintp;
 
 pub mod controls;
 
+mod border;
+pub use border::*;
 mod client_panel;
 pub use client_panel::*;
 mod engine_vgui;

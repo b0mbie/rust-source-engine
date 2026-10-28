@@ -13,6 +13,7 @@ use super::{
 	IClientPanel,
 	HCursor,
 	VPANEL,
+	IBorder,
 };
 
 class! {
@@ -78,6 +79,8 @@ class! {
 		pub virtual fn request_focus_next(panel: VPANEL) -> bool;
 		pub virtual fn set_tab_position(position: c_int);
 		pub virtual fn get_tab_position() -> c_int;
+		pub virtual fn set_border(border: *mut IBorder);
+		pub virtual fn get_border() -> *mut IBorder;
 		
 		// TODO: `Panel::SetBorder` and many, many others.
 	}
