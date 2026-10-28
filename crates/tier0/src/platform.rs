@@ -1,3 +1,5 @@
+use ::core::ffi::c_int;
+
 #[allow(non_camel_case_types)]
 mod dependent {
 	#[cfg(target_pointer_width = "64")]
@@ -22,3 +24,15 @@ pub use dependent::intp;
 pub use dependent::uintp;
 
 pub const MAX_PATH: usize = 260;
+
+#[allow(non_camel_case_types)]
+pub type qboolean = c_int;
+
+#[repr(C)]
+pub struct vrect_t {
+	pub x: c_int,
+	pub y: c_int,
+	pub width: c_int,
+	pub height: c_int,
+	pub next: *mut Self,
+}
