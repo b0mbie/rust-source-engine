@@ -111,7 +111,9 @@ impl<'a> SliceBfWrite<'a> {
 		debug_name: Option<&'a CStr>,
 	) -> Self {
 		unsafe {
-			let bytes = from_raw_parts_mut(data.as_mut_ptr().cast::<u8>(), data.len());
+			let bytes = from_raw_parts_mut(
+				data.as_mut_ptr().cast::<u8>(), data.len().saturating_mul(size_of::<u32>())
+			);
 			Self::aligned_with(bytes, n_bits, start_bit, debug_name)
 		}
 	}
