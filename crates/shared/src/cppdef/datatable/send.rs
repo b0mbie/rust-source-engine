@@ -4,11 +4,9 @@ use ::core::ffi::{
 use ::rse_cpp::class;
 
 use super::{
-	Variant, SendPropType,
+	DVariant, SendPropType,
+	RecvProp,
 };
-
-// TODO: `RecvProp`.
-pub type RecvProp = c_void;
 
 // TODO: `SendTablePrecalc`.
 pub type SendTablePrecalc = c_void;
@@ -20,7 +18,7 @@ pub type ArrayLengthSendProxyFn = unsafe extern "C" fn(the_struct: *const c_void
 pub type SendVarProxyFn = unsafe extern "C" fn(
 	prop: *const SendProp,
 	base: *const c_void, data: *const c_void,
-	out: *mut Variant,
+	out: *mut DVariant,
 	element: c_int, object_id: c_int,
 );
 pub type SendTableProxyFn = unsafe extern "C" fn(
