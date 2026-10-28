@@ -21,7 +21,7 @@ use ::rse_sound::cppdef::{
 
 use super::{
 	IMaterial, IMaterialSystem,
-	ButtonCode,
+	ButtonCode_t,
 };
 
 pub const VENGINE_CLIENT_INTERFACE_VERSION: &CStr = c"VEngineClient014";
@@ -75,9 +75,9 @@ class! {
 		pub virtual fn set_view_angles(va: RefMut<QAngle>);
 		pub virtual fn get_max_clients() -> c_int;
 		pub virtual fn key_lookup_binding(binding: *const c_char) -> *const c_char;
-		pub virtual fn key_binding_for_key(code: ButtonCode) -> *const c_char;
+		pub virtual fn key_binding_for_key(code: ButtonCode_t) -> *const c_char;
 		pub virtual fn start_key_trap_mode();
-		pub virtual fn check_done_key_trapping(code: RefMut<ButtonCode>) -> bool;
+		pub virtual fn check_done_key_trapping(code: RefMut<ButtonCode_t>) -> bool;
 		pub virtual fn is_in_game() -> bool;
 		pub virtual fn is_connected() -> bool;
 		pub virtual fn is_drawing_loading_image() -> bool;

@@ -23,24 +23,24 @@ pub enum JoystickAxis {
 }
 
 const fn joystick_button_internal(joystick: usize, button: usize) -> isize {
-	(ButtonCode::JoystickFirstButton as usize + (joystick * JOYSTICK_MAX_BUTTON_COUNT) + button) as _
+	(ButtonCode_t::JoystickFirstButton as usize + (joystick * JOYSTICK_MAX_BUTTON_COUNT) + button) as _
 }
 const fn joystick_pov_button_internal(joystick: usize, button: usize) -> isize {
-	(ButtonCode::JoystickFirstPovButton as usize + (joystick * JOYSTICK_POV_BUTTON_COUNT) + button) as _
+	(ButtonCode_t::JoystickFirstPovButton as usize + (joystick * JOYSTICK_POV_BUTTON_COUNT) + button) as _
 }
 const fn joystick_axis_button_internal(joystick: usize, button: usize) -> isize {
-	(ButtonCode::JoystickFirstAxisButton as usize + (joystick * JOYSTICK_AXIS_BUTTON_COUNT) + button) as _
+	(ButtonCode_t::JoystickFirstAxisButton as usize + (joystick * JOYSTICK_AXIS_BUTTON_COUNT) + button) as _
 }
 
 const fn steamcontroller_button_internal(joystick: usize, button: usize) -> isize {
-	(ButtonCode::SteamControllerFirstButton as usize + (joystick * STEAMCONTROLLER_MAX_BUTTON_COUNT) + button) as _
+	(ButtonCode_t::SteamControllerFirstButton as usize + (joystick * STEAMCONTROLLER_MAX_BUTTON_COUNT) + button) as _
 }
 const fn steamcontroller_axis_button_internal(joystick: usize, button: usize) -> isize {
-	(ButtonCode::STEAMCONTROLLER_FIRST_AXIS_BUTTON as usize + (joystick * STEAMCONTROLLER_AXIS_BUTTON_COUNT) + (button)) as _
+	(ButtonCode_t::STEAMCONTROLLER_FIRST_AXIS_BUTTON as usize + (joystick * STEAMCONTROLLER_AXIS_BUTTON_COUNT) + (button)) as _
 }
 
 #[allow(non_upper_case_globals)]
-impl ButtonCode {
+impl ButtonCode_t {
 	pub const COUNT: usize = Self::ButtonCodeLast as usize - Self::KeyFirst as usize + 1;
 
 	pub const KeyFirst: Self = Self::None;
@@ -74,7 +74,7 @@ impl ButtonCode {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(C)]
-pub enum ButtonCode {
+pub enum ButtonCode_t {
 	Invalid = -1,
 	None = 0,
 
