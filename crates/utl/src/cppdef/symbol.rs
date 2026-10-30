@@ -1,8 +1,9 @@
 use ::core::ffi::{c_ushort};
 use ::rse_cpp::class;
 
-pub type FileNameHandle = *mut ::core::ffi::c_void;
-pub const FILENAMEHANDLE_INVALID: FileNameHandle = ::core::ptr::null_mut();
+#[allow(non_camel_case_types)]
+pub type FileNameHandle_t = *mut ::core::ffi::c_void;
+pub const FILENAMEHANDLE_INVALID: FileNameHandle_t = ::core::ptr::null_mut();
 
 class! {
 	pub CStringPoolIndex {

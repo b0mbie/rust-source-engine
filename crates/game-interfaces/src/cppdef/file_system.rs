@@ -13,7 +13,7 @@ use ::rse_cpp::{
 	class, RefMut, RefConst,
 };
 use ::rse_interface::cppdef::app_system::IAppSystem;
-use ::rse_utl::cppdef::FileNameHandle;
+use ::rse_utl::cppdef::FileNameHandle_t;
 
 pub type ValidFileHandle = NonNull<c_void>;
 
@@ -82,8 +82,8 @@ class! {
 
 		pub virtual fn get_current_directory(out_directory: *mut c_char, max_len: c_int) -> bool;
 
-		pub virtual fn find_or_add_filename(filename: *const c_char) -> FileNameHandle;
-		pub virtual fn string(handle: RefConst<FileNameHandle>, out_buf: *mut c_char, buf_len: c_int) -> bool;
+		pub virtual fn find_or_add_filename(filename: *const c_char) -> FileNameHandle_t;
+		pub virtual fn string(handle: RefConst<FileNameHandle_t>, out_buf: *mut c_char, buf_len: c_int) -> bool;
 		
 		// TODO: `IFileSystem::AsyncReadMultiple` and others (79 functions).
 	}
