@@ -1,6 +1,8 @@
 use ::core::{
 	cell::UnsafeCell,
-	ffi::CStr,
+	ffi::{
+		CStr, c_char,
+	},
 };
 use ::rse_convar::{
 	cppdef::{
@@ -73,6 +75,44 @@ where
 			}
 		};
 		Self::from_raw(inner, name, help, flags, dispatch, complete, bits)
+	}
+
+	/// # Safety
+	/// `name` must point to a valid C string that lives for `'str`.
+	/// `help` must either be null, or point to a valid C string that lives for `'str`.
+	pub const unsafe fn with_raw_strings(
+		inner: T,
+		name: *const c_char, help: *const c_char, flags: CvarFlags,
+		callbacks: Callbacks,
+	) -> Self {
+		let mut bits = ConCommandBits::new();
+		let (dispatch, complete) = match callbacks {
+			Callbacks::Functions { dispatch, complete } => {
+				let dispatch = match dispatch {
+					DispatchFn::Plain(f) => dispatch_fn(f),
+					DispatchFn::With(f) => {
+						bits = bits.use_new_command_callback();
+						dispatch_with_fn(f)
+					}
+				};
+				let complete = match complete {
+					None => CompletionCallback { not_used: () },
+					Some(f) => {
+						bits = bits.with_completion_callback();
+						complete_fn(f)
+					}
+				};
+				(dispatch, complete)
+			}
+		};
+		let cmd = unsafe { ConCommandObject::with_raw_strings(
+			StdCommand::new(inner),
+			name, help, flags,
+			dispatch, complete, bits,
+		) };
+		Self {
+			con_command: UnsafeCell::new(cmd),
+		}
 	}
 
 	const fn from_raw(
