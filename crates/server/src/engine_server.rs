@@ -11,7 +11,7 @@ use ::rse_game_interfaces::{
 };
 use ::rse_shared::cppdef::{
 	CSteamID,
-	SoundLevel,
+	soundlevel_t,
 };
 use ::rse_math::Vector;
 
@@ -209,7 +209,7 @@ pub struct EmitSound<'a> {
 	pub pos: &'a Vector,
 	pub sample: &'a CStr,
 	pub volume: c_float,
-	pub sound_level: SoundLevel,
+	pub sound_level: soundlevel_t,
 	pub flags: c_int,
 	pub pitch: c_int,
 	pub delay: c_float,

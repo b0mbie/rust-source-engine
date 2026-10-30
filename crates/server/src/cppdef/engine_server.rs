@@ -16,7 +16,7 @@ use ::rse_shared::cppdef::{
 	KeyValues,
 	CSteamID,
 	bf_write,
-	SoundLevel,
+	soundlevel_t,
 	IAchievementMgr, CGamestatsData,
 	bbox_t,
 	IRecipientFilter,
@@ -115,7 +115,7 @@ class! {
 		pub virtual fn emit_ambient_sound(
 			ent_index: c_int,
 			pos: RefConst<Vector>, samp: *const c_char,
-			vol: c_float, sound_level: SoundLevel,
+			vol: c_float, sound_level: soundlevel_t,
 			flags: c_int, pitch: c_int, delay: c_float,
 		);
 		pub virtual fn fade_client_volume(

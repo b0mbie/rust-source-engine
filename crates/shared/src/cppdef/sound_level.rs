@@ -1,82 +1,123 @@
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[repr(C)]
-pub enum SoundLevel {
-	None = 0,
+use ::core::ffi::{
+	c_float, c_int,
+};
+
+#[allow(non_camel_case_types)]
+pub type soundlevel_t = c_int;
+
+macro_rules! presets {
+	{
+		$(
+			$(#[$attr:meta])*
+			$name:ident = $value:expr,
+		)*
+	} => {
+		$(
+			#[allow(non_upper_case_globals)]
+			$(#[$attr])*
+			pub const $name: soundlevel_t = $value;
+		)*
+	};
+}
+
+presets! {
+	SNDLVL_NONE = 0,
 
 	/// Rustling leaves.
-	Db20 = 20,
+	SNDLVL_20dB = 20,
 	/// Whispering.
-	Db25 = 25,
+	SNDLVL_25dB = 25,
 	/// Library.
-	Db30 = 30,
-	Db35 = 35,
-	Db40 = 40,
+	SNDLVL_30dB = 30,
+	SNDLVL_35dB = 35,
+	SNDLVL_40dB = 40,
 	/// Refrigerator.
-	Db45 = 45,
+	SNDLVL_45dB = 45,
 
 	/// Average home.
 	// 3.9
-	Db50 = 50,
-	Db55 = 55,
+	SNDLVL_50dB = 50,
+	// 3.0
+	SNDLVL_55dB = 55,
+
+	SNDLVL_IDLE = 60,
 	/// Normal conversation, clothes dryer.
 	// 2.0
-	#[doc(alias = "Idle")]
-	Db60 = 60,
+	SNDLVL_60dB = 60,
 
 	/// Washing machine, dishwasher.
 	// 1.5
-	Db65 = 65,
+	SNDLVL_65dB = 65,
 	// 1.25
-	Static = 66,
+	SNDLVL_STATIC = 66,
 
 	/// Car, vacuum cleaner, mixer, electric sewing machine.
 	// 1.0
-	Db70 = 70,
+	SNDLVL_70dB = 70,
 
+	SNDLVL_NORM = 75,
 	/// Busy traffic.
 	// 0.8
-	#[doc(alias = "Normal")]
-	Db75 = 75,
+	SNDLVL_75dB = 75,
 
 	/// Mini-bike, alarm clock, noisy restaurant, office tabulator, outboard motor, passing snowmobile.
 	// 0.7
-	#[doc(alias = "Talking")]
-	Db80 = 80,
+	SNDLVL_80dB = 80,
+	// 0.7
+	SNDLVL_TALKING = 80,
 	/// Average factory, electric shaver.
 	// 0.6
-	Db85 = 85,
+	SNDLVL_85dB = 85,
 	/// Screaming child, passing motorcycle, convertible ride on frw.
 	// 0.5
-	Db90 = 90,
-	Db95 = 95,
+	SNDLVL_90dB = 90,
+	SNDLVL_95dB = 95,
 	/// Subway train, diesel truck, woodworking shop, pneumatic drill, boiler shop, jackhammer.
 	// 0.4
-	Db100 = 100,
+	SNDLVL_100dB = 100,
 	/// Helicopter, power mower.
-	Db105 = 105,
+	SNDLVL_105dB = 105,
 	/// Snowmobile driver's seat, inboard motorboat, sandblasting.
-	Db110 = 110,
+	SNDLVL_110dB = 110,
 	/// Auto horn, propeller aircraft.
-	Db120 = 120,
+	SNDLVL_120dB = 120,
 	/// Air raid siren.
-	Db130 = 130,
+	SNDLVL_130dB = 130,
 
-	/// *Threshold of pain*, gunshot, jet engine.
+	/// Threshold of pain, gunshot, jet engine.
 	// 0.27
-	#[doc(alias = "Gunfire")]
-	Db140 = 140,
+	SNDLVL_GUNFIRE = 140,
+	// 0.2
+	SNDLVL_140dB = 140,
 
 	// 0.2
-	Db150 = 150,
+	SNDLVL_150dB = 150,
 
 	/// Rocket launching.
-	Db180 = 180,
+	SNDLVL_180dB = 180,
 }
 
-#[allow(non_upper_case_globals)]
-impl SoundLevel {
-	pub const Idle: Self = Self::Db60;
-	pub const Normal: Self = Self::Db75;
-	pub const Talking: Self = Self::Db80;
-	pub const Gunfire: Self = Self::Db140;
+/// Used to encode 0-255 for regular `soundlevel_t`'s and 256-511 for goldsrc-compatible ones.
+pub const MAX_SNDLVL_BITS: u8 = 9;
+pub const MIN_SNDLVL_VALUE: soundlevel_t = 0;
+pub const MAX_SNDLVL_VALUE: soundlevel_t = (1 << MAX_SNDLVL_BITS) - 1;
+
+/// Limit for attenuation due to network encoding.
+/// 
+/// Attenuation is encoded as multiplied by `64` in an 8-bit integer value.
+pub const MAX_ATTENUATION: c_float = 255.0 / 64.0;
+
+pub const fn attn_to_sndlvl(a: c_float) -> soundlevel_t {
+	if a >= 0.0 {
+		50 + (20.0 / a) as soundlevel_t
+	} else {
+		0
+	}
+}
+pub const fn sndlvl_to_attn(a: soundlevel_t) -> c_float {
+	if a > 50 {
+		20.0 / ((a - 50) as c_float)
+	} else {
+		4.0
+	}
 }
