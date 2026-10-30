@@ -51,6 +51,14 @@ macro_rules! cvar_find_fns {
 }
 
 impl<'a> Cvars<'a> {
+	pub const fn as_inner(&self) -> &Cvar {
+		self.0
+	}
+
+	pub const fn as_mut_inner(&mut self) -> &mut Cvar {
+		self.0
+	}
+
 	cvar_find_fns! {
 		result = Registered;
 		find = find;
