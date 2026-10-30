@@ -1,5 +1,5 @@
 use rse_plugin::prelude::*;
-use rse_server::{
+use rse_server::interfaces::{
 	OServerGameDll, UserMessageInfo,
 };
 use rse_tier0::prelude::*;

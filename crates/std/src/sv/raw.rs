@@ -1,11 +1,11 @@
-use ::rse_server::OVEngineServer;
+use ::rse_server::interfaces::OVEngineServer;
 
 use crate::{
 	plugin::PluginFactories,
 	raw::global_interface::GlobalInterface,
 };
 
-pub use ::rse_server::{
+pub use ::rse_server::interfaces::{
 	VEngineServer,
 };
 

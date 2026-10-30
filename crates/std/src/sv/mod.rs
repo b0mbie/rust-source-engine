@@ -4,7 +4,7 @@ use ::core::ffi::CStr;
 
 use crate::ffi::CBuffer;
 
-pub use ::rse_server::{
+pub use ::rse_server::interfaces::{
 	Model, Decal, Generic,
 };
 
