@@ -1,4 +1,6 @@
-use ::core::ffi::c_int;
+use ::core::ffi::{
+	c_int, c_uint,
+};
 
 pub const fn clamp_len_to_c_int(x: usize) -> c_int {
 	if x > (c_int::MAX as usize) {
@@ -6,4 +8,8 @@ pub const fn clamp_len_to_c_int(x: usize) -> c_int {
 	} else {
 		x as c_int
 	}
+}
+
+pub const fn clamp_len_to_c_uint(x: usize) -> c_uint {
+	if x > (c_uint::MAX as usize) {c_uint::MAX} else {x as _}
 }

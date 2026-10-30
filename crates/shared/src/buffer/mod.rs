@@ -11,6 +11,7 @@ use ::core::{
 	},
 };
 use ::rse_cpp::{
+	util::clamp_len_to_c_uint,
 	c_str::opt_c_str_as_ptr,
 	transparent_wrapper,
 };
@@ -282,10 +283,6 @@ pub enum Bits {
 	B6 = 6,
 	B7 = 7,
 	B8 = 8,
-}
-
-const fn clamp_len_to_c_uint(x: usize) -> c_uint {
-	if x > (c_uint::MAX as usize) {c_uint::MAX} else {x as _}
 }
 
 #[cfg(test)]
