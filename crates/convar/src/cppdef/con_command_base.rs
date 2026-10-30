@@ -25,9 +25,7 @@ class! {
 	// For whatever reason, the VTable for `ConVar` on `windows` doesn't include some functions from `ConCommandBase`.
 	// So, we can't use that class!
 	pub Registrable {
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 		pub virtual fn is_command() -> bool;
 
 		pub next: *mut Registrable;

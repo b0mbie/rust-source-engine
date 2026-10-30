@@ -39,9 +39,7 @@ class! {
 
 class! {
 	pub SendProp {
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 		pub matching_recv_prop: *mut RecvProp;
 		pub prop_type: SendPropType;
 		pub bits: c_int;

@@ -17,9 +17,7 @@ pub type FixedInt = c_uint;
 
 ::rse_cpp::class! {
 	pub IAudioDevice {
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 		pub virtual fn init() -> bool;
 		pub virtual fn shutdown();
 		pub virtual fn device_name() -> *const c_char;

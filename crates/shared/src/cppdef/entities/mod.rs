@@ -85,17 +85,13 @@ class! {
 		pub virtual fn get_base_networkable() -> *mut CBaseNetworkable;
 		pub virtual fn get_base_entity() -> *mut CBaseEntity;
 		pub virtual fn get_pvs_info() -> *mut PVSInfo_t;
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 	}
 }
 
 class! {
 	pub IServerEntity: pub virtual IServerUnknown {
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 		pub virtual fn get_model_index() -> c_int;
 		pub virtual fn get_model_name() -> string_t;
 		pub virtual fn set_model_index(index: c_int);
@@ -196,9 +192,7 @@ impl CBaseHandle {
 
 class! {
 	pub IHandleEntity {
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 		pub virtual fn set_ref_ehandle(handle: RefConst<CBaseHandle>);
 		pub virtual fn get_ref_ehandle() -> RefConst<CBaseHandle>;
 	}

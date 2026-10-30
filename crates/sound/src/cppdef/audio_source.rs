@@ -11,9 +11,7 @@ use super::{
 
 class! {
 	pub CAudioSource {
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 		// TODO: Nullable?
 		pub virtual fn create_mixer() -> *mut CAudioMixer;
 		pub virtual fn get_output_data(
@@ -35,9 +33,7 @@ class! {
 
 class! {
 	pub CAudioMixer {
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 		pub virtual fn mix_data_to_device(
 			device: *mut IAudioDevice,
 			channel: *mut channel_t,

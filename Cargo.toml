@@ -59,7 +59,7 @@ rse-vgui = { path = "./crates/vgui" }
 
 [workspace.dependencies.cpp-class]
 git = "https://github.com/b0mbie/cpp-class.git"
-version = "0.1.2"
+version = "0.1.3"
 
 [workspace.dependencies.libc]
 version = "0.2.177"

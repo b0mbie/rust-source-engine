@@ -84,9 +84,7 @@ pub struct TextParams {
 // TODO: `IScratchPad3D`.
 class! {
 	pub IScratchPad3D {
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 		pub virtual fn release();
 		pub virtual fn set_mapping(
 			input_min: RefConst<Vector>,

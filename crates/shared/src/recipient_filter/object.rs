@@ -55,9 +55,7 @@ impl<T: FilterImpl> FilterObject<T> {
 	}
 
 	const VTABLE: &IRecipientFilterVt = &new_vtable_self!(IRecipientFilterVt {
-		destructor,
-		#[cfg(not(windows))]
-		destructor_2,
+		destructors: rse_cpp::Destructors::new(Self::destructor),
 		is_reliable,
 		is_init_message,
 		get_recipient_count,
@@ -67,11 +65,6 @@ impl<T: FilterImpl> FilterObject<T> {
 	vtable_methods! {
 		this: This<IRecipientFilter>;
 		fn destructor() {
-			let _ = this;
-			// TODO: Destructor?
-		}
-		#[cfg(not(windows))]
-		fn destructor_2() {
 			let _ = this;
 			// TODO: Destructor?
 		}

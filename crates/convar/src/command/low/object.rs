@@ -162,9 +162,7 @@ where
 	const VTABLE: &'static ConCommandVt = &ConCommandVt {
 		inherited_con_command_base: ConCommandBaseVt {
 			inherited_registrable: new_vtable_self!(RegistrableVt {
-				destructor,
-				#[cfg(not(windows))]
-				destructor_2,
+				destructors: rse_cpp::Destructors::new(Self::destructor),
 				is_command
 			}),
 			is_flag_set: Self::is_flag_set,
@@ -184,11 +182,6 @@ where
 	vtable_methods! {
 		this: This<Registrable>;
 		fn destructor() {
-			let _ = this;
-			// TODO: Destructor?
-		}
-		#[cfg(not(windows))]
-		fn destructor_2() {
 			let _ = this;
 			// TODO: Destructor?
 		}

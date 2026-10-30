@@ -84,9 +84,7 @@ where
 	}
 
 	const VTABLE: &IGameEventListener2Vt = &new_vtable_self!(IGameEventListener2Vt {
-		destructor,
-		#[cfg(not(windows))]
-		destructor_2,
+		destructors: rse_cpp::Destructors::new(Self::destructor),
 		fire_game_event
 	});
 
@@ -95,13 +93,9 @@ where
 		fn destructor() {
 			unsafe { this.cast::<Self>().drop_in_place() }
 		}
-		#[cfg(not(windows))]
-		fn destructor_2() {
-			unsafe { this.cast::<Self>().drop_in_place() }
-		}
 		fn fire_game_event(event: *mut IGameEvent) {
 			let event = unsafe { GameEvent::from_mut_ptr(event) };
-			this_to_self!(mut this).inner.accept_event(event)
+			unsafe { this_to_self!(mut this) }.inner.accept_event(event)
 		}
 	}
 }

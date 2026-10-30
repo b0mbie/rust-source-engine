@@ -4,9 +4,7 @@ use ::rse_utl::cppdef::CUtlVector;
 
 class! {
 	pub IRecipientFilter {
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 		pub virtual fn is_reliable() -> bool;
 		pub virtual fn is_init_message() -> bool;
 		pub virtual fn get_recipient_count() -> c_int;

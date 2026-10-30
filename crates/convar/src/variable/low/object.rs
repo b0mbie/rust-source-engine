@@ -264,9 +264,7 @@ where
 		type_info: Self::TYPE_INFO,
 		base: ConVarVt {
 			inherited_registrable: new_vtable_self!(RegistrableVt {
-				destructor,
-				#[cfg(not(windows))]
-				destructor_2,
+				destructors: rse_cpp::Destructors::new(Self::destructor),
 				is_command,
 			}),
 			#[cfg(not(windows))]
@@ -298,11 +296,6 @@ where
 	vtable_methods! {
 		this: This<Registrable>;
 		fn destructor() {
-			let _ = this;
-			// TODO: Destructor?
-		}
-		#[cfg(not(windows))]
-		fn destructor_2() {
 			let _ = this;
 			// TODO: Destructor?
 		}

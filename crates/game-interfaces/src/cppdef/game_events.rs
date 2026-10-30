@@ -48,18 +48,14 @@ class! {
 
 class! {
 	pub IGameEventListener2 {
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 		pub virtual fn fire_game_event(event: *mut IGameEvent);
 	}
 }
 
 class! {
 	pub IGameEvent {
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 		pub virtual fn get_name() -> *const c_char;
 		pub virtual fn is_reliable() -> bool;
 		pub virtual fn is_local() -> bool;

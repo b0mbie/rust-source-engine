@@ -61,9 +61,7 @@ class! {
 
 class! {
 	pub CBotCmd {
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 
 		/// Number for matching server and client commands for debugging.
 		pub command_number: c_int;

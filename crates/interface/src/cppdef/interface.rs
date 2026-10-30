@@ -28,8 +28,6 @@ pub enum IfaceStatus {
 
 ::rse_cpp::class! {
 	pub IBaseInterface {
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 	}
 }
