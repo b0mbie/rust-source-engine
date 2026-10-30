@@ -1,3 +1,5 @@
+#![no_std]
+
 pub mod cppdef;
 
 mod engine_vgui;
