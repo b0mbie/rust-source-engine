@@ -4,6 +4,8 @@ pub mod cppdef;
 
 mod bots;
 pub use bots::*;
+mod engine_sound;
+pub use engine_sound::*;
 mod events;
 pub use events::*;
 mod file_system;

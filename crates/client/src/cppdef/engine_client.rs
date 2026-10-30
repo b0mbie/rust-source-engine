@@ -5,6 +5,7 @@ use ::rse_cpp::{
 	RefConst, RefMut,
 	class,
 };
+use ::rse_game_interfaces::cppdef::AudioState_t;
 use ::rse_shared::cppdef::{
 	player_info_t, client_textmessage_t, con_nprint_t, model_t,
 	INetChannelInfo,
@@ -209,14 +210,6 @@ class! {
 		pub virtual fn stop_demo_recording();
 		pub virtual fn take_screenshot(filename: *const c_char, folder: *const c_char);
 	}
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
-#[repr(C)]
-pub struct AudioState_t {
-	pub origin: Vector,
-	pub angles: QAngle,
-	pub is_underwater: bool,
 }
 
 class! {
