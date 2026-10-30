@@ -2,10 +2,7 @@ use ::core::ffi::{
 	c_char, c_float, c_int,
 };
 use ::rse_cpp::class;
-use ::rse_game_interfaces::cppdef::{
-	CGameEventListener,
-	IGameEvent,
-};
+use ::rse_game_interfaces::cppdef::CGameEventListener;
 use ::rse_math::Color;
 use ::rse_utl::cppdef::{
 	CUtlDict,
