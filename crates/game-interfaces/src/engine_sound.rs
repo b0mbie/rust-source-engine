@@ -39,7 +39,14 @@ impl EngineSound {
 	}
 
 	pub fn emit_sound_with_attenuation(&mut self, attenuation: c_float, params: EmitSound<'_>) {
-		let EmitSound { filter, ent_index, channel, sample, volume, flags, pitch, special_dsp, origin, direction, origins, update_positions, sound_time, speaker_entity } = params;
+		let EmitSound {
+			filter, ent_index,
+			channel, sample, volume,
+			flags, pitch, special_dsp,
+			origin, direction, origins,
+			update_positions, sound_time,
+			speaker_entity,
+		} = params;
 		unsafe {
 			virtual_call!(mut self.as_mut_inner() => emit_sound_with_attenuation(
 				RefMut::from_mut(filter.as_mut_inner()),
