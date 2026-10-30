@@ -10,6 +10,7 @@ use ::core::{
 
 pub use ::libc::wchar_t;
 
+/// Buffer for allocating [`WCStr`]s with a known size.
 #[repr(C)]
 pub struct WCStrBuf<const LEN: usize> {
 	wchars: [wchar_t; LEN],
@@ -60,6 +61,8 @@ impl<const LEN: usize> WCStrBuf<LEN> {
 		&self.wchars
 	}
 
+	/// # Safety
+	/// The returned slice must not be modified to contain invalid characters.
 	pub const unsafe fn as_mut_wchars(&mut self) -> &mut [wchar_t] {
 		&mut self.wchars
 	}
@@ -68,6 +71,9 @@ impl<const LEN: usize> WCStrBuf<LEN> {
 		unsafe { from_raw_parts(self.as_ptr(), LEN.saturating_add(1)) }
 	}
 
+	/// # Safety
+	/// The returned slice must not be modified to contain invalid characters.
+	/// The terminating NUL must also not be modified.
 	pub const unsafe fn as_mut_wchars_with_nul(&mut self) -> &mut [wchar_t] {
 		unsafe { from_raw_parts_mut(self.as_mut_ptr(), LEN.saturating_add(1)) }
 	}
@@ -101,6 +107,11 @@ impl<const LEN: usize> WCStrBuf<LEN> {
 	}
 }
 
+/// Dynamically-sized view of a C string with "wide" characters.
+/// 
+/// Unlike [`CStr`](::core::ffi::CStr),
+/// which uses [`c_char`](::core::ffi::c_char)s to store ANSI/UTF-8 data,
+/// this type uses [`wchar_t`] to store UTF-16 data.
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
 pub struct WCStr {
@@ -108,22 +119,32 @@ pub struct WCStr {
 }
 
 impl WCStr {
-	pub const unsafe fn from_wchars_with_nul_unchecked(slice: &[wchar_t]) -> &WCStr {
+	/// # Safety
+	/// `slice` must contain valid characters up to a terminating NUL.
+	pub const unsafe fn from_wchars_with_nul_unchecked(slice: &[wchar_t]) -> &Self {
 		unsafe { &*(slice as *const _ as *const Self) }
 	}
 
-	pub const unsafe fn from_mut_wchars_with_nul_unchecked(slice: &mut [wchar_t]) -> &mut WCStr {
+	/// # Safety
+	/// `slice` must contain valid characters up to a terminating NUL.
+	pub const unsafe fn from_mut_wchars_with_nul_unchecked(slice: &mut [wchar_t]) -> &mut Self {
 		unsafe { &mut *(slice as *mut _ as *mut Self) }
 	}
 
-	pub unsafe fn from_ptr<'a>(ptr: *const wchar_t) -> &'a WCStr {
+	/// # Safety
+	/// `ptr` must point to a wide C string
+	/// valid for reads for the lifetime `'a`.
+	pub unsafe fn from_ptr<'a>(ptr: *const wchar_t) -> &'a Self {
 		unsafe {
 			let len_without_nul = wcslen(ptr);
 			Self::from_wchars_with_nul_unchecked(from_raw_parts(ptr, len_without_nul.saturating_add(1)))
 		}
 	}
 
-	pub unsafe fn from_mut_ptr<'a>(ptr: *mut wchar_t) -> &'a mut WCStr {
+	/// # Safety
+	/// `ptr` must point to a wide C string
+	/// valid for reads and writes for the lifetime `'a`.
+	pub unsafe fn from_mut_ptr<'a>(ptr: *mut wchar_t) -> &'a mut Self {
 		unsafe {
 			let len_without_nul = wcslen(ptr);
 			Self::from_mut_wchars_with_nul_unchecked(from_raw_parts_mut(ptr, len_without_nul.saturating_add(1)))
@@ -150,6 +171,9 @@ impl WCStr {
 		&self.wchars_with_nul
 	}
 
+	/// # Safety
+	/// The returned slice must not be modified to contain invalid characters.
+	/// The terminating NUL must also not be modified.
 	pub const unsafe fn to_mut_wchars_with_nul(&mut self) -> &mut [wchar_t] {
 		&mut self.wchars_with_nul
 	}
