@@ -8,6 +8,15 @@ authors.workspace = true
 workspace = true
 
 [features]
+default = [
+	"drag-and-drop", "key-binding-maps",
+]
+
+# Disabled on Xbox 360.
+drag-and-drop = []
+
+# Disabled on Xbox 360.
+key-binding-maps = []
 
 [dependencies]
 rse-cpp.workspace = true

@@ -51,9 +51,6 @@ use super::{
 	}
 }
 
-// TODO: Is this not supposed to be an `enum`?
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[repr(C)]
-pub enum EInterfaceID {
-	IClientPanelStandardInterface = 0,
-}
+// TODO: Is this correct for an `enum` defined like this?
+pub type EInterfaceID = c_int;
+pub const ICLIENTPANEL_STANDARD_INTERFACE: EInterfaceID = 0;

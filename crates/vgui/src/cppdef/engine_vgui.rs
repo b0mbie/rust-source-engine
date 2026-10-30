@@ -6,9 +6,7 @@ use super::VPANEL;
 
 class! {
 	pub IEngineVGui {
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 		pub virtual fn get_panel(ty: VGuiPanel_t) -> VPANEL;
 		pub virtual fn is_game_ui_visible() -> bool;
 		pub virtual fn get_workshop_map(index: u32, desc: *mut WorkshopMapDesc_t) -> bool;

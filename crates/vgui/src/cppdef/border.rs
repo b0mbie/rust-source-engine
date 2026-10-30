@@ -8,9 +8,7 @@ use super::VPANEL;
 
 ::rse_cpp::class! {
 	pub IBorder {
-		pub virtual fn destructor();
-		#[cfg(not(windows))]
-		pub virtual fn destructor_2();
+		pub virtual ~destructors();
 
 		pub virtual fn paint(panel: VPANEL);
 		pub virtual fn paint_at(
