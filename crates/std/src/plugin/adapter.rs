@@ -175,6 +175,7 @@ where
 		fn description(&mut self) -> &CStr;
 		fn level_init(&mut self, map_name: &CStr);
 		fn server_activate(&mut self, edicts: &mut [ServerEdict], client_max: ClientIndex);
+		fn game_frame(&mut self, simulating: bool);
 		fn level_shutdown(&mut self);
 		fn client_active(&mut self, entity: &mut ServerEdict);
 		fn client_disconnect(&mut self, entity: &mut ServerEdict);
@@ -198,9 +199,5 @@ where
 		);
 		fn edict_allocated(&mut self, edict: &mut ServerEdict);
 		fn edict_freed(&mut self, edict: &ServerEdict);
-	}
-	
-	fn game_frame(&mut self, simulating: bool) {
-		unsafe { self.plugin_mut_unchecked().game_frame(simulating) }
 	}
 }
