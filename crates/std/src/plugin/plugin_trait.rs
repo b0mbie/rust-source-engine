@@ -10,7 +10,7 @@ use crate::{
 
 use super::{
 	ClientIndex, PluginResult, QueryCvarCookie, QueryCvarValueStatus,
-	RejectReason, ClientConnect,
+	RejectReason,
 	ServerEdict,
 };
 
@@ -70,13 +70,15 @@ pub trait Plugin: Sized {
 		&mut self,
 		entity: &mut ServerEdict,
 		name: &CStr, address: &CStr,
-		reject_reason: RejectReason<'_>,
-	) -> ClientConnect {
+		reject_reason: &mut RejectReason,
+		allow_connect: &mut bool,
+	) -> PluginResult {
 		let _ = entity;
 		let _ = name;
 		let _ = address;
 		let _ = reject_reason;
-		ClientConnect::Allow
+		let _ = allow_connect;
+		PluginResult::Continue
 	}
 	fn client_command(&mut self, entity: &mut ServerEdict, cmd: &Invocation) -> PluginResult {
 		let _ = entity;

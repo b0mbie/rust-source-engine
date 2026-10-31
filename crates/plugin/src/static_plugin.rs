@@ -29,7 +29,7 @@ use crate::{
 		IServerPluginCallbacks, IServerPluginCallbacksVt,
 		INTERFACEVERSION_ISERVERPLUGINCALLBACKS,
 	},
-	ClientConnect, Plugin, RejectReason,
+	Plugin, RejectReason,
 	PluginFactories,
 	QueryCvarCookie,
 };
@@ -208,28 +208,8 @@ where
 				)
 			};
 			let reject_reason = unsafe { RejectReason::new_unchecked(buffer) };
-			let result = unsafe { this_to_self!(mut this) }
-				.inner.client_connect(entity, name, address, reject_reason)
-				;
-			match result {
-				ClientConnect::Continue => PluginResult::Continue,
-				ClientConnect::Allow => {
-					*out_allow_connect = true;
-					PluginResult::Override
-				}
-				ClientConnect::AllowStop => {
-					*out_allow_connect = true;
-					PluginResult::Stop
-				}
-				ClientConnect::Reject => {
-					*out_allow_connect = false;
-					PluginResult::Override
-				}
-				ClientConnect::RejectStop => {
-					*out_allow_connect = false;
-					PluginResult::Stop
-				}
-			}
+			unsafe { this_to_self!(mut this) }
+				.inner.client_connect(entity, name, address, reject_reason, out_allow_connect)
 		}
 		fn client_command(entity: *mut edict_t, args: RefConst<CCommand>) -> PluginResult {
 			let entity = unsafe { ServerEdict::from_c_edict_mut(&mut *entity) };

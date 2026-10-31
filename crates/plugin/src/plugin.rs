@@ -64,13 +64,15 @@ pub trait Plugin {
 		&mut self,
 		entity: &mut ServerEdict,
 		name: &CStr, address: &CStr,
-		reject_reason: RejectReason<'_>,
-	) -> ClientConnect {
+		reject_reason: &mut RejectReason,
+		allow_connect: &mut bool,
+	) -> PluginResult {
 		let _ = entity;
 		let _ = name;
 		let _ = address;
 		let _ = reject_reason;
-		ClientConnect::Allow
+		let _ = allow_connect;
+		PluginResult::Continue
 	}
 	fn client_command(&mut self, entity: &mut ServerEdict, invocation: &Invocation) -> PluginResult {
 		let _ = entity;
@@ -101,13 +103,4 @@ pub trait Plugin {
 	fn edict_freed(&mut self, edict: &ServerEdict) {
 		let _ = edict;
 	}
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum ClientConnect {
-	Continue,
-	Allow,
-	AllowStop,
-	Reject,
-	RejectStop,
 }

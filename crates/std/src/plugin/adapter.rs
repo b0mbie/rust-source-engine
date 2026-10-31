@@ -17,7 +17,7 @@ use crate::{
 
 use super::{
 	ClientIndex, PluginResult, QueryCvarCookie, QueryCvarValueStatus,
-	RejectReason, ClientConnect,
+	RejectReason,
 	ServerEdict,
 	Plugin,
 };
@@ -186,8 +186,9 @@ where
 			&mut self,
 			entity: &mut ServerEdict,
 			name: &CStr, address: &CStr,
-			reject_reason: RejectReason<'_>,
-		) -> ClientConnect;
+			reject_reason: &mut RejectReason,
+			allow_connect: &mut bool,
+		) -> PluginResult;
 		fn client_command(&mut self, entity: &mut ServerEdict, invocation: &Invocation) -> PluginResult;
 		fn network_id_validated(&mut self, user_name: &CStr, network_id: &CStr) -> PluginResult;
 		fn query_cvar_value_finished(

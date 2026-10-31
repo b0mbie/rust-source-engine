@@ -42,7 +42,7 @@ pub mod prelude {
 			QueryCvarCookie_t, QueryCvarValueStatus,
 		},
 		StaticPlugin, LoadablePlugin, Plugin,
-		ClientConnect, RejectReason,
+		RejectReason,
 		PluginFactories, Invocation,
 		export_static_plugin, export_loadable_plugin,
 		export_static_plugin_as, export_loadable_plugin_as,

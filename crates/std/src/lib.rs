@@ -78,7 +78,7 @@ pub mod prelude {
 		},
 		plugin::{
 			ClientIndex, PluginResult, QueryCvarCookie, QueryCvarValueStatus,
-			RejectReason, ClientConnect,
+			RejectReason,
 			Plugin, plugin_description,
 			PluginFactories,
 		},

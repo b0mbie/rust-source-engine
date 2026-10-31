@@ -4,7 +4,7 @@ pub use ::rse_plugin::{
 		ClientIndex, PluginResult, QueryCvarValueStatus,
 	},
 	QueryCvarCookie,
-	RejectReason, ClientConnect,
+	RejectReason,
 	PluginFactories,
 	plugin_description,
 };
