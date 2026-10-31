@@ -5,8 +5,9 @@ pub use ::rse_shared::ServerEdict;
 
 use crate::{
 	cppdef::{
-		ClientIndex, PluginResult, QueryCvarCookie, QueryCvarValueStatus,
+		ClientIndex, PluginResult, QueryCvarValueStatus,
 	},
+	QueryCvarCookie,
 	RejectReason,
 };
 

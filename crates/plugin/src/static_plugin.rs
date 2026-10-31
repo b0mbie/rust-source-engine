@@ -25,12 +25,13 @@ use ::rse_interface::{
 
 use crate::{
 	cppdef::{
-		ClientIndex, PluginResult, QueryCvarCookie, QueryCvarValueStatus,
+		ClientIndex, PluginResult, QueryCvarCookie_t, QueryCvarValueStatus,
 		IServerPluginCallbacks, IServerPluginCallbacksVt,
 		INTERFACEVERSION_ISERVERPLUGINCALLBACKS,
 	},
 	ClientConnect, Plugin, RejectReason,
 	PluginFactories,
+	QueryCvarCookie,
 };
 
 /// Trait for plugins that live throughout the life of the object loaded in memory that the plugin comes from.
@@ -241,11 +242,12 @@ where
 			unsafe { this_to_self!(mut this) }.inner.network_id_validated(user_name, network_id)
 		}
 		fn on_query_cvar_value_finished(
-			cookie: QueryCvarCookie,
+			cookie: QueryCvarCookie_t,
 			player_entity: *mut edict_t,
 			status: QueryCvarValueStatus,
 			cvar_name: *const c_char, cvar_value: *const c_char,
 		) {
+			let cookie = QueryCvarCookie(cookie);
 			let player_entity = unsafe { ServerEdict::from_c_edict_mut(&mut *player_entity) };
 			let cvar_name = unsafe { CStr::from_ptr(cvar_name) };
 			let cvar_value = unsafe { CStr::from_ptr(cvar_value) };

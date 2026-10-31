@@ -23,6 +23,8 @@ mod macros;
 
 mod factories;
 pub use factories::*;
+mod helpers;
+pub use helpers::*;
 mod static_plugin;
 pub use static_plugin::*;
 mod plugin;
@@ -37,7 +39,7 @@ pub mod prelude {
 	pub use crate::{
 		cppdef::{
 			ClientIndex, PluginResult,
-			QueryCvarCookie, QueryCvarValueStatus,
+			QueryCvarCookie_t, QueryCvarValueStatus,
 		},
 		StaticPlugin, LoadablePlugin, Plugin,
 		ClientConnect, RejectReason,

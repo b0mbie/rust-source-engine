@@ -9,11 +9,12 @@ use ::rse_shared::ServerEdict;
 
 use crate::{
 	cppdef::{
-		ClientIndex, PluginResult, QueryCvarCookie, QueryCvarValueStatus,
+		ClientIndex, PluginResult, QueryCvarValueStatus,
 	},
 	RejectReason, ClientConnect,
 	StaticPlugin, Plugin,
 	PluginFactories,
+	QueryCvarCookie,
 };
 
 /// Helper for a [`LoadablePlugin`] that implements [`StaticPlugin`],

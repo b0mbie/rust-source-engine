@@ -1,8 +1,9 @@
 pub use ::rse_shared::ServerEdict;
 pub use ::rse_plugin::{
 	cppdef::{
-		ClientIndex, PluginResult, QueryCvarCookie, QueryCvarValueStatus,
+		ClientIndex, PluginResult, QueryCvarValueStatus,
 	},
+	QueryCvarCookie,
 	RejectReason, ClientConnect,
 	PluginFactories,
 	plugin_description,

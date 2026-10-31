@@ -36,20 +36,10 @@ pub enum QueryCvarValueStatus {
 	CvarProtected = 3,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[repr(transparent)]
-pub struct QueryCvarCookie(pub c_int);
-impl QueryCvarCookie {
-	pub const INVALID: Self = Self(-1);
-
-	pub const fn is_valid(&self) -> bool {
-		self.0 != Self::INVALID.0
-	}
-
-	pub const fn is_invalid(&self) -> bool {
-		self.0 == Self::INVALID.0
-	}
-}
+#[allow(non_camel_case_types)]
+pub type QueryCvarCookie_t = c_int;
+#[allow(non_upper_case_globals)]
+pub const InvalidQueryCvarCookie: QueryCvarCookie_t = -1;
 
 pub const INTERFACEVERSION_ISERVERPLUGINCALLBACKS: &CStr = c"ISERVERPLUGINCALLBACKS003";
 
@@ -80,7 +70,7 @@ class! {
 		pub virtual fn client_command(entity: *mut edict_t, args: RefConst<CCommand>) -> PluginResult;
 		pub virtual fn network_id_validated(user_name: *const c_char, network_id: *const c_char) -> PluginResult;
 		pub virtual fn on_query_cvar_value_finished(
-			cookie: QueryCvarCookie,
+			cookie: QueryCvarCookie_t,
 			player_entity: *mut edict_t,
 			status: QueryCvarValueStatus,
 			cvar_name: *const c_char, cvar_value: *const c_char,
@@ -115,6 +105,6 @@ class! {
 			plugin: *mut IServerPluginCallbacks,
 		);
 		pub virtual fn client_command(entity: *mut edict_t, cmd: *const c_char);
-		pub virtual fn start_query_cvar_value(entity: *mut edict_t, name: *const c_char) -> QueryCvarCookie;
+		pub virtual fn start_query_cvar_value(entity: *mut edict_t, name: *const c_char) -> QueryCvarCookie_t;
 	}
 }
