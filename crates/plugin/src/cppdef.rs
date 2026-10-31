@@ -11,10 +11,11 @@ use ::rse_shared::cppdef::{
 	KeyValues,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(C)]
 pub enum PluginResult {
 	/// Keep going.
+	#[default]
 	Continue = 0,
 	/// Run the game DLL function, but use our return value instead.
 	Override,
