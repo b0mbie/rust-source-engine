@@ -189,7 +189,7 @@ where
 			reject_reason: &mut RejectReason,
 			allow_connect: &mut bool,
 		) -> PluginResult;
-		fn client_command(&mut self, entity: &mut ServerEdict, invocation: &Invocation) -> PluginResult;
+		fn client_command(&mut self, entity: &mut ServerEdict, cmd: &Invocation) -> PluginResult;
 		fn network_id_validated(&mut self, user_name: &CStr, network_id: &CStr) -> PluginResult;
 		fn query_cvar_value_finished(
 			&mut self,
