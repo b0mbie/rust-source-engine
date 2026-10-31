@@ -1,5 +1,7 @@
 use rse_std::prelude::*;
-use rse_std::fs::File;
+use rse_std::fs::{
+	File, size_of_file,
+};
 use std::borrow::Cow;
 
 struct FileSystem;
@@ -8,14 +10,16 @@ impl Plugin for FileSystem {
 	fn load(factories: PluginFactories) -> Result<Self, Self::LoadError> {
 		let _ = factories;
 	
-		let size = rse_std::fs::size_of_file(c"gameinfo.txt", c"GAME");
+		let size = size_of_file(c"gameinfo.txt", c"GAME");
 		con_msg!("Size of `gameinfo.txt`: {size}B");
 
 		let mut buffer = vec![0; size];
 		let mut gameinfo = File::open(c"gameinfo.txt", c"rb", c"GAME")
-			.ok_or("couldn't open `gameinfo.txt` for reading")?;
+			.ok_or("couldn't open `gameinfo.txt` for reading")?
+			;
 		let n_read = gameinfo.read(&mut buffer)
-			.ok_or("couldn't read `gameinfo.txt` to the end")?;
+			.ok_or("couldn't read `gameinfo.txt` to the end")?
+			;
 
 		if n_read != size {
 			return Err(Cow::Owned(format!("read {n_read} bytes from `gameinfo.txt` when expecting to read {size} bytes")))
@@ -32,3 +36,12 @@ impl Plugin for FileSystem {
 	}
 }
 export_plugin!(FileSystem);
+
+#[con_command]
+fn rse_size_of_file(cmd: &Invocation) {
+	let [path, path_id] = cmd.args() else {
+		con_warn!("Usage: <path> <path Id>");
+		return
+	};
+	con_msg!("Size of {path:?} in {path_id:?}: {}", size_of_file(path, path_id));
+}
