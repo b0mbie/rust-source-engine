@@ -3,6 +3,9 @@ use ::core::{
 	ptr::NonNull,
 };
 use ::rse_cpp::virtual_call;
+use ::rse_game_interfaces::{
+	InterfaceOfFactory, AppSystemFactory,
+};
 use ::rse_interface::{
 	Interface, ptr_interface,
 };
@@ -12,7 +15,6 @@ use crate::{
 		IGameEventManager2, INTERFACEVERSION_GAMEEVENTSMANAGER2,
 		IGameEvent,
 	},
-	InterfaceOfFactory, AppSystemFactory,
 };
 
 ptr_interface! {

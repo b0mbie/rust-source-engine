@@ -7,13 +7,12 @@ use ::rse_cpp::{
 	This, this_to_self,
 };
 
-use crate::{
-	cppdef::{
-		IGameEventListener2, IGameEventListener2Vt,
-		IGameEvent,
-	},
-	GameEvent,
+use crate::cppdef::{
+	IGameEventListener2, IGameEventListener2Vt,
+	IGameEvent,
 };
+
+use super::GameEvent;
 
 pub trait FromEvent<'a, L: ?Sized>: Sized {
 	type Error;

@@ -13,13 +13,15 @@ use ::rse_cpp::{
 	transparent_wrapper,
 	virtual_call,
 };
-use ::rse_game_interfaces::{
+use ::rse_game_interfaces::InterfaceOfFactory;
+use ::rse_shared::{
 	cppdef::{
 		IEngineSound, IENGINESOUND_CLIENT_INTERFACE_VERSION,
 		IAudioOutputStream,
 	},
-	EngineSound,
-	InterfaceOfFactory,
+	interfaces::{
+		EngineSound,
+	},
 };
 use ::rse_interface::{
 	Interface,

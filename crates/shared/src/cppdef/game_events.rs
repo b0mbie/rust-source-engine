@@ -5,11 +5,12 @@ use ::rse_cpp::{
 	wide_c_str::wchar_t,
 	class,
 };
-use ::rse_shared::cppdef::{
+use ::rse_interface::cppdef::IBaseInterface;
+
+use crate::cppdef::{
 	KeyValues,
 	bf_read, bf_write,
 };
-use ::rse_interface::cppdef::IBaseInterface;
 
 /// Maximum game event name length.
 pub const MAX_EVENT_NAME_LENGTH: usize = 32;

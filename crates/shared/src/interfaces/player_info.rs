@@ -5,9 +5,8 @@ use ::rse_cpp::{
 	transparent_wrapper,
 	virtual_call,
 };
-use ::rse_shared::{
-	cppdef::CGlobalVars,
-	ServerEdict,
+use ::rse_game_interfaces::{
+	InterfaceOfFactory, GameServerFactory,
 };
 use ::rse_interface::{
 	Interface, ptr_interface,
@@ -18,10 +17,11 @@ use ::rse_math::{
 
 use crate::{
 	cppdef::{
+		CGlobalVars,
 		IPlayerInfoManager, IPlayerInfo, IPlayerInfo_V2,
 		INTERFACEVERSION_PLAYERINFOMANAGER,
 	},
-	InterfaceOfFactory, GameServerFactory,
+	ServerEdict,
 };
 
 pub use crate::cppdef::CBotCmd;

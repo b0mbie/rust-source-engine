@@ -4,6 +4,8 @@ pub mod cppdef;
 
 pub mod recipient_filter;
 
+pub mod interfaces;
+
 mod buffer;
 pub use buffer::*;
 mod datatable;

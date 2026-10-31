@@ -11,9 +11,12 @@ workspace = true
 # Equivalent to the `REPLAY_ENABLED` define.
 replay = []
 datatable-supports-int64 = []
+xbox360 = ["rse-utl/xbox360"]
 
 [dependencies]
+libc.workspace = true
 rse-cpp.workspace = true
+rse-game-interfaces.workspace = true
 rse-interface.workspace = true
 rse-math.workspace = true
 rse-tier0.workspace = true

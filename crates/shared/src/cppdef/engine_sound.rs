@@ -5,16 +5,17 @@ use ::rse_cpp::{
 	class,
 	RefMut,
 };
-use ::rse_shared::cppdef::{
-	IRecipientFilter,
-	soundlevel_t,
-};
 use ::rse_math::{
 	Vector, QAngle,
 };
 use ::rse_utl::cppdef::{
 	CUtlVector,
 	FileNameHandle_t,
+};
+
+use crate::cppdef::{
+	IRecipientFilter,
+	soundlevel_t,
 };
 
 class! {

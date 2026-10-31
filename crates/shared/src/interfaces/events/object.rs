@@ -8,9 +8,11 @@ use ::rse_cpp::{
 	wide_c_str::WCStr,
 	transparent_wrapper, virtual_call,
 };
-use ::rse_shared::KeyValues;
 
-use crate::cppdef::IGameEvent;
+use crate::{
+	cppdef::IGameEvent,
+	KeyValues,
+};
 
 use super::{
 	VisitEvent, VisitorObject,

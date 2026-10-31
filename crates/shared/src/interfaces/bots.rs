@@ -3,7 +3,9 @@ use ::rse_cpp::{
 	transparent_wrapper,
 	virtual_call,
 };
-use ::rse_shared::ServerEdict;
+use ::rse_game_interfaces::{
+	InterfaceOfFactory, GameServerFactory,
+};
 use ::rse_interface::{
 	Interface, ptr_interface,
 };
@@ -13,7 +15,7 @@ use crate::{
 		IBotManager, IBotController,
 		INTERFACEVERSION_PLAYERBOTMANAGER,
 	},
-	InterfaceOfFactory, GameServerFactory,
+	ServerEdict,
 };
 
 ptr_interface! {

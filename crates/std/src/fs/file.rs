@@ -1,7 +1,7 @@
 use ::core::ffi::{
 	CStr, c_int,
 };
-use ::rse_game_interfaces::cppdef::{
+use ::rse_shared::cppdef::{
 	FileSystemSeek, ValidFileHandle,
 };
 use ::std::io::{

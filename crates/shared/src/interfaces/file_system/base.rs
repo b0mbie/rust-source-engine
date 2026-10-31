@@ -5,17 +5,17 @@ use ::rse_cpp::{
 	util::clamp_len_to_c_int,
 	virtual_call,
 };
+use ::rse_game_interfaces::{
+	InterfaceOfFactory, AppSystemFactory,
+};
 use ::rse_interface::{
 	Interface, ptr_interface,
 };
 
-use crate::{
-	cppdef::{
-		IBaseFileSystem, BASEFILESYSTEM_INTERFACE_VERSION,
-		ValidFileHandle,
-		FileSystemSeek,
-	},
-	InterfaceOfFactory, AppSystemFactory,
+use crate::cppdef::{
+	IBaseFileSystem, BASEFILESYSTEM_INTERFACE_VERSION,
+	ValidFileHandle,
+	FileSystemSeek,
 };
 
 use super::FileTime;

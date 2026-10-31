@@ -5,16 +5,14 @@ use ::rse_cpp::{
 	RefMut, virtual_call,
 };
 use ::rse_math::Vector;
-use ::rse_shared::{
+use ::rse_utl::Vector as UtlVector;
+
+use crate::{
 	cppdef::{
+		IEngineSound, SOUND_FROM_WORLD,
 		soundlevel_t, CHAN_AUTO,
 	},
 	recipient_filter::RecipientFilter,
-};
-use ::rse_utl::Vector as UtlVector;
-
-use crate::cppdef::{
-	IEngineSound, SOUND_FROM_WORLD,
 };
 
 ::rse_cpp::transparent_wrapper! {

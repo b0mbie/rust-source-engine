@@ -7,16 +7,5 @@ authors.workspace = true
 [lints]
 workspace = true
 
-[features]
-xbox360 = ["rse-utl/xbox360"]
-
 [dependencies]
-libc.workspace = true
-rse-cpp.workspace = true
-rse-shared.workspace = true
 rse-interface.workspace = true
-rse-math.workspace = true
-rse-scratch-pad.workspace = true
-
-[dependencies.rse-utl]
-workspace = true

@@ -4,7 +4,7 @@ use ::core::{
 	},
 	ptr::NonNull,
 };
-use ::rse_game_interfaces::cppdef::FileFindHandle_t;
+use ::rse_shared::cppdef::FileFindHandle_t;
 
 use super::with_fs;
 

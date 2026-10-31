@@ -5,16 +5,16 @@ use ::core::{
 	ptr::NonNull,
 };
 use ::rse_cpp::virtual_call;
+use ::rse_game_interfaces::{
+	InterfaceOfFactory, AppSystemFactory,
+};
 use ::rse_interface::{
 	Interface, ptr_interface,
 };
 
-use crate::{
-	cppdef::{
-		IFileSystem, FILESYSTEM_INTERFACE_VERSION,
-		FileFindHandle_t,
-	},
-	InterfaceOfFactory, AppSystemFactory,
+use crate::cppdef::{
+	IFileSystem, FILESYSTEM_INTERFACE_VERSION,
+	FileFindHandle_t,
 };
 
 use super::BaseFileSystem;

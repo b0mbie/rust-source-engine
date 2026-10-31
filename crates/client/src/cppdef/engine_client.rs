@@ -5,12 +5,12 @@ use ::rse_cpp::{
 	RefConst, RefMut,
 	class,
 };
-use ::rse_game_interfaces::cppdef::AudioState_t;
 use ::rse_shared::cppdef::{
 	player_info_t, client_textmessage_t, con_nprint_t, model_t,
 	INetChannelInfo,
 	IAchievementMgr, CGamestatsData,
 	KeyValues,
+	AudioState_t,
 };
 use ::rse_math::{
 	SurfInfo, Vector, QAngle, VMatrix, matrix3x4_t,

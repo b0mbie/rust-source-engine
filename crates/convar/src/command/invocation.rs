@@ -4,6 +4,7 @@ use ::core::{
 	},
 	fmt,
 	mem::size_of,
+	ops::Deref,
 	slice::{
 		from_raw_parts, from_raw_parts_mut,
 	},
@@ -113,6 +114,13 @@ impl Arg {
 		ArgIter {
 			inner: slice.iter(),
 		}
+	}
+}
+
+impl Deref for Arg {
+	type Target = CStr;
+	fn deref(&self) -> &Self::Target {
+		self.as_c_str()
 	}
 }
 

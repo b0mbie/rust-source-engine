@@ -1,5 +1,5 @@
 use ::core::ffi::CStr;
-use ::rse_game_interfaces::{
+use ::rse_shared::interfaces::file_system::{
 	OFileSystem, FileSystem,
 };
 use ::std::sync::OnceLock;

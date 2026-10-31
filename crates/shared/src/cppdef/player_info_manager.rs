@@ -5,12 +5,13 @@ use ::rse_cpp::{
 	class,
 	RefConst, RefMut,
 };
-use ::rse_shared::cppdef::{
-	entities::edict_t,
-	CGlobalVars,
-};
 use ::rse_math::{
 	Vector, QAngle,
+};
+
+use crate::cppdef::{
+	entities::edict_t,
+	CGlobalVars,
 };
 
 pub const INTERFACEVERSION_PLAYERINFOMANAGER: &CStr = c"PlayerInfoManager002";
