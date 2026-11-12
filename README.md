@@ -1,13 +1,15 @@
 # Rust Source Engine
 This repository is dedicated to providing implementations
 for interacting with the Source 1 engine in Rust.
+See the crates in the `examples/` directory for potential use cases.
 
 > [!WARNING]
 > Due to the large scope of this project,
-> the crates are likely to be highly unstable
-> while the C++ definitions are ported to Rust.
-> There may also be problems with soundness, or non-existent safe APIs.
-> ### You have been warned!
+> the crates are likely to be highly unstable.
+> There may be problems with soundness, non-existent safe APIs, or
+> incomplete definitions that can cause *Undefined Behavior*
+> (with the potential to silently corrupt program state).
+> **You have been warned!**
 
 ## License
 Please note that, as it stands right now,
