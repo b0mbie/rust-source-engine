@@ -9,6 +9,13 @@ for interacting with the Source 1 engine in Rust.
 > There may also be problems with soundness, or non-existent safe APIs.
 > ### You have been warned!
 
+## License
+Please note that, as it stands right now,
+the circumstances of this project existing are rather unique
+and it is unclear to me what can and cannot be allowed for users -
+thus, this project is *All Rights Reserved* until further notice.
+(I plan to re-license it to allow more permissive usage in the future.)
+
 ## Overview
 The project consists of a workspace with crates that provide access to some functionality of the Source 1 engine.
 It was initially developed to allow for writing Valve Server Plugins for the Source 1 engine,
